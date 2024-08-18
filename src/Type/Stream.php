@@ -2,6 +2,7 @@
 
 namespace Phunkie\Streams\Type;
 
+use Phunkie\Cats\Show;
 use Phunkie\Streams\Compilable;
 use Phunkie\Streams\Ops\Stream\CompileOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
@@ -15,7 +16,9 @@ use Phunkie\Types\Kind;
  */
 class Stream implements Showable, Compilable, Kind
 {
-    use ShowOps;
+    use Show, ShowOps {
+        ShowOps::showType insteadof Show;
+    }
     use CompileOps;
     use FunctorOps;
 
