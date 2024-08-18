@@ -1,0 +1,24 @@
+{
+    "name": "phunkie/streams",
+    "require": {
+        "phunkie/phunkie": "^0.11.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Phunkie\\Streams\\": "src/",
+            "Tests\\Phunkie\\Streams\\": "tests/"
+        },
+        "files": [
+            "src/Functions/common.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Marcello Duarte",
+            "email": "marcello.duarte@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^11.3"
+    }
+}
