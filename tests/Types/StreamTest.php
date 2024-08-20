@@ -45,4 +45,13 @@ class StreamTest extends TestCase
             $zipWith->compile->toList()
         );
     }
+
+    #[Test]
+    function it_has_list_operations()
+    {
+        $a = Stream("John", "Yoko");
+        $b = Stream("Paul", "Linda");
+
+        assertEquals(ImmList("John", "Yoko", "Paul", "Linda"), $a->concat($b)->compile->toList());
+    }
 }

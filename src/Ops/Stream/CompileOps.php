@@ -2,7 +2,6 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
-use Phunkie\Cats\IO;
 use Phunkie\Types\ImmList;
 
 /**

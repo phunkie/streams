@@ -1,6 +1,6 @@
 <?php
 
-namespace {
+namespace Phunkie\Streams\IO\File {
 
     use Phunkie\Streams\IO\Read;
     use Phunkie\Streams\Type\Stream;

@@ -15,7 +15,7 @@ class IO extends PhunkieIO
 
     public function run()
     {
-        return call_user_func($this->f);
+        return ($this->f)();
     }
 
     public function unsafeRunSync()

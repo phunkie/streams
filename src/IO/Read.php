@@ -2,9 +2,7 @@
 
 namespace Phunkie\Streams\IO;
 
-use Phunkie\Cats\IO;
 use Phunkie\Streams\Type\Stream;
-use function Phunkie\Functions\io\io;
 
 class Read implements Resource
 {
@@ -49,7 +47,7 @@ class Read implements Resource
     private function read($bytes)
     {
         if (is_resource($this->handle)) {
-            $data = stream_get_contents($this->handle, $bytes);
+            $data = fread($this->handle, $bytes);
 
             if ($data === false || ($data === '' && feof($this->handle))) {
                 return Resource::EOF;

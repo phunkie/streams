@@ -20,5 +20,13 @@
     ],
     "require-dev": {
         "phpunit/phpunit": "^11.3"
+    },
+    "suggest": {
+        "ext-mbstring": "Required for encoding and decoding text in various encodings",
+        "ext-json": "Required for JSON encoding and decoding",
+        "ext-pcntl": "Required for process control in Unix-like operating systems",
+        "ext-posix": "Required for POSIX functions, useful for multi-threading and process control",
+        "ext-zlib": "Required for stream compression and decompression",
+        "ext-sockets": "Required for socket communication in networking applications"
     }
 }

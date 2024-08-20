@@ -5,13 +5,12 @@ namespace Phunkie\Streams\Ops\Pull;
 use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
-use function Phunkie\Functions\io\io;
 
 trait CompileOps
 {
     public function toList(): ImmList
     {
-        $list = ImmList(...$this->getUnderlying());
+        $list = ImmList(...$this->getValues());
 
         foreach ($this->getScope()->getMaps() as $f) {
             $list = $list->map($f);
@@ -22,7 +21,7 @@ trait CompileOps
 
     public function toArray(): array
     {
-        return $this->getUnderlying();
+        return $this->getValues();
     }
 
     public function runLog($bytes)
@@ -32,7 +31,7 @@ trait CompileOps
             $count = 0;
 
             do {
-                $bit = $this->getUnderlying()->pull($bytes);
+                $bit = $this->pull();
 
                 if ($bit !== Resource::EOF) {
                     $log[] = $bit;

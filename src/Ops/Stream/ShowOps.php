@@ -2,6 +2,8 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
+use Phunkie\Streams\Pull\ResourcePull;
+
 /**
  * @method getPull(): Phunkie\Streams\Pull
  */
@@ -14,7 +16,7 @@ trait ShowOps
 
     public function getTypeVariables(): array
     {
-        return [$this->getPull()->hasEffect() ? IO : Pure, $this->getPull()->showType()];
+        return [$this->getPull() instanceof ResourcePull ? IO : Pure, $this->getPull()->showType()];
     }
 
     public function toString(): string
