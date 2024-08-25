@@ -25,4 +25,9 @@ trait ImmListOps
             }
         };
     }
+
+    public function take(int $n): Stream
+    {
+        return new Stream($this->getPull()->take($n), $this->getBytes());
+    }
 }

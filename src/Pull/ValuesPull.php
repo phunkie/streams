@@ -2,18 +2,23 @@
 
 namespace Phunkie\Streams\Pull;
 
-use Phunkie\Streams\Ops\Pull\CompileOps;
-use Phunkie\Streams\Ops\Pull\FunctorOps;
-use Phunkie\Streams\Ops\Pull\ShowOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\InteratorOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
+use Phunkie\Types\ImmList;
 
 class ValuesPull implements Pull
 {
     use ShowOps;
     use CompileOps;
     use FunctorOps;
+    use InteratorOps;
+    use ImmListOps;
 
     private $values;
     private $index;
@@ -41,48 +46,29 @@ class ValuesPull implements Pull
         return $this->values;
     }
 
-    public function getScope()
+    public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    /**
-     * Retrieves the next value in the sequence.
-     *
-     * @return void The next value.
-     */
-    public function next(): void
+    public function applyScope(ImmList|array $chunk): ImmList | array
     {
-        if (!$this->valid()) {
-            throw new \OutOfBoundsException("No more elements to pull.");
-        }
+        $that = $this;
+        $applyToList = function (ImmList $list) use ($chunk, $that) {
+            foreach ($that->getScope()->getMaps() as $map) {
+                $list = $list->map($map);
+            }
+            return $list;
+        };
 
-        $this->index++;
-    }
-
-    public function hasNext(): bool
-    {
-        return $this->index < count($this->values);
-    }
-
-    public function rewind(): void
-    {
-        $this->index = 0;
-    }
-
-    public function current(): mixed
-    {
-        return $this->values[$this->index];
-    }
-
-    public function key(): mixed
-    {
-        return $this->index;
-    }
-
-    public function valid(): bool
-    {
-        return $this->index < count($this->values);
+        return match (get_class($chunk)) {
+            ImmList::class => $applyToList($chunk),
+            default => array_map(function($c) use ($that) {
+                foreach ($that->getScope()->getMaps() as $map) {
+                    $c = array_map($map, $c);
+                }
+            },$chunk)
+        };
     }
 
     public function toStream(): Stream
@@ -96,6 +82,18 @@ class ValuesPull implements Pull
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
+
+        return $this;
+    }
+
+    public function getIndex(): int
+    {
+        return $this->index;
+    }
+
+    public function setIndex(int $index): static
+    {
+        $this->index = $index;
 
         return $this;
     }

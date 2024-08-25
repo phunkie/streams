@@ -40,7 +40,7 @@ class ResourcePull implements Pull
         return $this->scope;
     }
 
-    public function getStream(): Stream
+    public function toStream(): Stream
     {
         $stream = Stream($this->resource, $this->chunkSize);
         $stream->setScope($this->getScope());

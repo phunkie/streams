@@ -1,6 +1,6 @@
 <?php
 
-namespace Phunkie\Streams\Ops\Pull;
+namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 
 use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\IO\Resource;

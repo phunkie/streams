@@ -5,13 +5,12 @@ namespace Phunkie\Streams\Pull;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
-use Phunkie\Types\ImmList;
 
 class ResourcePullConcat implements Pull
 {
-    private $pull1;
-    private $pull2;
-    private $currentPull;
+    private ResourcePull $pull1;
+    private ResourcePull $pull2;
+    private ResourcePull $currentPull;
     private Scope $scope;
 
     public function __construct(ResourcePull $pull1, ResourcePull $pull2)
@@ -48,11 +47,6 @@ class ResourcePullConcat implements Pull
         $this->currentPull = $this->pull1;
     }
 
-    public function show(): string
-    {
-        return $this->pull1->show() . " ++ " . $this->pull2->show();
-    }
-
     public function getScope(): Scope
     {
         return $this->scope;
@@ -71,5 +65,15 @@ class ResourcePullConcat implements Pull
         $stream->setScope($this->getScope());
 
         return $stream;
+    }
+
+    public function getPull1(): ResourcePull
+    {
+        return $this->pull1;
+    }
+
+    public function getPull2(): ResourcePull
+    {
+        return $this->pull2;
     }
 }

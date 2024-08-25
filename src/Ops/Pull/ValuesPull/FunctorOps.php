@@ -1,6 +1,6 @@
 <?php
 
-namespace Phunkie\Streams\Ops\Pull;
+namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
 /**
  * @method getScope

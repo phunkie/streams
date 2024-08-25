@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Phunkie\Streams\Types;
+namespace Tests\Phunkie\Streams\Type;
 
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

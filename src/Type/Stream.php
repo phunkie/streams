@@ -3,12 +3,12 @@
 namespace Phunkie\Streams\Type;
 
 use Phunkie\Cats\Show;
-use Phunkie\Streams\Compilable;
+use Phunkie\Streams\Infinite\Constructor;
 use Phunkie\Streams\IO\File\Path;
-use Phunkie\Streams\Ops\Stream\CompileOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
 use Phunkie\Streams\Ops\Stream\ImmListOps;
 use Phunkie\Streams\Ops\Stream\ShowOps;
+use Phunkie\Streams\Pull\InfinitePull;
 use Phunkie\Streams\Pull\ResourcePull;
 use Phunkie\Streams\Pull\ValuesPull;
 use Phunkie\Streams\Showable;
@@ -20,12 +20,11 @@ use Phunkie\Types\Kind;
  *
  * @property Compiler $compile Provides access to a Compiler instance for this Stream.
  */
-class Stream implements Showable, Compilable, Kind
+class Stream implements Showable, Kind
 {
     use Show, ShowOps {
         ShowOps::showType insteadof Show;
     }
-    use CompileOps;
     use FunctorOps;
     use ImmListOps;
 
@@ -46,6 +45,11 @@ class Stream implements Showable, Compilable, Kind
     {
         $resourcePull = new ResourcePull($path, $bytes);
         return new Stream($resourcePull, $bytes);
+    }
+
+    public static function fromInfinite(Constructor $infinite, int $bytes = 256): Stream
+    {
+        return new Stream(new InfinitePull($infinite, $bytes), $bytes);
     }
 
     protected function getPull(): Pull

@@ -2,7 +2,6 @@
 
 namespace Phunkie\Streams\Type;
 
-use Phunkie\Types\Function1;
 use const Phunkie\Functions\function1\identity;
 
 class Scope
