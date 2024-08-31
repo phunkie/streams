@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Infinite;
 
-final class Range implements Constructor
+final class Range implements Infinite
 {
     private \Generator $values;
 

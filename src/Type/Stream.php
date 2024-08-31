@@ -3,8 +3,9 @@
 namespace Phunkie\Streams\Type;
 
 use Phunkie\Cats\Show;
-use Phunkie\Streams\Infinite\Constructor;
+use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\IO\File\Path;
+use Phunkie\Streams\Ops\Stream\EffectfulOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
 use Phunkie\Streams\Ops\Stream\ImmListOps;
 use Phunkie\Streams\Ops\Stream\ShowOps;
@@ -27,6 +28,7 @@ class Stream implements Showable, Kind
     }
     use FunctorOps;
     use ImmListOps;
+    use EffectfulOps;
 
     /**
      * Constructor for the Stream class.
@@ -47,7 +49,7 @@ class Stream implements Showable, Kind
         return new Stream($resourcePull, $bytes);
     }
 
-    public static function fromInfinite(Constructor $infinite, int $bytes = 256): Stream
+    public static function fromInfinite(Infinite $infinite, int $bytes = 256): Stream
     {
         return new Stream(new InfinitePull($infinite, $bytes), $bytes);
     }
@@ -61,6 +63,7 @@ class Stream implements Showable, Kind
     {
         return match($property) {
             'compile' => new Compiler($this->getPull(), $this->getBytes()),
+            'repeat' => self::fromInfinite(repeat(...$this->getPull()->getValues()), $this->getBytes()),
             'runLog' => $this->getPull() instanceof ResourcePull ?
                 (new Compiler($this->getPull(), $this->getBytes()))->runLog() :
                 throw new \Error("Cannot call runlog on Pure Streams"),
@@ -88,5 +91,10 @@ class Stream implements Showable, Kind
         $this->bytes = $bytes;
 
         return $this;
+    }
+
+    public function getEffect(): string
+    {
+        return $this->getPull() instanceof ResourcePull ? IO : Pure;
     }
 }

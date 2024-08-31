@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Pull;
 
-use Phunkie\Streams\Infinite\Constructor;
+use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\Ops\Pull\InfinitePull\CompileOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ImmListOps;
@@ -21,11 +21,11 @@ class InfinitePull implements Pull
     use InteratorOps;
     use ImmListOps;
 
-    private Constructor $infinite;
+    private Infinite $infinite;
     private int $bytes;
     private Scope $scope;
 
-    public function __construct(Constructor $infinite, int $bytes = 256)
+    public function __construct(Infinite $infinite, int $bytes = 256)
     {
         $this->infinite = $infinite;
         $this->bytes = $bytes;

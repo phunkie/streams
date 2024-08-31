@@ -14,4 +14,13 @@ trait ImmListOps
         $valuesPull->setScope($this->getScope());
         return $valuesPull;
     }
+
+    public function filter(callable $f): ValuesPull
+    {
+        $valuesPull = new ValuesPull(
+            ...array_filter($this->getValues(), $f)
+        );
+        $valuesPull->setScope($this->getScope());
+        return $valuesPull;
+    }
 }

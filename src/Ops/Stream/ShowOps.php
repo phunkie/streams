@@ -16,7 +16,7 @@ trait ShowOps
 
     public function getTypeVariables(): array
     {
-        return [$this->getPull() instanceof ResourcePull ? IO : Pure, $this->getPull()->showType()];
+        return [$this->getEffect(), $this->getPull()->showType()];
     }
 
     public function toString(): string

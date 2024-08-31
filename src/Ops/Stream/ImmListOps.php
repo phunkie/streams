@@ -30,4 +30,9 @@ trait ImmListOps
     {
         return new Stream($this->getPull()->take($n), $this->getBytes());
     }
+
+    public function filter(callable $f): Stream
+    {
+        return new Stream($this->getPull()->filter($f), $this->getBytes());
+    }
 }

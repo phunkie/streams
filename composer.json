@@ -18,9 +18,6 @@
             "email": "marcello.duarte@gmail.com"
         }
     ],
-    "require-dev": {
-        "phpunit/phpunit": "^11.3"
-    },
     "suggest": {
         "ext-mbstring": "Required for encoding and decoding text in various encodings",
         "ext-json": "Required for JSON encoding and decoding",
@@ -28,5 +25,14 @@
         "ext-posix": "Required for POSIX functions, useful for multi-threading and process control",
         "ext-zlib": "Required for stream compression and decompression",
         "ext-sockets": "Required for socket communication in networking applications"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.35"
+    },
+    "config": {
+        "bin-dir": "bin",
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }

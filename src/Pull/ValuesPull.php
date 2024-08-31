@@ -3,6 +3,7 @@
 namespace Phunkie\Streams\Pull;
 
 use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\InteratorOps;
@@ -19,6 +20,7 @@ class ValuesPull implements Pull
     use FunctorOps;
     use InteratorOps;
     use ImmListOps;
+    use EffectfulOps;
 
     private $values;
     private $index;
