@@ -16,6 +16,7 @@ trait ImmListOps
                 $values[] = $this->pull();
             }
         }
+
         $valuesPull = new ValuesPull(
             ...$values
         );
