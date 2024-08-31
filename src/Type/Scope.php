@@ -3,8 +3,6 @@
 namespace Phunkie\Streams\Type;
 
 use Phunkie\Streams\IO\IO;
-use Phunkie\Types\ImmList;
-use const Phunkie\Functions\function1\identity;
 
 class Scope
 {
@@ -24,10 +22,13 @@ class Scope
     {
         foreach ($this->getCallables() as $callable) {
             [$type, $f] = $callable;
+
             $chunk = match ($type) {
                 'map' => array_map($f, $chunk),
-                'evalMap' => new IO(fn () => ImmList(...array_map($f, $chunk))),
                 'filter' => array_filter($chunk, $f),
+                'evalMap' => new IO(fn () => ImmList(...array_map($f, $chunk))),
+                'evalFilter' => new IO(fn () => ImmList(...array_map(fn($x) => new IO(fn() =>$x),
+                    array_filter($chunk, fn($v) => $f($v)->run())))),
                 default => throw new \Error("Method not found $type")
             };
         }

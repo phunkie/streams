@@ -5,22 +5,45 @@ use function Phunkie\Streams\Functions\io\io;
 
 describe("EffectfulStream", function () {
 
-    beforeEach(function() {
-        $this->stream = Stream("London", "Paris", "Amsterdam")
-            ->evalMap(fn($x) => io(fn() => strtoupper($x)));
+    describe("evalMap", function () {
+        beforeEach(function() {
+            $this->stream = Stream("London", "Paris", "Amsterdam")
+                ->evalMap(fn($x) => io(fn() => strtoupper($x)));
+        });
+
+        it("implements evalMap", function () {
+            expect($this->stream->compile->toList())
+                ->toBeInstanceOf(IO::class);
+        });
+
+        it("can be unsafely ran", function () {
+            expect($this->stream
+                ->compile
+                ->toList()
+                ->unsafeRunSync())
+                ->toEqual(ImmList("LONDON", "PARIS", "AMSTERDAM"));
+        });
     });
 
-    it("implements evalMap", function () {
-        expect($this->stream->compile->toList())
-        ->toBeInstanceOf(IO::class);
-    });
+    describe("evalFilter", function () {
+        beforeEach(function () {
+            $this->stream = Stream("London", "Paris", "Amsterdam")
+                ->evalFilter(fn($x) => io(fn() => strlen($x) > 5));
+        });
 
-    it("can be unsafely ran", function () {
-        expect($this->stream
-            ->compile
-            ->toList()
-            ->unsafeRunSync())
-        ->toEqual(ImmList("LONDON", "PARIS", "AMSTERDAM"));
+        it("implements evalFilter", function () {
+            expect($this->stream->compile->toList())
+                ->toBeInstanceOf(IO::class);
+        });
+
+        it("can be unsafely ran", function () {
+            expect($this->stream
+                ->compile
+                ->toList()
+                ->unsafeRunSync())
+                ->toEqual(ImmList("London", "Amsterdam"));
+        });
+
     });
 
 });

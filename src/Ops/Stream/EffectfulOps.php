@@ -14,10 +14,14 @@ trait EffectfulOps
     public function evalFilter($f)
     {
         $this->getPull()->getScope()->addCallable('evalFilter', $f);
+
+        return $this;
     }
 
     public function evalFlatMap($f)
     {
         $this->getPull()->getScope()->addCallable('evalMap', $f);
+
+        return $this;
     }
 }

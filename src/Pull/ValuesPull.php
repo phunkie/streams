@@ -12,7 +12,6 @@ use Phunkie\Streams\Ops\Pull\ValuesPull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
-use Phunkie\Types\ImmList;
 
 class ValuesPull implements Pull
 {

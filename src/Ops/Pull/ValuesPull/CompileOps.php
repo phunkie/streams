@@ -19,10 +19,7 @@ trait CompileOps
 
         $list = $this->applyScope($this->getValues());
 
-        if ($list instanceof IO) {
-            return $list;
-        }
-        return ImmList(...$list);
+        return $list instanceof IO ? $list : new ImmList(...$list);
     }
 
     public function toArray(): array
