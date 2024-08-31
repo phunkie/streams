@@ -35,16 +35,17 @@ printLn($infinite->take(10)->compile->toList());
 
 printLn(Stream(1, 2, 3)->repeat->take(10)->compile->toList());
 
-//printLn(Stream(1, 2, 3, 4, 5)->map(fn($x) => $x * 2)->compile->toList());
-//
-//printLn(Stream(1, 2, 3, 4, 5)->filter(fn($x) => $x % 2 == 0)->compile->toList());
+printLn(Stream(1, 2, 3, 4, 5)->map(fn($x) => $x * 2)->compile->toList());
 
-//printLn($x->evalMap(fn($x) => io($x * 2))
-//    ->compile
-//    ->toList());
+printLn(Stream(1, 2, 3, 4, 5)->filter(fn($x) => $x % 2 == 0)->compile->toList());
 
-//$y = Stream("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
-//
-//printLn($x->interleave($y)->compile->toList());
-// Stream<Pure, Mixed> List(1, "Monday", 2, "")
+printLn(Stream(1, 2, 3, 4, 5)->evalMap(fn($x) => io(fn() => $x * 2))
+    ->compile
+    ->toList()
+    ->unsafeRunSync());
 
+$x = Stream(1, 2, 3, 4, 5);
+$y = Stream("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
+$z = Stream(true, false, true, false, true);
+
+printLn($x->interleave($y, $z)->compile->toList());

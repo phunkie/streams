@@ -26,6 +26,7 @@ class Scope
             $chunk = match ($type) {
                 'map' => array_map($f, $chunk),
                 'filter' => array_filter($chunk, $f),
+                'interleave' => $f($chunk),
                 'evalMap' => new IO(fn () => ImmList(...array_map($f, $chunk))),
                 'evalFilter' => new IO(fn () => ImmList(...array_map(fn($x) => new IO(fn() =>$x),
                     array_filter($chunk, fn($v) => $f($v)->run())))),
