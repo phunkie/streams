@@ -6,16 +6,18 @@ trait EffectfulOps
 {
     public function evalMap($f)
     {
-        return $this->getPull()->evalMap($f);
+        $this->getPull()->getScope()->addCallable('evalMap', $f);
+
+        return $this;
     }
 
     public function evalFilter($f)
     {
-        return $this->getPull()->evalFilter($f);
+        $this->getPull()->getScope()->addCallable('evalFilter', $f);
     }
 
     public function evalFlatMap($f)
     {
-        return $this->getPull()->evalFlatMap($f);
+        $this->getPull()->getScope()->addCallable('evalMap', $f);
     }
 }

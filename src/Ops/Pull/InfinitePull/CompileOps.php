@@ -10,13 +10,8 @@ trait CompileOps
 {
     public function toList(): ImmList
     {
-        $list = ImmList(...$this->getValues());
-
-        foreach ($this->getScope()->getMaps() as $f) {
-            $list = $list->map($f);
-        }
-
-        return $list;
+        $list = $this->getScope()->apply($this->getValues());
+        return ImmList(... $list);
     }
 
     public function toArray(): array

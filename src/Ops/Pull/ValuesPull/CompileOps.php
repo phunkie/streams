@@ -2,6 +2,7 @@
 
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
+use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Types\ImmList;
@@ -13,11 +14,15 @@ use Phunkie\Types\ImmList;
  */
 trait CompileOps
 {
-    public function toList(): ImmList
+    public function toList(): ImmList | IO
     {
 
-        $list = ImmList(...$this->getValues());
-        return $this->applyScope($list);
+        $list = $this->applyScope($this->getValues());
+
+        if ($list instanceof IO) {
+            return $list;
+        }
+        return ImmList(...$list);
     }
 
     public function toArray(): array

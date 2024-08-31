@@ -2,6 +2,7 @@
 
 namespace Phunkie\Streams\Pull;
 
+use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
@@ -53,24 +54,9 @@ class ValuesPull implements Pull
         return $this->scope;
     }
 
-    public function applyScope(ImmList|array $chunk): ImmList | array
+    public function applyScope(array $chunk): array | IO
     {
-        $that = $this;
-        $applyToList = function (ImmList $list) use ($chunk, $that) {
-            foreach ($that->getScope()->getMaps() as $map) {
-                $list = $list->map($map);
-            }
-            return $list;
-        };
-
-        return match (get_class($chunk)) {
-            ImmList::class => $applyToList($chunk),
-            default => array_map(function($c) use ($that) {
-                foreach ($that->getScope()->getMaps() as $map) {
-                    $c = array_map($map, $c);
-                }
-            },$chunk)
-        };
+        return $this->getScope()->apply($chunk);
     }
 
     public function toStream(): Stream

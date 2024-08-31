@@ -17,10 +17,8 @@ trait ImmListOps
 
     public function filter(callable $f): ValuesPull
     {
-        $valuesPull = new ValuesPull(
-            ...array_filter($this->getValues(), $f)
-        );
-        $valuesPull->setScope($this->getScope());
-        return $valuesPull;
+        $this->getScope()->addCallable('filter', $f);
+
+        return $this;
     }
 }

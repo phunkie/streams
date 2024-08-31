@@ -9,7 +9,7 @@ trait FunctorOps
 {
     public function mapOutput($f): static
     {
-        $this->getScope()->addMap($f);
+        $this->getScope()->addCallable('map', $f);
 
         return $this;
     }

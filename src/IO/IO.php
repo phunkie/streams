@@ -20,6 +20,6 @@ class IO extends PhunkieIO
 
     public function unsafeRunSync()
     {
-        return $this->run();
+        return $this->run()->map(fn ($x) => $x->run());
     }
 }

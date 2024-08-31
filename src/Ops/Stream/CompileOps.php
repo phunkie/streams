@@ -2,6 +2,7 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
+use Phunkie\Streams\IO\IO;
 use Phunkie\Types\ImmList;
 
 /**
@@ -9,7 +10,7 @@ use Phunkie\Types\ImmList;
  */
 trait CompileOps
 {
-    public function toList(): ImmList
+    public function toList(): ImmList | IO
     {
         return $this->getPull()->toList();
     }
