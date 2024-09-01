@@ -30,6 +30,8 @@ use Phunkie\Types\Kind;
  * The Stream class represents a lazy, functional stream of data in Phunkie.
  *
  * @property Compiler $compile Provides access to a Compiler instance for this Stream.
+ * @property Stream $repeat Provides access to a Stream instance that repeats this Stream.
+ * @property array $runLog Provides access to the log of the execution of this Stream.
  */
 class Stream implements Showable, Kind
 {
@@ -72,13 +74,28 @@ class Stream implements Showable, Kind
     public function __get($property)
     {
         return match($property) {
-            'compile' => new Compiler($this->getPull(), $this->getBytes()),
-            'repeat' => self::fromInfinite(repeat(...$this->getPull()->getValues()), $this->getBytes()),
-            'runLog' => $this->getPull() instanceof ResourcePull ?
-                (new Compiler($this->getPull(), $this->getBytes()))->runLog() :
-                throw new \Error("Cannot call runlog on Pure Streams"),
+            'compile' => $this->compile(),
+            'repeat' => $this->repeat(),
+            'runLog' => $this->runLog(),
             default => throw new \Error("value $property is not a member of Stream")
         };
+    }
+
+    public function compile(): Compiler
+    {
+        return new Compiler($this->getPull(), $this->getBytes());
+    }
+
+    public function repeat(): Stream
+    {
+        return self::fromInfinite(repeat(...$this->getPull()->getValues()), $this->getBytes());
+    }
+
+    public function runLog(): array
+    {
+        return $this->getPull() instanceof ResourcePull ?
+            (new Compiler($this->getPull(), $this->getBytes()))->runLog() :
+            throw new \Error("Cannot call runlog on Pure Streams");
     }
 
     public function setScope(Scope $scope)

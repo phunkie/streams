@@ -11,41 +11,43 @@ $stream = Stream(1, 2, 3, 4);
 printLn($stream);
 
 $plusOne = $stream->map(increment);
-printLn($plusOne->compile->toList());
+printLn($plusOne->compile->toList);
 
 $smaller = $plusOne->take(2);
 
-printLn($smaller->compile->toList());
+printLn($smaller->compile->toList);
 
-printLn($stream->compile->runLog());
+printLn($stream->compile->runLog);
 
 $a = Stream("John", "Yoko");
 $b = Stream("Paul", "Linda");
 
-printLn($a->concat($b)->compile->toList());
+printLn($a->concat($b)->compile->toList);
 
 $long = Stream(fromRange(1,100000000000));
 printLn($long);
-printLn($long->take(50)->compile->toList());
+printLn($long->take(50)->compile->toList);
 
 $infinite = Stream(iterate(0)(increment));
 //printLn("Infinite stream:");
 printLn($infinite);
-printLn($infinite->take(10)->compile->toList());
+printLn($infinite->take(10)->compile->toList);
 
-printLn(Stream(1, 2, 3)->repeat->take(10)->compile->toList());
+printLn(Stream(1, 2, 3)->repeat->take(10)->compile->toList);
 
-printLn(Stream(1, 2, 3, 4, 5)->map(fn($x) => $x * 2)->compile->toList());
+printLn(Stream(1, 2, 3, 4, 5)->map(fn($x) => $x * 2)->compile->toList);
 
-printLn(Stream(1, 2, 3, 4, 5)->filter(fn($x) => $x % 2 == 0)->compile->toList());
+printLn(Stream(1, 2, 3, 4, 5)->filter(fn($x) => $x % 2 == 0)->compile->toList);
 
 printLn(Stream(1, 2, 3, 4, 5)->evalMap(fn($x) => io(fn() => $x * 2))
     ->compile
-    ->toList()
-    ->unsafeRunSync());
+    ->toList
+    ->unsafeRunSync);
 
 $x = Stream(1, 2, 3, 4, 5);
 $y = Stream("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
 $z = Stream(true, false, true, false, true);
 
-printLn($x->interleave($y, $z)->compile->toList());
+printLn($x->interleave($y, $z)->compile->toList);
+
+//printLn($y->evalTap(fn($x) => IO(fn() => printLn($x))->compile->toList());
