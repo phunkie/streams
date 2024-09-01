@@ -12,6 +12,10 @@
 
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
+use Phunkie\Streams\IO\IO;
+use function Phunkie\Streams\Functions\pipeline\evalFilter;
+use function Phunkie\Streams\Functions\pipeline\evalMap;
+
 /**
  * This trait allows you to add operations with side effects to the scope of the stream.
  *
@@ -27,7 +31,14 @@ trait EffectfulOps
      */
     public function evalMap($f)
     {
-        $this->getScope()->addCallable('evalMap', $f);
+        $this->addPipeline(evalMap($f)[IO::class]);
+
+        return $this;
+    }
+
+    public function evalFilter($f)
+    {
+        $this->addPipeline(evalFilter($f)[IO::class]);
 
         return $this;
     }

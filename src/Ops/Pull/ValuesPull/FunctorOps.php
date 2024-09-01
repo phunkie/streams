@@ -2,6 +2,8 @@
 
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
+use function Phunkie\Streams\Functions\pipeline\map;
+
 /**
  * @method getScope
  */
@@ -16,7 +18,7 @@ trait FunctorOps
 
     public function map($f): static
     {
-        $this->getScope()->addCallable('map', $f);
+        $this->addPipeline(map($f));
 
         return $this;
     }

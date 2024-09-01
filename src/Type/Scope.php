@@ -7,6 +7,7 @@ use Phunkie\Streams\IO\IO;
 class Scope
 {
     private array $callables = [];
+    private Pipeline $pipeline;
 
     public function addCallable($type, $f)
     {
@@ -36,4 +37,22 @@ class Scope
 
         return $chunk;
     }
+
+    public function addPipeline(Pipeline $pipeline)
+    {
+        if (!isset($this->pipeline)) {
+            $this->pipeline = $pipeline;
+            return;
+        }
+        $this->pipeline = $this->pipeline->andThen($pipeline);
+    }
+
+    public function runPipeline(array $chunk): array | IO
+    {
+        if (!isset($this->pipeline)) {
+            return $chunk;
+        }
+        return $this->pipeline->run($chunk);
+    }
+
 }

@@ -14,7 +14,9 @@ trait FunctorOps
     use \Phunkie\Ops\FunctorOps;
     public function map($f): Kind | Stream
     {
-        return $this->getPull()->mapOutput($f)->toStream();
+        $this->getPull()->map($f);
+
+        return $this;
     }
 
     public function imap(callable $f, callable $g): Kind | Stream

@@ -16,8 +16,7 @@ trait CompileOps
 {
     public function toList(): ImmList | IO
     {
-
-        $list = $this->applyScope($this->getValues());
+        $list = $this->runPipeline($this->getValues());
 
         return $list instanceof IO ? $list : new ImmList(...$list);
     }

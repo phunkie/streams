@@ -1,5 +1,6 @@
 <?php
 
+use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\Type\Range;
 use function Phunkie\Functions\io\io;
 use const Phunkie\Functions\numbers\increment;
