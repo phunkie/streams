@@ -50,4 +50,9 @@ $z = Stream(true, false, true, false, true);
 
 printLn($x->interleave($y, $z)->compile->toList);
 
+printLn(Stream(1, 2, 3, 4)
+    ->zipWith(increment)
+    ->compile
+    ->toList());
+
 //printLn($y->evalTap(fn($x) => IO(fn() => printLn($x))->compile->toList());
