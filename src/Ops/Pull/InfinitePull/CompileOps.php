@@ -10,8 +10,9 @@ trait CompileOps
 {
     public function toList(): ImmList
     {
-        $list = $this->getScope()->apply($this->getValues());
-        return ImmList(... $list);
+        $list = $this->runPipeline($this->getValues());
+
+        return $list instanceof IO ? $list : new ImmList(...$list);
     }
 
     public function toArray(): array

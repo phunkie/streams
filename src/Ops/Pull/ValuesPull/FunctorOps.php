@@ -11,9 +11,7 @@ trait FunctorOps
 {
     public function mapOutput($f): static
     {
-        $this->getScope()->addCallable('map', $f);
-
-        return $this;
+        return $this->map($f);
     }
 
     public function map($f): static

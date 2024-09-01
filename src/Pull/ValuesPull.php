@@ -55,11 +55,6 @@ class ValuesPull implements Pull
         return $this->scope;
     }
 
-    public function applyScope(array $chunk): array | IO
-    {
-        return $this->getScope()->apply($chunk);
-    }
-
     public function toStream(): Stream
     {
         $stream = Stream(...$this->values);
