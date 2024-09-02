@@ -56,4 +56,4 @@ printLn(Stream(1, 2, 3, 4)
     ->compile
     ->toList());
 
-//printLn($y->evalTap(fn($x) => IO(fn() => printLn($x))->compile->toList());
+printLn($y->evalTap(fn($x) => new IO(fn() => printLn(strlen($x))))->compile->drain->unsafeRunSync);

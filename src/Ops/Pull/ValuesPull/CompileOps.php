@@ -6,6 +6,8 @@ use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Types\ImmList;
+use function Phunkie\Functions\function1\identity;
+use const Phunkie\Functions\function1\identity;
 
 /**
  * @method array getValues()
@@ -23,11 +25,23 @@ trait CompileOps
 
     public function toArray(): array
     {
-        return $this->getValues();
+        return $this->runPipeline($this->getValues());
     }
 
     public function runLog($bytes): array
     {
         return $this->toArray();
+    }
+
+    public function drain(): IO
+    {
+        return new IO(function () {
+            while ($this->valid()) {
+                $this->runPipeline([$this->current()])->run();
+                $this->next();
+            }
+
+            return Unit();
+        });
     }
 }

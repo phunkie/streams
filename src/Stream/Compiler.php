@@ -24,6 +24,7 @@ class Compiler
     public function __get($property)
     {
         return match($property) {
+            'drain' => $this->drain(),
             'toList' => $this->toList(),
             'toArray' => $this->toArray(),
             'runLog' => $this->runLog(),
@@ -39,5 +40,10 @@ class Compiler
     public function getBytes(): int
     {
         return $this->bytes;
+    }
+
+    private function drain()
+    {
+        return $this->getPull()->drain();
     }
 }

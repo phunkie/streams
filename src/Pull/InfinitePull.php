@@ -6,7 +6,7 @@ use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\Ops\Pull\InfinitePull\CompileOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ImmListOps;
-use Phunkie\Streams\Ops\Pull\InfinitePull\InteratorOps;
+use Phunkie\Streams\Ops\Pull\InfinitePull\IteratorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ShowOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\PipelineOps;
 use Phunkie\Streams\Type\Pull;
@@ -19,7 +19,7 @@ class InfinitePull implements Pull
     use CompileOps;
     use FunctorOps;
     use ShowOps;
-    use InteratorOps;
+    use IteratorOps;
     use ImmListOps;
     use PipelineOps;
 

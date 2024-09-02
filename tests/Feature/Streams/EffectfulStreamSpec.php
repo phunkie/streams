@@ -46,4 +46,31 @@ describe("EffectfulStream", function () {
 
     });
 
+    describe("evalTap", function () {
+        beforeEach(function () {
+            $this->stream = Stream("London", "Paris", "Amsterdam")
+                ->evalTap(fn($x) => io(fn() => strlen($x) > 5));
+        });
+
+        it("implements evalTap", function () {
+            expect($this->stream->compile->toList())
+                ->toBeInstanceOf(IO::class);
+        });
+
+        it("does not change the stream", function () {
+            expect($this->stream
+                ->compile
+                ->toList()
+                ->unsafeRunSync())
+                ->toEqual(["London", "Paris", "Amsterdam"]);
+        });
+
+        it("return IO<Unit> when drained", function () {
+            expect($this->stream
+                ->compile
+                ->drain)
+                ->toEqual(new IO(fn() => Unit()));
+        });
+    });
+
 });

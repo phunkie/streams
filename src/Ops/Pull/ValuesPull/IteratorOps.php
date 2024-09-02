@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
-trait InteratorOps
+trait IteratorOps
 {
     public function rewind(): void
     {

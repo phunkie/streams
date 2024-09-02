@@ -33,6 +33,11 @@ class IO extends PhunkieIO
 
     public function unsafeRunSync()
     {
-        return $this->run()->map(fn ($x) => $x->run());
+        $result = $this->run();
+
+        if (is_array($result)) {
+            return $result;
+        }
+        return $result->map(fn ($x) => $x->run());
     }
 }

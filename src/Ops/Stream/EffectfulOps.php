@@ -2,25 +2,34 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
+use Phunkie\Streams\Type\Stream;
+
 trait EffectfulOps
 {
-    public function evalMap($f)
+    public function evalMap($f): Stream
     {
         $this->getPull()->evalMap($f);
 
         return $this;
     }
 
-    public function evalFilter($f)
+    public function evalTap($f): Stream
+    {
+        $this->getPull()->evalTap($f);
+
+        return $this;
+    }
+
+    public function evalFilter($f): Stream
     {
         $this->getPull()->evalFilter($f);
 
         return $this;
     }
 
-    public function evalFlatMap($f)
+    public function evalFlatMap($f): Stream
     {
-        $this->getPull()->getScope()->addCallable('evalMap', $f);
+        $this->getPull()->evalFlatMap($f);
 
         return $this;
     }

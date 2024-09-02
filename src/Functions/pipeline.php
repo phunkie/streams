@@ -44,11 +44,29 @@ namespace Phunkie\Streams\Functions\pipeline {
         return new Pipeline(fn ($chunk) => ImmList(...array_map($f, $chunk)));
     }
 
+    const evalFlatMap = 'evalFlatMap';
+    function evalFlatMap(callable $f): Pipeline
+    {
+        return new Pipeline(fn ($chunk) => Stream(...array_map($f, $chunk)));
+    }
+
     const evalFilter = 'evalFilter';
     function evalFilter(callable $f): Pipeline
     {
         return new Pipeline(fn ($chunk) => ImmList(...array_map(fn($x) => new IO(fn() =>$x),
             array_filter($chunk, fn($v) => $f($v)->run()))));
+    }
+
+    function evalTap($f): Pipeline
+    {
+        return new Pipeline(
+            function($chunk) use ($f) {
+                foreach ($chunk as $v) {
+                    $f($v)->run();
+                }
+                return $chunk;
+            }
+        );
     }
 
 }

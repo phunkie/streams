@@ -5,7 +5,7 @@ namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 /**
  * @method getInfinite
  */
-trait InteratorOps
+trait IteratorOps
 {
     public function current(): mixed
     {
