@@ -21,20 +21,14 @@ namespace Phunkie\Streams\Functions\pipeline {
     function interleave(... $other): Pipeline
     {
         return new Pipeline(function($chunk) use ($other) {
-            $interleaved = [];
-            $pulls = [];
-            $pulls[] = $chunk;
+            $pulls = array_merge([$chunk], array_map(fn($pull) => $pull->getValues(), $other));
 
-            $pulls = array_merge($pulls, array_map(fn($x) => $x->getValues(), $other));
+            $heads = fn($matrix) => array_filter(array_map(fn($vector) => array_shift($vector), $matrix));
+            $tails = fn($matrix) => array_filter(array_map(fn($vector) => array_slice($vector, 1), $matrix));
+            $interleaved = fn($matrix, $self) =>
+                count($matrix) ? array_merge($heads($matrix), $self($tails($matrix), $self)) : [];
 
-            for ($p = $pulls; count($p); $p = array_filter($p)) {
-
-                foreach ($p as &$pull) {
-                    $interleaved[] = array_shift($pull);
-                }
-            }
-
-            return $interleaved;
+            return $interleaved($pulls, $interleaved);
         });
     }
 
