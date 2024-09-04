@@ -1,6 +1,7 @@
 <?php
 
 use Phunkie\Streams\IO\IO;
+use Phunkie\Types\ImmList;
 use function Phunkie\Streams\Functions\io\io;
 
 describe("EffectfulStream", function () {
@@ -54,15 +55,14 @@ describe("EffectfulStream", function () {
 
         it("implements evalTap", function () {
             expect($this->stream->compile->toList())
-                ->toBeInstanceOf(IO::class);
+                ->toBeInstanceOf(ImmList::class);
         });
 
         it("does not change the stream", function () {
             expect($this->stream
                 ->compile
-                ->toList()
-                ->unsafeRunSync())
-                ->toEqual(["London", "Paris", "Amsterdam"]);
+                ->toList())
+                ->toEqual(ImmList("London", "Paris", "Amsterdam"));
         });
 
         it("return IO<Unit> when drained", function () {

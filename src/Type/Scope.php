@@ -23,6 +23,13 @@ class Scope
         if (!isset($this->pipeline)) {
             return $chunk;
         }
+
+        if ($this->pipeline->isPassthrough()) {
+            $io = $this->pipeline->run($chunk);
+            $io->run();
+            return $chunk;
+        }
+
         return $this->pipeline->run($chunk);
     }
 

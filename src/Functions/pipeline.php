@@ -59,7 +59,7 @@ namespace Phunkie\Streams\Functions\pipeline {
 
     function evalTap($f): Pipeline
     {
-        return new Pipeline(
+        $pipeline = new Pipeline(
             function($chunk) use ($f) {
                 foreach ($chunk as $v) {
                     $f($v)->run();
@@ -67,6 +67,9 @@ namespace Phunkie\Streams\Functions\pipeline {
                 return $chunk;
             }
         );
+
+        $pipeline->setPassthrough(true);
+        return $pipeline;
     }
 
 }

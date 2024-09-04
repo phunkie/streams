@@ -9,6 +9,8 @@ class Pipeline implements \ArrayAccess
     private \Closure $f;
     private mixed $effect = null;
 
+    private bool $isPassthrough = false;
+
     public function __construct(\Closure $f) {
         $this->f = $f;
     }
@@ -54,5 +56,15 @@ class Pipeline implements \ArrayAccess
     private function isEffectful(): bool
     {
         return !is_null($this->effect);
+    }
+
+    public function isPassthrough(): bool
+    {
+        return $this->isPassthrough;
+    }
+
+    public function setPassthrough(bool $isPassthrough): void
+    {
+        $this->isPassthrough = $isPassthrough;
     }
 }

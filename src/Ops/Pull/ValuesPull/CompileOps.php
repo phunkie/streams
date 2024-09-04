@@ -37,7 +37,7 @@ trait CompileOps
     {
         return new IO(function () {
             while ($this->valid()) {
-                $this->runPipeline([$this->current()])->run();
+                $this->runPipeline([$this->current()]);
                 $this->next();
             }
 
