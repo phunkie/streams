@@ -5,12 +5,31 @@ namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
+use function Phunkie\Functions\show\show;
+use function Phunkie\Streams\Functions\io\io;
 
 trait CompileOps
 {
-    public function toList(): ImmList
+    public function toList(): ImmList | IO
     {
-        $list = $this->runPipeline($this->getValues());
+        $list = $this->runPipeline($this->getInfinite()->getValues());
+
+        if ($list instanceof \Generator) {
+            $chunk = [];
+            for ($i = 0; $i < 10; $i++) {
+                if (!$list->valid()) {
+                    break;
+                }
+                $chunk[] = $list->current();
+                $list->next();
+            }
+
+            if ($i === 9) {
+                $chunk[] = '...';
+            }
+
+            return io(fn () => ImmList(...$chunk));
+        }
 
         return $list instanceof IO ? $list : new ImmList(...$list);
     }

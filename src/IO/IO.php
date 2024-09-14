@@ -38,6 +38,7 @@ class IO extends PhunkieIO
         if (is_array($result)) {
             return $result;
         }
-        return $result->map(fn ($x) => $x->run());
+
+        return $result->map(fn ($x) => $x instanceof IO ? $x->run() : $x);
     }
 }

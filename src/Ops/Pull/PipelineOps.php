@@ -1,6 +1,6 @@
 <?php
 
-namespace Phunkie\Streams\Ops\Pull\ValuesPull;
+namespace Phunkie\Streams\Ops\Pull;
 
 use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\Type\Pipeline;
@@ -16,8 +16,8 @@ trait PipelineOps
         return $this;
     }
 
-    public function runPipeline(array $chunk): array | IO
+    public function runPipeline(iterable $chunk, $acceptIo = true): iterable | IO
     {
-        return $this->getScope()->runPipeline($chunk);
+        return $this->getScope()->runPipeline($chunk, $acceptIo);
     }
 }

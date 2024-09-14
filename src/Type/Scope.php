@@ -18,7 +18,7 @@ class Scope
         $this->pipeline = $this->pipeline->andThen($pipeline);
     }
 
-    public function runPipeline(array $chunk): array | IO
+    public function runPipeline(iterable $chunk, $acceptIo = true): iterable | IO
     {
         if (!isset($this->pipeline)) {
             return $chunk;
@@ -27,10 +27,18 @@ class Scope
         if ($this->pipeline->isPassthrough()) {
             $io = $this->pipeline->run($chunk);
             $io->run();
-            return $chunk;
+            if ($acceptIo) {
+                return $io;
+            }
+            return $io->unsafeRunSync();
         }
 
         return $this->pipeline->run($chunk);
+    }
+
+    public function getPipeline(): Pipeline
+    {
+        return $this->pipeline;
     }
 
 }

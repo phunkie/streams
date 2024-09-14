@@ -10,7 +10,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Phunkie\Streams\Ops\Pull\ValuesPull;
+namespace Phunkie\Streams\Ops\Pull;
 
 use Phunkie\Streams\IO\IO;
 use function Phunkie\Streams\Functions\pipeline\evalFilter;

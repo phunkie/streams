@@ -3,12 +3,13 @@
 namespace Phunkie\Streams\Pull;
 
 use Phunkie\Streams\Infinite\Infinite;
+use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\CompileOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\IteratorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ShowOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\PipelineOps;
+use Phunkie\Streams\Ops\Pull\PipelineOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -22,6 +23,7 @@ class InfinitePull implements Pull
     use IteratorOps;
     use ImmListOps;
     use PipelineOps;
+    use EffectfulOps;
 
     private Infinite $infinite;
     private int $bytes;
@@ -34,13 +36,17 @@ class InfinitePull implements Pull
         $this->scope = new Scope(identity);
     }
 
-
     public function pull()
     {
         $current = $this->current();
 
         $this->next();
         return $current;
+    }
+
+    public function getValues(): \Generator
+    {
+        return $this->infinite->getValues();
     }
 
     public function toStream(): Stream
@@ -51,7 +57,7 @@ class InfinitePull implements Pull
         return $stream;
     }
 
-    public function getInfinite()
+    public function getInfinite(): Infinite
     {
         return $this->infinite;
     }

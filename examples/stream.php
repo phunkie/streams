@@ -56,4 +56,8 @@ printLn(Stream(1, 2, 3, 4)
     ->compile
     ->toList());
 
-printLn($y->evalTap(fn($x) => new IO(fn() => printLn(strlen($x))))->compile->drain->unsafeRunSync);
+//$y->interleave(Stream(awakeEvery(1)))->evalTap(fn($x) => new IO(fn() => printLn(strlen($x))))->compile->drain->unsafeRunSync;
+
+$printTime = fn($time) => io(fn() => printLn(date('H:i:s', (int)$time)));
+
+printLn(Stream(awakeEvery(2))->take(2)->compile->toList()->unsafeRunSync());

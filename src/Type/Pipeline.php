@@ -14,7 +14,8 @@ class Pipeline implements \ArrayAccess
     public function __construct(\Closure $f) {
         $this->f = $f;
     }
-    public function run(array $chunk): array | IO
+
+    public function run(iterable $chunk): iterable | IO
     {
         if ($this->isEffectful()) {
             try {
@@ -66,5 +67,17 @@ class Pipeline implements \ArrayAccess
     public function setPassthrough(bool $isPassthrough): void
     {
         $this->isPassthrough = $isPassthrough;
+    }
+
+    public function getEffect(): mixed
+    {
+        return $this->effect;
+    }
+
+    public function setEffect(mixed $effect): Pipeline
+    {
+        $this->effect = $effect;
+
+        return $this;
     }
 }

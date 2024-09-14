@@ -18,17 +18,28 @@ namespace Phunkie\Streams\Functions\pipeline {
     }
 
     const interleave = 'interleave';
-    function interleave(... $other): Pipeline
+    function interleave(...$others): Pipeline
     {
-        return new Pipeline(function($chunk) use ($other) {
-            $pulls = array_merge([$chunk], array_map(fn($pull) => $pull->getValues(), $other));
+        return new Pipeline(function ($chunk) use ($others) {
+            $pulls = array_merge([$chunk], array_map(fn($pull) => $pull->getValues(), $others));
 
-            $heads = fn($matrix) => array_filter(array_map(fn($vector) => array_shift($vector), $matrix));
-            $tails = fn($matrix) => array_filter(array_map(fn($vector) => array_slice($vector, 1), $matrix));
-            $interleaved = fn($matrix, $self) =>
-                count($matrix) ? array_merge($heads($matrix), $self($tails($matrix), $self)) : [];
+            $indices = array_fill(0, count($pulls), 0);
 
-            return $interleaved($pulls, $interleaved);
+            $interleaved = [];
+            $totalElements = array_sum(array_map('count', $pulls));
+            $currentElement = 0;
+
+            while ($currentElement < $totalElements) {
+                foreach ($pulls as $i => &$pull) {
+                    if (isset($pull[$indices[$i]])) {
+                        $interleaved[] = $pull[$indices[$i]];
+                        $indices[$i]++;
+                        $currentElement++;
+                    }
+                }
+            }
+
+            return $interleaved;
         });
     }
 

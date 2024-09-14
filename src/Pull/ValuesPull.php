@@ -4,11 +4,11 @@ namespace Phunkie\Streams\Pull;
 
 use Phunkie\Streams\IO\IO;
 use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\EffectfulOps;
+use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\IteratorOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\PipelineOps;
+use Phunkie\Streams\Ops\Pull\PipelineOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;

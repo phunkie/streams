@@ -15,7 +15,7 @@ namespace Phunkie\Streams\Type;
 use Phunkie\Cats\Show;
 use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\IO\File\Path;
-use Phunkie\Streams\Ops\Pull\ValuesPull\PipelineOps;
+use Phunkie\Streams\Ops\Pull\PipelineOps;
 use Phunkie\Streams\Ops\Stream\EffectfulOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
 use Phunkie\Streams\Ops\Stream\ImmListOps;

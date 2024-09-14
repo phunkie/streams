@@ -7,6 +7,7 @@ namespace {
     use Phunkie\Streams\Infinite\Range;
     use Phunkie\Streams\Infinite\Constant;
     use Phunkie\Streams\Infinite\Repeat;
+    use Phunkie\Streams\Infinite\Timer;
 
     function fromRange(int $start, int $end, int $step = 1): Infinite
     {
@@ -27,5 +28,10 @@ namespace {
     function repeat(...$values): Infinite
     {
         return new Repeat(...$values);
+    }
+
+    function awakeEvery(float $seconds, $stopAt = null): Infinite
+    {
+        return new Timer($seconds, $stopAt);
     }
 }

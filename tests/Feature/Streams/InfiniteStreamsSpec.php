@@ -28,4 +28,8 @@ describe('creates infinite streams', function () {
                 ->toList()
         )->toEqual(ImmList(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3));
     });
+
+    it ('implements awakeEvery', function () {
+        expect(Stream(awakeEvery(0.000001))->take(2)->compile->toList()->unsafeRunSync()->toArray())->toHaveCount(2);
+    });
 });
