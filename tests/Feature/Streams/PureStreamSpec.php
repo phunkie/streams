@@ -4,7 +4,7 @@ use const Phunkie\Functions\numbers\increment;
 
 it('creates pure streams', function () {
     expect(Stream(1, 2, 3)->showType())->toBe('Stream<Pure, Int>',)
-        ->and(Stream(1, 2, 3)->toString())->toBe('Stream(1, 2, 3)');
+        ->and(Stream(1, 2, 3)->toString())->toBe('Stream(..)');
 });
 
 it('can be compiled into another structure', function () {

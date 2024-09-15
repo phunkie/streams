@@ -21,6 +21,6 @@ trait ShowOps
 
     public function toString(): string
     {
-        return 'Stream(' . $this->getPull()->toString() . ')';
+        return 'Stream(..)';
     }
 }
