@@ -1,26 +1,26 @@
 <?php
 
-namespace Phunkie\Streams\Functions\pipeline {
+namespace Phunkie\Streams\Functions\transformation {
 
     use Phunkie\Streams\IO\IO;
-    use Phunkie\Streams\Type\Pipeline;
+    use Phunkie\Streams\Type\Transformation;
 
     const map = 'map';
-    function map($f): Pipeline
+    function map($f): Transformation
     {
-        return new Pipeline(fn($chunk) => array_map($f, $chunk));
+        return new Transformation(fn($chunk) => array_map($f, $chunk));
     }
 
     const filter = 'filter';
-    function filter(callable $f): Pipeline
+    function filter(callable $f): Transformation
     {
-        return new Pipeline(fn($chunk) => array_filter($chunk, $f));
+        return new Transformation(fn($chunk) => array_filter($chunk, $f));
     }
 
     const interleave = 'interleave';
-    function interleave(...$others): Pipeline
+    function interleave(...$others): Transformation
     {
-        return new Pipeline(function ($chunk) use ($others) {
+        return new Transformation(function ($chunk) use ($others) {
             $pulls = array_merge([$chunk], array_map(fn($pull) => $pull->getValues(), $others));
 
             $indices = array_fill(0, count($pulls), 0);
@@ -44,27 +44,27 @@ namespace Phunkie\Streams\Functions\pipeline {
     }
 
     const evalMap = 'evalMap';
-    function evalMap(callable $f): Pipeline
+    function evalMap(callable $f): Transformation
     {
-        return new Pipeline(fn ($chunk) => ImmList(...array_map($f, $chunk)));
+        return new Transformation(fn ($chunk) => ImmList(...array_map($f, $chunk)));
     }
 
     const evalFlatMap = 'evalFlatMap';
-    function evalFlatMap(callable $f): Pipeline
+    function evalFlatMap(callable $f): Transformation
     {
-        return new Pipeline(fn ($chunk) => Stream(...array_map($f, $chunk)));
+        return new Transformation(fn ($chunk) => Stream(...array_map($f, $chunk)));
     }
 
     const evalFilter = 'evalFilter';
-    function evalFilter(callable $f): Pipeline
+    function evalFilter(callable $f): Transformation
     {
-        return new Pipeline(fn ($chunk) => ImmList(...array_map(fn($x) => new IO(fn() =>$x),
+        return new Transformation(fn ($chunk) => ImmList(...array_map(fn($x) => new IO(fn() =>$x),
             array_filter($chunk, fn($v) => $f($v)->run()))));
     }
 
-    function evalTap($f): Pipeline
+    function evalTap($f): Transformation
     {
-        $pipeline = new Pipeline(
+        $transformation = new Transformation(
             function($chunk) use ($f) {
                 foreach ($chunk as $v) {
                     $f($v)->run();
@@ -73,8 +73,7 @@ namespace Phunkie\Streams\Functions\pipeline {
             }
         );
 
-        $pipeline->setPassthrough(true);
-        return $pipeline;
+        $transformation->setPassthrough(true);
+        return $transformation;
     }
-
 }

@@ -20,14 +20,14 @@ trait CompileOps
 {
     public function toList(): ImmList | IO
     {
-        $list = $this->runPipeline($this->getValues(), false);
+        $list = $this->runTransformations($this->getValues(), false);
 
         return $list instanceof IO ? $list : new ImmList(...$list);
     }
 
     public function toArray(): array
     {
-        return $this->runPipeline($this->getValues());
+        return $this->runTransformations($this->getValues());
     }
 
     public function runLog($bytes): array
@@ -39,7 +39,7 @@ trait CompileOps
     {
         return new IO(function () {
             while ($this->valid()) {
-                $this->runPipeline([$this->current()]);
+                $this->runTransformations([$this->current()]);
                 $this->next();
             }
 

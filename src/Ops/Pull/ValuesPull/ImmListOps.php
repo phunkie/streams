@@ -3,8 +3,8 @@
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
 use Phunkie\Streams\Pull\ValuesPull;
-use function Phunkie\Streams\Functions\pipeline\filter;
-use function Phunkie\Streams\Functions\pipeline\interleave;
+use function Phunkie\Streams\Functions\transformation\filter;
+use function Phunkie\Streams\Functions\transformation\interleave;
 
 trait ImmListOps
 {
@@ -19,14 +19,14 @@ trait ImmListOps
 
     public function filter(callable $f): ValuesPull
     {
-        $this->addPipeline(filter($f));
+        $this->appendTransformation(filter($f));
 
         return $this;
     }
 
     public function interleave(... $other): ValuesPull
     {
-        $this->addPipeline(interleave(...$other));
+        $this->appendTransformation(interleave(...$other));
 
         return $this;
     }

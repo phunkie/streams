@@ -8,7 +8,7 @@ use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\IteratorOps;
-use Phunkie\Streams\Ops\Pull\PipelineOps;
+use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
@@ -22,7 +22,7 @@ class ValuesPull implements Pull
     use IteratorOps;
     use ImmListOps;
     use EffectfulOps;
-    use PipelineOps;
+    use TransformationOps;
 
     private $values;
     private $index;

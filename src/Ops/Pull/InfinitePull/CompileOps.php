@@ -12,7 +12,7 @@ trait CompileOps
 {
     public function toList(): ImmList | IO
     {
-        $list = $this->runPipeline($this->getInfinite()->getValues());
+        $list = $this->runTransformations($this->getInfinite()->getValues());
 
         if ($list instanceof \Generator) {
             $chunk = [];

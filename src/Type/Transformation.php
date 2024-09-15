@@ -4,7 +4,7 @@ namespace Phunkie\Streams\Type;
 
 use Phunkie\Streams\IO\IO;
 
-class Pipeline implements \ArrayAccess
+class Transformation implements \ArrayAccess
 {
     private \Closure $f;
     private mixed $effect = null;
@@ -28,14 +28,14 @@ class Pipeline implements \ArrayAccess
         return ($this->f)($chunk);
     }
 
-    public function andThen(Pipeline $pipeline): Pipeline
+    public function andThen(Transformation $transformation): Transformation
     {
-        return new Pipeline(fn($chunk) => $pipeline->run($this->run($chunk)));
+        return new Transformation(fn($chunk) => $transformation->run($this->run($chunk)));
     }
 
     public function offsetExists(mixed $offset): bool
     {
-        throw new \Error('Pipeline is not an array');
+        throw new \Error('Transformation is not an array');
     }
 
     public function offsetGet(mixed $offset): mixed
@@ -46,12 +46,12 @@ class Pipeline implements \ArrayAccess
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
-        throw new \Error('Pipeline is not an array');
+        throw new \Error('Transformation is not an array');
     }
 
     public function offsetUnset(mixed $offset): void
     {
-        throw new \Error('Pipeline is not an array');
+        throw new \Error('Transformation is not an array');
     }
 
     private function isEffectful(): bool
@@ -74,7 +74,7 @@ class Pipeline implements \ArrayAccess
         return $this->effect;
     }
 
-    public function setEffect(mixed $effect): Pipeline
+    public function setEffect(mixed $effect): Transformation
     {
         $this->effect = $effect;
 

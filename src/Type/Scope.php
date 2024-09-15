@@ -7,25 +7,25 @@ use Phunkie\Streams\IO\IO;
 class Scope
 {
     private array $callables = [];
-    private Pipeline $pipeline;
+    private Transformation $transformation;
 
-    public function addPipeline(Pipeline $pipeline): void
+    public function appendTransformation(Transformation $transformation): void
     {
-        if (!isset($this->pipeline)) {
-            $this->pipeline = $pipeline;
+        if (!isset($this->transformation)) {
+            $this->transformation = $transformation;
             return;
         }
-        $this->pipeline = $this->pipeline->andThen($pipeline);
+        $this->transformation = $this->transformation->andThen($transformation);
     }
 
-    public function runPipeline(iterable $chunk, $acceptIo = true): iterable | IO
+    public function runTransformations(iterable $chunk, $acceptIo = true): iterable | IO
     {
-        if (!isset($this->pipeline)) {
+        if (!isset($this->transformation)) {
             return $chunk;
         }
 
-        if ($this->pipeline->isPassthrough()) {
-            $io = $this->pipeline->run($chunk);
+        if ($this->transformation->isPassthrough()) {
+            $io = $this->transformation->run($chunk);
             $io->run();
             if ($acceptIo) {
                 return $io;
@@ -33,12 +33,6 @@ class Scope
             return $io->unsafeRunSync();
         }
 
-        return $this->pipeline->run($chunk);
+        return $this->transformation->run($chunk);
     }
-
-    public function getPipeline(): Pipeline
-    {
-        return $this->pipeline;
-    }
-
 }

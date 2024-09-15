@@ -9,7 +9,7 @@ use Phunkie\Streams\Ops\Pull\InfinitePull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\IteratorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ShowOps;
-use Phunkie\Streams\Ops\Pull\PipelineOps;
+use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -22,7 +22,7 @@ class InfinitePull implements Pull
     use ShowOps;
     use IteratorOps;
     use ImmListOps;
-    use PipelineOps;
+    use TransformationOps;
     use EffectfulOps;
 
     private Infinite $infinite;

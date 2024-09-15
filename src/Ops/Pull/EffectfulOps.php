@@ -13,9 +13,9 @@
 namespace Phunkie\Streams\Ops\Pull;
 
 use Phunkie\Streams\IO\IO;
-use function Phunkie\Streams\Functions\pipeline\evalFilter;
-use function Phunkie\Streams\Functions\pipeline\evalMap;
-use function Phunkie\Streams\Functions\pipeline\evalTap;
+use function Phunkie\Streams\Functions\transformation\evalFilter;
+use function Phunkie\Streams\Functions\transformation\evalMap;
+use function Phunkie\Streams\Functions\transformation\evalTap;
 
 /**
  * This trait allows you to add operations with side effects to the scope of the stream.
@@ -32,28 +32,28 @@ trait EffectfulOps
      */
     public function evalMap($f)
     {
-        $this->addPipeline(evalMap($f)[IO::class]);
+        $this->appendTransformation(evalMap($f)[IO::class]);
 
         return $this;
     }
 
     public function evalTap($f)
     {
-        $this->addPipeline(evalTap($f)[IO::class]);
+        $this->appendTransformation(evalTap($f)[IO::class]);
 
         return $this;
     }
 
     public function evalFilter($f)
     {
-        $this->addPipeline(evalFilter($f)[IO::class]);
+        $this->appendTransformation(evalFilter($f)[IO::class]);
 
         return $this;
     }
 
     public function evalFlatMap($f)
     {
-        $this->addPipeline(evalFilter($f)[IO::class]);
+        $this->appendTransformation(evalFilter($f)[IO::class]);
 
         return $this;
     }
