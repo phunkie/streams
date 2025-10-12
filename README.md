@@ -217,7 +217,40 @@ Stream(...[1, 2, 3, 4, 5, 6])
 // [[1, 2], [3, 4], [5, 6]]
 ```
 
-See [examples/stream-operations.php](examples/stream-operations.php) for 15 comprehensive examples.
+See [examples/stream-operations.php](examples/stream-operations.php) for 20 comprehensive examples.
+
+## File I/O with Streams
+
+### writeFile() - Stream Pipe for Writing
+
+Write stream elements directly to files using the `writeFile()` pipe:
+
+```php
+use function Phunkie\Streams\IO\File\{writeFile, readLines};
+
+// Write stream to file
+Stream(...['line1', 'line2', 'line3'])
+    ->through(writeFile(new Path('/tmp/output.txt')));
+
+// With transformations
+Stream(...[1, 2, 3, 4, 5])
+    ->filter(fn($x) => $x % 2 === 0)
+    ->map(fn($x) => "Even: $x")
+    ->through(writeFile(new Path('/tmp/evens.txt')));
+
+// Complex pipeline
+$processData = fn(Stream $s) => $s
+    ->dropWhile(fn($x) => $x < 5)
+    ->takeWhile(fn($x) => $x <= 15)
+    ->filter(fn($x) => $x % 2 === 0)
+    ->map(fn($x) => "Value: $x");
+
+Stream(...range(1, 20))
+    ->through($processData)
+    ->through(writeFile(new Path('/tmp/processed.txt')));
+```
+
+See [examples/file-pipes.php](examples/file-pipes.php) for 12 comprehensive file I/O examples.
 
 ## Documentation
 
@@ -230,7 +263,8 @@ See [examples/stream-operations.php](examples/stream-operations.php) for 15 comp
 - [examples/bracket.php](examples/bracket.php) - Resource management (10 examples)
 - [examples/error-handling.php](examples/error-handling.php) - Error handling (12 examples)
 - [examples/composition.php](examples/composition.php) - Stream composition (12 examples)
-- [examples/stream-operations.php](examples/stream-operations.php) - Stream operations (15 examples)
+- [examples/stream-operations.php](examples/stream-operations.php) - Stream operations (20 examples)
+- [examples/file-pipes.php](examples/file-pipes.php) - File I/O with streams (12 examples)
 
 ## Contributing
 

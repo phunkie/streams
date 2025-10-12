@@ -2,12 +2,14 @@
 
 use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\File\Path;
+use Phunkie\Streams\Type\Stream;
 use function Phunkie\Streams\IO\File\exists;
 use function Phunkie\Streams\IO\File\deleteFile;
 use function Phunkie\Streams\IO\File\readFileContents;
 use function Phunkie\Streams\IO\File\writeFileContents;
 use function Phunkie\Streams\IO\File\readLines;
 use function Phunkie\Streams\IO\File\writeLines;
+use function Phunkie\Streams\IO\File\writeFile;
 use function Phunkie\Effect\Functions\io\io;
 use function Phunkie\Streams\Functions\resource\bracket;
 
@@ -244,6 +246,86 @@ describe("Bracket Resource Management", function () {
             } finally {
                 if (file_exists($file1->toString())) unlink($file1->toString());
                 if (file_exists($file2->toString())) unlink($file2->toString());
+            }
+        });
+    });
+
+    describe("Stream pipe writeFile", function () {
+
+        it("writes stream elements to file", function () {
+            $tempFile = new Path(sys_get_temp_dir() . '/stream_write_test_' . uniqid() . '.txt');
+
+            try {
+                Stream(...['line1', 'line2', 'line3'])
+                    ->through(writeFile($tempFile));
+
+                $content = readLines($tempFile)->unsafeRunSync();
+                expect($content)->toBe(['line1', 'line2', 'line3']);
+            } finally {
+                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+            }
+        });
+
+        it("writes stream with transformations", function () {
+            $tempFile = new Path(sys_get_temp_dir() . '/stream_transform_test_' . uniqid() . '.txt');
+
+            try {
+                Stream(...[1, 2, 3, 4, 5])
+                    ->map(fn($x) => $x * 2)
+                    ->filter(fn($x) => $x > 5)
+                    ->through(writeFile($tempFile));
+
+                $content = readLines($tempFile)->unsafeRunSync();
+                expect($content)->toBe(['6', '8', '10']);
+            } finally {
+                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+            }
+        });
+
+        it("writes empty stream creates empty file", function () {
+            $tempFile = new Path(sys_get_temp_dir() . '/stream_empty_test_' . uniqid() . '.txt');
+
+            try {
+                Stream()
+                    ->through(writeFile($tempFile));
+
+                $content = readLines($tempFile)->unsafeRunSync();
+                expect($content)->toBe([]);
+            } finally {
+                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+            }
+        });
+
+        it("converts non-string elements to strings", function () {
+            $tempFile = new Path(sys_get_temp_dir() . '/stream_convert_test_' . uniqid() . '.txt');
+
+            try {
+                Stream(...[1, 2.5, true, false])
+                    ->through(writeFile($tempFile));
+
+                $content = readLines($tempFile)->unsafeRunSync();
+                expect($content)->toBe(['1', '2.5', '1', '']);
+            } finally {
+                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+            }
+        });
+
+        it("can chain writeFile with other operations", function () {
+            $tempFile = new Path(sys_get_temp_dir() . '/stream_chain_test_' . uniqid() . '.txt');
+
+            try {
+                $processData = fn($s) => $s
+                    ->map(fn($x) => $x * 2)
+                    ->filter(fn($x) => $x < 10);
+
+                Stream(...[1, 2, 3, 4, 5, 6])
+                    ->through($processData)
+                    ->through(writeFile($tempFile));
+
+                $content = readLines($tempFile)->unsafeRunSync();
+                expect(array_values($content))->toBe(['2', '4', '6', '8']);
+            } finally {
+                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
             }
         });
     });

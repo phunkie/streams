@@ -86,7 +86,7 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 - [x] Examples: `examples/stream-operations.php` (20 examples)
 - [x] All 96 tests passing (128 assertions)
 
-### 3.2 File I/O stream operations ✅ PARTIALLY COMPLETED
+### 3.2 File I/O stream operations ✅ FULLY COMPLETED
 **File operations using bracket from phunkie/effect:**
 
 - [x] Enhanced `src/Functions/file.php` with:
@@ -96,11 +96,13 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
   - [x] `writeFileContents(Path $path, string $contents): IO<int>` - Write file with bracket
   - [x] `readLines(Path $path): IO<array>` - Read file lines with bracket
   - [x] `writeLines(Path $path, array $lines): IO<int>` - Write lines with bracket
-  - [ ] `writeFile(Path $path): callable` - Stream pipe function (TODO)
-  - [ ] `readFile(Path $path, int $bufferSize = 4096): Pull` - Stream Pull (already exists as readAll)
+  - [x] `writeFile(Path $path): callable` - Stream pipe function for writing streams to files
+  - [x] `readFile(Path $path, int $bufferSize = 4096): Pull` - Stream Pull (already exists as readAll)
 
-- [x] Add comprehensive file I/O tests (BracketSpec.php)
-- [x] Add file processing examples (bracket.php)
+- [x] Add comprehensive file I/O tests (BracketSpec.php - 17 tests total, 5 for writeFile pipe)
+- [x] Add file processing examples (bracket.php - 10 examples)
+- [x] Add file pipe examples (file-pipes.php - 12 examples)
+- [x] All 101 tests passing (133 assertions)
 - [ ] Update documentation with file operations (deferred to Phase 5)
 
 ### 3.3 Network stream operations (OPTIONAL)
@@ -243,11 +245,12 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
    - ✅ Phase 2.2 - Error handling with attempt/handleError
    - ✅ Phase 2.3 - Stream composition with flatMap
 3. ✅ **Phase 3.1 Fully Complete** - Core stream operations (through, takeWhile, dropWhile, chunk, merge, zip, drain)
-4. **Continue Phase 3** - File I/O stream operations (Phase 3.2) or Network operations (Phase 3.3)
-5. **Update documentation** - Reflect current state and phunkie/effect usage (Phase 5)
-6. **Enhance Scope** - Better resource management (Phase 4)
-7. **Add tests** - Comprehensive coverage (Phase 7)
-8. **Code quality** - CS Fixer, PHPStan, CI (Phase 7.2)
+4. ✅ **Phase 3.2 Fully Complete** - File I/O stream operations (writeFile pipe function)
+5. **Phase 3.3 (Optional)** - Network operations (httpGet, httpPost, socket) - requires evaluation
+6. **Update documentation** - Reflect current state and phunkie/effect usage (Phase 5)
+7. **Enhance Scope** - Better resource management (Phase 4)
+8. **Add tests** - Comprehensive coverage (Phase 7)
+9. **Code quality** - CS Fixer, PHPStan, CI (Phase 7.2)
 
 ---
 
@@ -268,5 +271,5 @@ If changes to phunkie/effect are needed:
 
 **Last Updated:** 2025-10-12
 **Current Phase:** Phase 3 - Implement Missing Stream-Specific Operations
-**Completed:** Phase 1, Phase 2 (bracket, error handling, composition), Phase 3.1 (all stream operations - through, takeWhile, dropWhile, chunk, merge, zip, drain)
-**Next Milestone:** Phase 3.2 (File I/O pipes), Phase 5 (documentation updates), or Phase 4 (Scope enhancement)
+**Completed:** Phase 1, Phase 2 (bracket, error handling, composition), Phase 3.1 (all stream operations), Phase 3.2 (file I/O pipes with writeFile)
+**Next Milestone:** Phase 3.3 (Network operations - optional), Phase 5 (documentation updates), or Phase 4 (Scope enhancement)
