@@ -45,31 +45,31 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ## Phase 3: Implement Missing Stream-Specific Operations (HIGH PRIORITY)
 
-### 3.1 Core stream operations
-**These are stream-specific and need to be implemented in phunkie/streams:**
+### 3.1 Core stream operations ✅ COMPLETED
+**Stream-specific operations implemented:**
 
-- [ ] **through()** - Pipe operator for stream transformations
-  ```php
-  Stream(...)->through(fn($s) => $s->map(...)->filter(...))
-  ```
-  - [ ] Implement in `src/Ops/Stream/` or `src/Type/Stream.php`
-  - [ ] Add tests
-  - [ ] Add examples
+- [x] **through()** - Pipe operator for stream transformations
+  - [x] Implemented in `src/Ops/Stream/ImmListOps.php`
+  - [x] Simple pipe function application: `Stream(...)->through(fn($s) => $s->map(...)->filter(...))`
 
-- [ ] **takeWhile(callable $predicate)** - Take while predicate is true
-  - [ ] Implement in appropriate Pull ops trait
-  - [ ] Add tests
-  - [ ] Add examples
+- [x] **takeWhile(callable $predicate)** - Take while predicate is true
+  - [x] Transformation in `src/Functions/transformation.php`
+  - [x] Pull operation in `src/Ops/Pull/ValuesPull/ImmListOps.php`
+  - [x] Stream operation in `src/Ops/Stream/ImmListOps.php`
 
-- [ ] **dropWhile(callable $predicate)** - Drop while predicate is true
-  - [ ] Implement in appropriate Pull ops trait
-  - [ ] Add tests
-  - [ ] Add examples
+- [x] **dropWhile(callable $predicate)** - Drop while predicate is true
+  - [x] Transformation in `src/Functions/transformation.php`
+  - [x] Pull operation in `src/Ops/Pull/ValuesPull/ImmListOps.php`
+  - [x] Stream operation in `src/Ops/Stream/ImmListOps.php`
 
-- [ ] **chunk(int $size)** - Process in fixed-size chunks
-  - [ ] Implement chunking logic
-  - [ ] Add tests
-  - [ ] Add examples
+- [x] **chunk(int $size)** - Process in fixed-size chunks
+  - [x] Transformation in `src/Functions/transformation.php`
+  - [x] Pull operation in `src/Ops/Pull/ValuesPull/ImmListOps.php`
+  - [x] Stream operation in `src/Ops/Stream/ImmListOps.php`
+
+- [x] Tests: `tests/Feature/Streams/StreamOperationsSpec.php` (24 tests)
+- [x] Examples: `examples/stream-operations.php` (15 examples)
+- [x] All 85 tests passing (117 assertions)
 
 - [ ] **merge(Stream ...$streams)** - Merge multiple streams
   - [ ] Implement merge logic
@@ -239,8 +239,8 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
    - ✅ Phase 2.1 - Bracket implementation with file I/O
    - ✅ Phase 2.2 - Error handling with attempt/handleError
    - ✅ Phase 2.3 - Stream composition with flatMap
-3. **Implement through()** - Essential for composability (Phase 3.1)
-4. **Implement chunk(), takeWhile(), dropWhile()** - Core operations (Phase 3.1)
+3. ✅ **Phase 3.1 Complete** - Core stream operations (through, takeWhile, dropWhile, chunk)
+4. **Implement merge(), zip()** - Additional stream operations (Phase 3.1 remaining)
 5. **Update documentation** - Reflect current state and phunkie/effect usage (Phase 5)
 6. **Enhance Scope** - Better resource management (Phase 4)
 7. **Add tests** - Comprehensive coverage (Phase 7)
@@ -265,5 +265,5 @@ If changes to phunkie/effect are needed:
 
 **Last Updated:** 2025-10-12
 **Current Phase:** Phase 3 - Implement Missing Stream-Specific Operations
-**Completed:** Phase 1 (phunkie/effect integration), Phase 2 (bracket, error handling, composition)
-**Next Milestone:** Implement core stream operations (through, chunk, takeWhile, dropWhile)
+**Completed:** Phase 1, Phase 2 (bracket, error handling, composition), Phase 3.1 (stream operations)
+**Next Milestone:** Complete Phase 3 (merge, zip) or move to Phase 5 (documentation updates)

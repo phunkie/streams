@@ -74,4 +74,59 @@ namespace Phunkie\Streams\Functions\transformation {
         $transformation->setPassthrough(true);
         return $transformation;
     }
+
+    const takeWhile = 'takeWhile';
+    function takeWhile(callable $predicate): Transformation
+    {
+        return new Transformation(function($chunk) use ($predicate) {
+            $result = [];
+            foreach ($chunk as $value) {
+                if (!$predicate($value)) {
+                    break;
+                }
+                $result[] = $value;
+            }
+            return $result;
+        });
+    }
+
+    const dropWhile = 'dropWhile';
+    function dropWhile(callable $predicate): Transformation
+    {
+        $dropping = true;
+        return new Transformation(function($chunk) use ($predicate, &$dropping) {
+            $result = [];
+            foreach ($chunk as $value) {
+                if ($dropping && !$predicate($value)) {
+                    $dropping = false;
+                }
+                if (!$dropping) {
+                    $result[] = $value;
+                }
+            }
+            return array_values($result);
+        });
+    }
+
+    const chunk = 'chunk';
+    function chunk(int $size): Transformation
+    {
+        $buffer = [];
+        return new Transformation(function($chunk) use ($size, &$buffer) {
+            $chunks = [];
+            foreach ($chunk as $value) {
+                $buffer[] = $value;
+                if (count($buffer) === $size) {
+                    $chunks[] = $buffer;
+                    $buffer = [];
+                }
+            }
+            // Flush remaining buffer as final chunk
+            if (!empty($buffer)) {
+                $chunks[] = $buffer;
+                $buffer = [];
+            }
+            return $chunks;
+        });
+    }
 }

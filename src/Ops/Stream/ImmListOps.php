@@ -41,4 +41,24 @@ trait ImmListOps
     {
         return new Stream($this->getPull()->filter($f), $this->getBytes());
     }
+
+    public function through(callable $pipe): Stream
+    {
+        return $pipe($this);
+    }
+
+    public function takeWhile(callable $predicate): Stream
+    {
+        return new Stream($this->getPull()->takeWhile($predicate), $this->getBytes());
+    }
+
+    public function dropWhile(callable $predicate): Stream
+    {
+        return new Stream($this->getPull()->dropWhile($predicate), $this->getBytes());
+    }
+
+    public function chunk(int $size): Stream
+    {
+        return new Stream($this->getPull()->chunk($size), $this->getBytes());
+    }
 }
