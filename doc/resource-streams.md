@@ -90,228 +90,223 @@ $copyResult = Stream(new Path("source.txt"))
 
 ## Network Resources
 
-Phunkie Streams can work with network resources like HTTP requests and socket connections.
+Phunkie Streams provides comprehensive network operations for HTTP requests and TCP sockets.
 
 ### HTTP Requests
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\io\httpGet;
+use Phunkie\Streams\Network;
 
-// Create a stream from an HTTP GET request
-$responseStream = Stream(httpGet("https://api.example.com/data"))
-    ->compile()
-    ->toList()
-    ->unsafeRunSync();
+// Simple HTTP GET request
+$data = Network::httpGet('https://api.example.com/data')
+    ->compile->toArray();
 
 // Process JSON from an API
-$processedData = Stream(httpGet("https://api.example.com/users"))
-    ->map(fn($response) => json_decode($response, true))
-    ->flatMap(fn($data) => $data['users'])
-    ->filter(fn($user) => $user['active'] === true)
-    ->compile()
-    ->toList()
-    ->unsafeRunSync();
+$users = Network::httpGet('https://api.example.com/users')
+    ->map(fn($chunk) => json_decode($chunk, true))
+    ->filter(fn($data) => $data !== null)
+    ->compile->toArray();
+
+// HTTP POST with JSON payload
+$response = Network::httpPost(
+    'https://api.example.com/users',
+    json_encode(['name' => 'Alice', 'email' => 'alice@example.com']),
+    ['Content-Type: application/json']
+)->compile->toArray();
 ```
 
-### Socket Connections
+### TCP Socket Connections
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\io\socket;
+use Phunkie\Streams\{Network, IO\Network\SocketAddress};
 
-// Create a stream from a socket
-$socketStream = Stream(socket("localhost", 8080))
-    ->through(fn($line) => "Processed: " . $line)
-    ->compile()
-    ->toList()
-    ->unsafeRunSync();
-```
+// TCP client - connect and read
+$messages = Network::client(new SocketAddress('localhost', 8080))
+    ->take(10)
+    ->map(fn($data) => trim($data))
+    ->compile->toArray();
 
-## Resource Management with bracket()
-
-The `bracket()` function is a crucial part of Phunkie Streams' resource management system. It implements the "bracket pattern" (also known as "try-with-resources" in some languages) which ensures proper resource cleanup even in the presence of errors.
-
-### How bracket() Works
-
-```php
-Stream(new Path("file.txt"))
-    ->through(bracket())
-    ->map(fn($line) => processLine($line))
-    ->compile()
-    ->drain;
-```
-
-The `bracket()` function:
-
-1. **Acquires** a resource (opens a file, establishes a connection, etc.)
-2. **Uses** the resource for processing
-3. **Releases** the resource when done, even if an error occurs
-
-This is equivalent to the following imperative code:
-
-```php
-try {
-    $resource = acquireResource();
-    try {
-        useResource($resource);
-    } finally {
-        releaseResource($resource);
-    }
-} catch (Exception $e) {
-    handleError($e);
-}
-```
-
-### Why bracket() is Important
-
-1. **Resource Safety**: Ensures resources are always released, preventing resource leaks
-2. **Error Handling**: Properly handles errors during resource acquisition and usage
-3. **Composability**: Can be composed with other stream operations
-4. **Declarative Style**: Expresses resource management in a functional way
-
-### Common Use Cases
-
-```php
-// File handling
-Stream(new Path("file.txt"))
-    ->through(bracket())
-    ->map(fn($line) => processLine($line));
-
-// HTTP requests
-Stream(new HttpRequest("GET", "https://api.example.com"))
-    ->through(bracket())
-    ->map(fn($response) => processResponse($response));
-
-// Database connections
-Stream(new DatabaseConnection("mysql://localhost/db"))
-    ->through(bracket())
-    ->map(fn($conn) => executeQuery($conn));
-
-// Process management
-Stream(new Process("command"))
-    ->through(bracket())
-    ->map(fn($output) => processOutput($output));
-```
-
-### bracket() vs. Manual Resource Management
-
-```php
-// Manual resource management (error-prone)
-$handle = fopen("file.txt", "r");
-try {
-    while (($line = fgets($handle)) !== false) {
-        processLine($line);
-    }
-} finally {
-    fclose($handle);
-}
-
-// Using bracket() (safe and declarative)
-Stream(new Path("file.txt"))
-    ->through(bracket())
-    ->map(fn($line) => processLine($line))
-    ->compile()
-    ->drain;
-```
-
-The `bracket()` pattern is essential for writing robust streaming applications that handle resources safely and efficiently. 
-
-## Resource Safety
-
-One of the key benefits of using Phunkie Streams with resources is automatic resource management. Phunkie Streams ensures that resources are properly acquired and released, even in the presence of errors.
-
-### Using Bracket for Resource Safety
-
-The `bracket` operation ensures that a resource is always properly closed, regardless of whether the operations succeed or fail:
-
-```php
-<?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\io\bracket;
-use Phunkie\Streams\IO\File\Path;
-
-// Safe file processing with bracket
-$result = bracket(
-    // Resource acquisition
-    fn() => fopen("data.txt", "r"),
-    // Resource usage
-    fn($handle) => Stream(function() use ($handle) {
-        while (!feof($handle)) {
-            yield fgets($handle);
-        }
+// TCP server - accept connections
+Network::server(host: '0.0.0.0', port: 8080)
+    ->map(function($clientSocket) {
+        $data = fread($clientSocket, 1024);
+        fwrite($clientSocket, "Echo: $data");
+        fclose($clientSocket);
+        return "Handled client";
     })
-    ->map(fn($line) => trim($line))
-    ->filter(fn($line) => !empty($line)),
-    // Resource release
-    fn($handle) => fclose($handle)
-)
-->compile()
-->toList()
-->unsafeRunSync();
+    ->take(5) // Handle 5 clients
+    ->compile->drain
+    ->unsafeRunSync();
+
+// Write stream to socket
+Stream(...['message1', 'message2', 'message3'])
+    ->through(Network::socketWrite(new SocketAddress('localhost', 8080)));
 ```
 
-### Scope and Resource Management
+## Resource Management
 
-Phunkie Streams uses the concept of a Scope to manage resource lifetimes:
+Phunkie Streams uses two complementary approaches for resource management:
+
+1. **Automatic cleanup via `__destruct()`** - Resource objects (HttpRequest, SocketRead, etc.) automatically clean up when no longer referenced
+2. **Explicit cleanup via `bracket()`** - For operations requiring guaranteed immediate cleanup
+
+### Using bracket() for File I/O
+
+The `bracket()` function ensures proper resource cleanup even in the presence of errors:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use Phunkie\Streams\Scope\ResourceScope;
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents};
 use Phunkie\Streams\IO\File\Path;
 
-// Create a resource scope
-$scope = new ResourceScope();
+// Read file with automatic cleanup
+$content = readFileContents(new Path('data.txt'))
+    ->map(fn($text) => strtoupper($text))
+    ->unsafeRunSync();
 
-// Register resources with the scope
-$fileStream = Stream(new Path("data.txt"))
-    ->through($scope->register(fn() => $resource))
-    ->compile()
-    ->toList();
+// Write file with automatic cleanup
+$bytes = writeFileContents(new Path('output.txt'), "Hello, World!")
+    ->unsafeRunSync();
+```
 
-// All resources in the scope will be released when the scope is closed
-$scope->close();
+These file I/O functions use bracket() internally for guaranteed cleanup.
+
+### Manual bracket() Usage
+
+For custom resource management:
+
+```php
+<?php
+use function Phunkie\Streams\Functions\resource\bracket;
+use function Phunkie\Effect\Functions\io\io;
+
+$result = bracket(
+    // Acquire resource
+    io(fn() => fopen('data.txt', 'r')),
+    // Use resource
+    fn($handle) => io(fn() => stream_get_contents($handle)),
+    // Release resource (always called, even on errors)
+    fn($handle) => io(fn() => fclose($handle))
+)->unsafeRunSync();
+```
+
+### Automatic Resource Management
+
+Network and stream resources use PHP's `__destruct()` for automatic cleanup:
+
+```php
+<?php
+use Phunkie\Streams\Network;
+
+// HttpRequest automatically closes when stream completes
+$data = Network::httpGet('https://api.example.com/data')
+    ->map(fn($chunk) => process($chunk))
+    ->compile->toArray();
+// Connection automatically closed here
+
+// SocketRead automatically closes when done
+$messages = Network::client(new SocketAddress('localhost', 8080))
+    ->take(10)
+    ->compile->toArray();
+// Socket automatically closed here
+```
+
+For a comprehensive guide on when to use each pattern, see [Resource Management Guide](resource-management.md). 
+
+## Resource Safety Guarantees
+
+Phunkie Streams ensures resources are properly managed through:
+
+1. **PHP's deterministic garbage collection** - Resources cleaned up immediately when last reference is dropped
+2. **`__destruct()` methods** - All Resource classes implement proper cleanup in destructors
+3. **`bracket()` function** - Guarantees finalization even when errors occur
+
+### Examples of Safe Resource Handling
+
+```php
+<?php
+use function Phunkie\Streams\Functions\file\{readLines, writeLines};
+use Phunkie\Streams\IO\File\Path;
+
+// File operations are always safe - bracket() used internally
+$lines = readLines(new Path('data.txt'))
+    ->map(fn($linesArray) => array_map('trim', $linesArray))
+    ->unsafeRunSync();
+
+// Even if an error occurs, files are properly closed
+try {
+    writeLines(new Path('/invalid/path.txt'), ['line1', 'line2'])
+        ->unsafeRunSync();
+} catch (\Exception $e) {
+    // File handle still properly closed, no leak
+    echo "Error: " . $e->getMessage();
+}
+```
+
+### Stream-Based Resource Cleanup
+
+Stream resources automatically clean up when consumed:
+
+```php
+<?php
+use Phunkie\Streams\Network;
+
+try {
+    // Even if processing throws, HttpRequest's __destruct() ensures cleanup
+    $data = Network::httpGet('https://api.example.com/data')
+        ->map(fn($chunk) => riskyOperation($chunk))
+        ->compile->toArray();
+} catch (\Exception $e) {
+    // HTTP connection already closed by __destruct()
+    echo "Processing failed but connection closed safely";
+}
 ```
 
 ## Error Handling
 
-Resource operations can fail for various reasons (file not found, network issues, etc.). Phunkie Streams provides tools for handling these errors in a functional way:
+Resource operations can fail for various reasons (file not found, network issues, etc.). Phunkie Streams provides functional error handling through IO's `attempt()` and `handleError()`:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\io\attempt;
+use function Phunkie\Streams\Functions\file\readFileContents;
 use Phunkie\Streams\IO\File\Path;
-use function Phunkie\PatternMatching\Referenced\{Success, Failure};
-use function pmatch;
 
-// Use attempt to catch exceptions and convert them to Validation values
-$result = Stream(new Path("possibly-missing-file.txt"))
-    ->through(attempt())
-    ->compile()
-    ->toList()
+// Using attempt() - returns Validation<Throwable, string>
+$result = readFileContents(new Path('/nonexistent/file.txt'))
+    ->attempt()
     ->unsafeRunSync();
 
-$on = pmatch($result);
-match(true) {
-    $on(Success($data)) => printf("Success! Got data: %d lines\n", count($data)),
-    $on(Failure($error)) => printf("Failed with error: %s\n", $error->getMessage())
-};
+$content = $result->getOrElse("default content");
+
+// Using handleError() - recover from errors
+$content = readFileContents(new Path('/nonexistent/file.txt'))
+    ->handleError(fn($e) => "Error: " . $e->getMessage())
+    ->unsafeRunSync();
+
+// Network error handling
+$data = Network::httpGet('https://invalid-domain.example.com')
+    ->map(fn($chunk) => process($chunk))
+    ->attempt()  // Returns Validation
+    ->unsafeRunSync()
+    ->getOrElse([]);  // Default empty array on error
 ```
+
+For comprehensive error handling patterns, see [Error Handling Guide](error-handling.md).
 
 ## Best Practices for Resource Streams
 
 When working with resource streams, follow these best practices:
 
-1. **Always use `.compile()`** before terminal operations on resource streams
-2. **Always use `.unsafeRunSync()`** to execute IO operations
-3. **Use bracket or scope** for proper resource cleanup
-4. **Handle errors** using `attempt()` or similar error-handling mechanisms
-5. **Be mindful of memory usage** when processing large files
-6. **Set appropriate buffer sizes** for optimal performance
+1. **Use the Network API for HTTP/sockets** - `Network::httpGet()`, `Network::client()`, etc.
+2. **Use file I/O functions for files** - `readFileContents()`, `writeFileContents()`, `readLines()`, `writeLines()`
+3. **Always use `.compile()` before terminal operations** on resource streams
+4. **Always use `.unsafeRunSync()`** to execute IO operations
+5. **Handle errors functionally** using `attempt()` or `handleError()`
+6. **Trust automatic cleanup** - Resource objects clean themselves up via `__destruct()`
+7. **Use bracket() for raw resources** - When working with file handles or raw sockets directly
+8. **Be mindful of memory** when processing large files - use appropriate buffer sizes
 
 ## Composing Resource Operations
 

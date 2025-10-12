@@ -318,6 +318,7 @@ See [examples/network.php](examples/network.php) for 15 comprehensive network ex
 
 ## Documentation
 
+- [Resource Management Guide](doc/resource-management.md) - When to use bracket() vs __destruct()
 - [Error Handling Guide](doc/error-handling.md) - Error recovery strategies
 - [Composition Guide](doc/composition.md) - Monadic composition patterns
 - [Full Documentation](./doc) - Complete documentation directory

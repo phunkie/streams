@@ -50,7 +50,8 @@ Phunkie Streams implements several Pull types:
 
 - **ValuesPull**: For handling pure finite streams of in-memory values
 - **InfinitePull**: For working with potentially infinite sequences
-- **ResourcePull**: For interfacing with external resources like files
+- **ResourcePull**: For interfacing with raw PHP stream resources (files)
+- **ResourceObjectPull**: For Resource interface objects (HttpRequest, SocketRead, etc.)
 - **ResourcePullConcat**: For concatenating resource-based streams
 
 ### Pull Operations
@@ -84,56 +85,50 @@ When you chain operations on a Stream, you're building a pipeline of Pull operat
 
 ## Scope and Transformation Management
 
-Phunkie Streams provides an abstraction called `Scope` for managing transformations across stream operations.
+Phunkie Streams uses an internal abstraction called `Scope` to manage transformations across stream operations. Scope is used internally by the library and is not typically manipulated directly by users.
 
-### The Scope Abstraction
+### What Scope Does
 
-A `Scope` is responsible for managing transformations that are applied to stream elements. It allows for:
+Scope serves different purposes depending on the type of stream:
 
-- Appending transformations to create a transformation pipeline
-- Running transformations on chunks of data
-- Handling effects that might result from transformations
+**For ValuesPull (pure streams):**
+- Stores a chain of `Transformation` objects
+- Transformations are applied during compilation
+- Supports complex operations like `filter()`, `takeWhile()`, `dropWhile()`, `chunk()`
+
+**For ResourceObjectPull (network/resource streams):**
+- Stores `map()` functions to transform stream elements
+- Stores `filter()` predicates to filter elements
+- Transformations are applied during value extraction
+
+### How It Works Internally
+
+When you chain operations on a stream, Scope accumulates the transformations:
 
 ```php
 <?php
 use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\IO\fromResource;
-use Phunkie\Streams\Type\Scope;
-use Phunkie\Streams\Type\Transformation;
 
-// Create a custom scope
-$scope = new Scope();
+// Each operation adds to the Scope
+$stream = Stream(1, 2, 3, 4, 5)
+    ->filter(fn($x) => $x % 2 === 0)  // Adds filter to Scope
+    ->map(fn($x) => $x * 2)            // Adds map to Scope
+    ->takeWhile(fn($x) => $x < 10);    // Adds takeWhile to Scope
 
-// Add a transformation to the scope
-$scope->appendTransformation(new Transformation(
-    fn($chunk) => strtoupper($chunk)
-));
-
-// Create a stream with the scope
-$filePath = new Path('path/to/file.txt');
-$fileStream = Stream(fromResource($filePath));
-$fileStream->setScope($scope);
-
-// The scope's transformations will be applied to the stream's elements
+// Transformations are applied when the stream is consumed
+$result = $stream->toArray(); // [4, 8]
 ```
 
-### Transformation Pipeline
+### Why Scope Matters
 
-Scope manages a chain of transformations:
+Scope enables:
 
-1. Transformations can be appended to create a pipeline
-2. When the scope's `runTransformations` method is called, it applies all transformations in order
-3. Transformations can be pure functions or effectful operations
+1. **Lazy evaluation** - Transformations are accumulated, not immediately applied
+2. **Optimization** - Multiple transformations can be optimized together
+3. **Resource safety** - Transformations are applied while resource is managed
+4. **Effect handling** - Separates pure transformations from effectful operations
 
-### Effect Handling
-
-Scope also handles effects produced by transformations:
-
-1. Pure transformations directly transform data
-2. Effectful transformations wrap their results in an IO type
-3. The scope can run effects or pass them through, depending on the context
-
-This enables a clean separation between pure data transformations and effects that interact with the outside world.
+Users don't need to interact with Scope directly - it works behind the scenes to make stream operations efficient and safe.
 
 ## Effect Types
 
@@ -166,22 +161,28 @@ IO streams represent computations that interact with the outside world:
 
 ```php
 <?php
-use function Phunkie\Streams\IO\fromResource;
-use Phunkie\Streams\IO\File\Path;
+use function Phunkie\Streams\Stream;
+use Phunkie\Streams\{Network, IO\File\Path};
 
-// This is an IO stream - it reads from a file
-$filePath = new Path('path/to/file.txt');
-$ioStream = Stream(fromResource($filePath))
+// File I/O stream
+$fileStream = Stream(new Path('data.txt'))
     ->map(fn($line) => strtoupper($line));
 
 // IO streams need to be compiled before consumption
-$result = $ioStream->compile()->toArray();
+$result = $fileStream->compile()->toArray();
+
+// HTTP request stream
+$httpStream = Network::httpGet('https://api.example.com/data')
+    ->map(fn($chunk) => json_decode($chunk, true))
+    ->filter(fn($data) => $data !== null);
+
+$data = $httpStream->compile->toArray();
 ```
 
 IO streams:
 - Access external resources like files, databases, or network
 - May have side effects
-- Need proper resource management
+- Need proper resource management (handled automatically)
 - Require explicit compilation before consumption
 
 ### Why Effect Typing Matters
