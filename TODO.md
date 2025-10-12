@@ -15,14 +15,15 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ## Phase 2: Use Existing Phunkie Effect Features (HIGH PRIORITY)
 
-### 2.1 Import and use bracket() from phunkie/effect
-**Status:** Already available in phunkie/effect, needs integration
+### 2.1 Import and use bracket() from phunkie/effect ✅ COMPLETED
+**Status:** Fully implemented and tested
 
-- [ ] Create `src/Functions/resource.php` with re-exported bracket
-- [ ] Update Stream file operations to use `bracket()` pattern
-- [ ] Add bracket examples in `examples/bracket.php`
-- [ ] Update documentation to show bracket usage
-- [ ] Add tests for bracket with streams (`tests/Feature/Streams/BracketSpec.php`)
+- [x] Create `src/Functions/resource.php` with re-exported bracket
+- [x] Update Stream file operations to use `bracket()` pattern
+- [x] Add bracket examples in `examples/bracket.php`
+- [x] Add tests for bracket with streams (`tests/Feature/Streams/BracketSpec.php`)
+- [x] All tests passing (35 tests, 44 assertions)
+- [ ] Update documentation to show bracket usage (deferred to Phase 5)
 
 ### 2.2 Use attempt() and handleError() from IO
 **Status:** Already available on IO class
@@ -86,18 +87,22 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
   - [ ] Ensure it returns IO properly
   - [ ] Add tests
 
-### 3.2 File I/O stream operations
+### 3.2 File I/O stream operations ✅ PARTIALLY COMPLETED
 **File operations using bracket from phunkie/effect:**
 
-- [ ] Create `src/Functions/file.php` with:
-  - [ ] `writeFile(Path $path): callable` - Returns pipe function using bracket
-  - [ ] `readFile(Path $path, int $bufferSize = 4096): Pull` - Returns Pull with bracket
-  - [ ] `exists(Path $path): IO<bool>` - Check if file exists
-  - [ ] `deleteFile(Path $path): IO<Unit>` - Delete file safely
+- [x] Enhanced `src/Functions/file.php` with:
+  - [x] `exists(Path $path): IO<bool>` - Check if file exists
+  - [x] `deleteFile(Path $path): IO<Unit>` - Delete file safely
+  - [x] `readFileContents(Path $path): IO<string>` - Read file with bracket
+  - [x] `writeFileContents(Path $path, string $contents): IO<int>` - Write file with bracket
+  - [x] `readLines(Path $path): IO<array>` - Read file lines with bracket
+  - [x] `writeLines(Path $path, array $lines): IO<int>` - Write lines with bracket
+  - [ ] `writeFile(Path $path): callable` - Stream pipe function (TODO)
+  - [ ] `readFile(Path $path, int $bufferSize = 4096): Pull` - Stream Pull (already exists as readAll)
 
-- [ ] Add comprehensive file I/O tests
-- [ ] Add file processing examples
-- [ ] Update documentation with file operations
+- [x] Add comprehensive file I/O tests (BracketSpec.php)
+- [x] Add file processing examples (bracket.php)
+- [ ] Update documentation with file operations (deferred to Phase 5)
 
 ### 3.3 Network stream operations (OPTIONAL)
 **HTTP and socket operations - may need external libraries:**
@@ -198,11 +203,11 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ### 7.1 Increase test coverage
 
-- [ ] Bracket resource management tests
+- [x] Bracket resource management tests (BracketSpec.php)
+- [x] File I/O with proper cleanup tests (BracketSpec.php)
 - [ ] Error handling with attempt/handleError tests
 - [ ] Stream composition with flatMap tests
 - [ ] Concurrent operations tests
-- [ ] File I/O with proper cleanup tests
 - [ ] Network operations tests (if implemented)
 - [ ] Edge cases and error scenarios
 - [ ] Performance tests for infinite streams
@@ -231,15 +236,15 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 ## Immediate Next Steps (Priority Order)
 
 1. ✅ **Phase 1 Complete** - Phunkie Effect Integration
-2. **Import bracket** - Create `src/Functions/resource.php`
-3. **Implement through()** - Essential for composability
-4. **Implement chunk(), takeWhile(), dropWhile()** - Core operations
-5. **Create file I/O functions** - `src/Functions/file.php`
-6. **Update documentation** - Reflect current state and phunkie/effect usage
-7. **Add comprehensive examples** - Show bracket, attempt, flatMap patterns
-8. **Enhance Scope** - Better resource management
-9. **Add tests** - Comprehensive coverage
-10. **Code quality** - CS Fixer, PHPStan, CI
+2. ✅ **Phase 2.1 Complete** - Bracket implementation with file I/O
+3. **Phase 2.2** - Error handling examples with attempt/handleError
+4. **Phase 2.3** - Stream composition examples with flatMap
+5. **Implement through()** - Essential for composability (Phase 3.1)
+6. **Implement chunk(), takeWhile(), dropWhile()** - Core operations (Phase 3.1)
+7. **Update documentation** - Reflect current state and phunkie/effect usage (Phase 5)
+8. **Enhance Scope** - Better resource management (Phase 4)
+9. **Add tests** - Comprehensive coverage (Phase 7)
+10. **Code quality** - CS Fixer, PHPStan, CI (Phase 7.2)
 
 ---
 
@@ -260,4 +265,5 @@ If changes to phunkie/effect are needed:
 
 **Last Updated:** 2025-10-12
 **Current Phase:** Phase 2 - Using Phunkie Effect Features
-**Next Milestone:** Implement bracket integration and core stream operations
+**Completed:** Phase 1 (phunkie/effect integration), Phase 2.1 (bracket + file I/O)
+**Next Milestone:** Phase 2.2/2.3 - Error handling and composition examples
