@@ -242,4 +242,128 @@ describe("Stream Operations", function () {
             expect($result)->toBe([]);
         });
     });
+
+    describe("merge() operation", function () {
+
+        it("merges two streams", function () {
+            $stream1 = Stream(...[1, 2, 3]);
+            $stream2 = Stream(...[4, 5, 6]);
+
+            $result = $stream1->merge($stream2)->toArray();
+
+            expect($result)->toBe([1, 2, 3, 4, 5, 6]);
+        });
+
+        it("merges multiple streams", function () {
+            $stream1 = Stream(...[1, 2]);
+            $stream2 = Stream(...[3, 4]);
+            $stream3 = Stream(...[5, 6]);
+
+            $result = $stream1->merge($stream2, $stream3)->toArray();
+
+            expect($result)->toBe([1, 2, 3, 4, 5, 6]);
+        });
+
+        it("merges empty streams", function () {
+            $stream1 = Stream(...[1, 2, 3]);
+            $stream2 = Stream();
+
+            $result = $stream1->merge($stream2)->toArray();
+
+            expect($result)->toBe([1, 2, 3]);
+        });
+
+        it("merges with transformations", function () {
+            $stream1 = Stream(...[1, 2, 3]);
+            $stream2 = Stream(...[4, 5, 6]);
+
+            $result = $stream1
+                ->merge($stream2)
+                ->map(fn($x) => $x * 2)
+                ->toArray();
+
+            expect($result)->toBe([2, 4, 6, 8, 10, 12]);
+        });
+    });
+
+    describe("zip() operation", function () {
+
+        it("zips two streams of equal length", function () {
+            $stream1 = Stream(...[1, 2, 3]);
+            $stream2 = Stream(...['a', 'b', 'c']);
+
+            $result = $stream1->zip($stream2)->toArray();
+
+            expect($result)->toBe([[1, 'a'], [2, 'b'], [3, 'c']]);
+        });
+
+        it("zips streams of different lengths (takes shorter)", function () {
+            $stream1 = Stream(...[1, 2, 3, 4, 5]);
+            $stream2 = Stream(...['a', 'b', 'c']);
+
+            $result = $stream1->zip($stream2)->toArray();
+
+            expect($result)->toBe([[1, 'a'], [2, 'b'], [3, 'c']]);
+        });
+
+        it("handles empty stream in zip", function () {
+            $stream1 = Stream(...[1, 2, 3]);
+            $stream2 = Stream();
+
+            $result = $stream1->zip($stream2)->toArray();
+
+            expect($result)->toBe([]);
+        });
+
+        it("can map over zipped streams", function () {
+            $stream1 = Stream(...[1, 2, 3]);
+            $stream2 = Stream(...[10, 20, 30]);
+
+            $result = $stream1
+                ->zip($stream2)
+                ->map(fn($pair) => $pair[0] + $pair[1])
+                ->toArray();
+
+            expect($result)->toBe([11, 22, 33]);
+        });
+
+        it("zips and processes pairs", function () {
+            $names = Stream(...['Alice', 'Bob', 'Charlie']);
+            $ages = Stream(...[25, 30, 35]);
+
+            $result = $names
+                ->zip($ages)
+                ->map(fn($pair) => "{$pair[0]} is {$pair[1]} years old")
+                ->toArray();
+
+            expect($result)->toBe([
+                'Alice is 25 years old',
+                'Bob is 30 years old',
+                'Charlie is 35 years old'
+            ]);
+        });
+    });
+
+    describe("drain operation", function () {
+
+        it("drain returns IO", function () {
+            $stream = Stream(...[1, 2, 3]);
+            $drain = $stream->compile->drain;
+
+            expect($drain)->toBeInstanceOf(\Phunkie\Effect\IO\IO::class);
+        });
+
+        it("drain executes side effects", function () {
+            $sideEffect = [];
+            $stream = Stream(...[1, 2, 3])
+                ->map(function($x) use (&$sideEffect) {
+                    $sideEffect[] = $x * 2;
+                    return $x;
+                });
+
+            $stream->compile->drain->unsafeRunSync();
+
+            expect($sideEffect)->toBe([2, 4, 6]);
+        });
+    });
 });

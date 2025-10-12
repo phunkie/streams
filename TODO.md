@@ -45,8 +45,8 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ## Phase 3: Implement Missing Stream-Specific Operations (HIGH PRIORITY)
 
-### 3.1 Core stream operations ✅ COMPLETED
-**Stream-specific operations implemented:**
+### 3.1 Core stream operations ✅ FULLY COMPLETED
+**All stream-specific operations implemented and tested:**
 
 - [x] **through()** - Pipe operator for stream transformations
   - [x] Implemented in `src/Ops/Stream/ImmListOps.php`
@@ -67,24 +67,24 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
   - [x] Pull operation in `src/Ops/Pull/ValuesPull/ImmListOps.php`
   - [x] Stream operation in `src/Ops/Stream/ImmListOps.php`
 
-- [x] Tests: `tests/Feature/Streams/StreamOperationsSpec.php` (24 tests)
-- [x] Examples: `examples/stream-operations.php` (15 examples)
-- [x] All 85 tests passing (117 assertions)
+- [x] **merge(Stream ...$streams)** - Merge multiple streams
+  - [x] Implemented in `src/Ops/Stream/ImmListOps.php`
+  - [x] Add tests (4 tests in StreamOperationsSpec.php)
+  - [x] Add examples (Examples 16, 19 in stream-operations.php)
 
-- [ ] **merge(Stream ...$streams)** - Merge multiple streams
-  - [ ] Implement merge logic
-  - [ ] Add tests
-  - [ ] Add examples
+- [x] **zip(Stream $other)** - Zip two streams (plain zip, zipWith exists)
+  - [x] Implemented in `src/Ops/Stream/ImmListOps.php`
+  - [x] Add tests (5 tests in StreamOperationsSpec.php)
+  - [x] Add examples (Examples 17, 18, 20 in stream-operations.php)
 
-- [ ] **zip(Stream $other)** - Zip two streams (plain zip, zipWith exists)
-  - [ ] Implement in stream ops
-  - [ ] Add tests
-  - [ ] Add examples
+- [x] **drain** - Property accessor for compile->drain
+  - [x] Reviewed current implementation
+  - [x] Confirmed it returns IO properly
+  - [x] Add tests (2 tests in StreamOperationsSpec.php)
 
-- [ ] **drain** - Fix property accessor (currently works but needs review)
-  - [ ] Review current implementation
-  - [ ] Ensure it returns IO properly
-  - [ ] Add tests
+- [x] Tests: `tests/Feature/Streams/StreamOperationsSpec.php` (35 tests)
+- [x] Examples: `examples/stream-operations.php` (20 examples)
+- [x] All 96 tests passing (128 assertions)
 
 ### 3.2 File I/O stream operations ✅ PARTIALLY COMPLETED
 **File operations using bracket from phunkie/effect:**
@@ -135,10 +135,11 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ### 5.1 Update documentation to reflect phunkie/effect integration
 
-- [ ] **README.md** updates:
-  - [ ] Add section on resource management with bracket
-  - [ ] Show error handling with attempt/handleError
-  - [ ] Add flatMap examples for IO composition
+- [x] **README.md** updates:
+  - [x] Add section on resource management with bracket
+  - [x] Show error handling with attempt/handleError
+  - [x] Add flatMap examples for IO composition
+  - [x] Add stream operations section (through, takeWhile, dropWhile, chunk)
   - [ ] Add badges (build status, code coverage, version)
 
 - [ ] **doc/resource-streams.md** updates:
@@ -167,9 +168,10 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ### 5.3 Create new examples
 
-- [ ] `examples/bracket-file.php` - File processing with bracket
-- [ ] `examples/error-handling.php` - Error handling with attempt
-- [ ] `examples/composition.php` - Stream composition with flatMap
+- [x] `examples/bracket.php` - File processing with bracket (10 examples)
+- [x] `examples/error-handling.php` - Error handling with attempt (12 examples)
+- [x] `examples/composition.php` - Stream composition with flatMap (12 examples)
+- [x] `examples/stream-operations.php` - Stream operations (15 examples)
 - [ ] `examples/console-io.php` - Console I/O integration
 - [ ] `examples/resource-management.php` - Complex resource scenarios
 
@@ -202,13 +204,14 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ### 7.1 Increase test coverage
 
-- [x] Bracket resource management tests (BracketSpec.php)
+- [x] Bracket resource management tests (BracketSpec.php - 12 tests)
 - [x] File I/O with proper cleanup tests (BracketSpec.php)
-- [ ] Error handling with attempt/handleError tests
-- [ ] Stream composition with flatMap tests
+- [x] Error handling with attempt/handleError tests (ErrorHandlingSpec.php - 20 tests)
+- [x] Stream composition with flatMap tests (CompositionSpec.php - 18 tests)
+- [x] Stream operations tests (StreamOperationsSpec.php - 24 tests)
 - [ ] Concurrent operations tests
 - [ ] Network operations tests (if implemented)
-- [ ] Edge cases and error scenarios
+- [ ] Additional edge cases and error scenarios
 - [ ] Performance tests for infinite streams
 
 ### 7.2 Code quality & tooling
@@ -239,8 +242,8 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
    - ✅ Phase 2.1 - Bracket implementation with file I/O
    - ✅ Phase 2.2 - Error handling with attempt/handleError
    - ✅ Phase 2.3 - Stream composition with flatMap
-3. ✅ **Phase 3.1 Complete** - Core stream operations (through, takeWhile, dropWhile, chunk)
-4. **Implement merge(), zip()** - Additional stream operations (Phase 3.1 remaining)
+3. ✅ **Phase 3.1 Fully Complete** - Core stream operations (through, takeWhile, dropWhile, chunk, merge, zip, drain)
+4. **Continue Phase 3** - File I/O stream operations (Phase 3.2) or Network operations (Phase 3.3)
 5. **Update documentation** - Reflect current state and phunkie/effect usage (Phase 5)
 6. **Enhance Scope** - Better resource management (Phase 4)
 7. **Add tests** - Comprehensive coverage (Phase 7)
@@ -265,5 +268,5 @@ If changes to phunkie/effect are needed:
 
 **Last Updated:** 2025-10-12
 **Current Phase:** Phase 3 - Implement Missing Stream-Specific Operations
-**Completed:** Phase 1, Phase 2 (bracket, error handling, composition), Phase 3.1 (stream operations)
-**Next Milestone:** Complete Phase 3 (merge, zip) or move to Phase 5 (documentation updates)
+**Completed:** Phase 1, Phase 2 (bracket, error handling, composition), Phase 3.1 (all stream operations - through, takeWhile, dropWhile, chunk, merge, zip, drain)
+**Next Milestone:** Phase 3.2 (File I/O pipes), Phase 5 (documentation updates), or Phase 4 (Scope enhancement)

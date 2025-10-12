@@ -61,4 +61,28 @@ trait ImmListOps
     {
         return new Stream($this->getPull()->chunk($size), $this->getBytes());
     }
+
+    public function merge(Stream ...$streams): Stream
+    {
+        // Merge is similar to concat but combines all streams
+        $allValues = $this->getPull()->getValues();
+        foreach ($streams as $stream) {
+            $allValues = array_merge($allValues, $stream->getPull()->getValues());
+        }
+        return Stream(...$allValues);
+    }
+
+    public function zip(Stream $other): Stream
+    {
+        $thisValues = $this->getPull()->getValues();
+        $otherValues = $other->getPull()->getValues();
+        $zipped = [];
+        $count = min(count($thisValues), count($otherValues));
+
+        for ($i = 0; $i < $count; $i++) {
+            $zipped[] = [$thisValues[$i], $otherValues[$i]];
+        }
+
+        return Stream(...$zipped);
+    }
 }

@@ -12,8 +12,11 @@ composer require phunkie/streams
 
 - **Pure streams**: Finite sequences of values that can be transformed and combined
 - **Infinite streams**: Unbounded sequences that can be processed lazily
-- **Effectful operations**: Operations that interact with the outside world (I/O, etc.)
-- **Resource management**: Safe handling of resources through proper acquisition and release
+- **Effectful operations**: Operations that interact with the outside world (I/O, etc.) using phunkie/effect
+- **Resource management**: Safe handling of resources through bracket pattern for guaranteed cleanup
+- **Error handling**: Functional error handling with `attempt()` and `handleError()`
+- **Monadic composition**: Compose IO operations with `flatMap()` for type-safe pipelines
+- **Stream operations**: Rich set of operations including `through()`, `takeWhile()`, `dropWhile()`, `chunk()`
 
 ## Pure Streams
 
@@ -114,9 +117,120 @@ $result = $stream
 var_dump($result);
 ```
 
+## Resource Management with Bracket
+
+Phunkie Streams uses the bracket pattern from phunkie/effect for safe resource management:
+
+```php
+use Phunkie\Streams\IO\File\Path;
+use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents};
+
+// Read file with automatic resource cleanup
+$content = readFileContents(new Path('data.txt'))
+    ->unsafeRunSync();
+
+// Write file with guaranteed cleanup even on errors
+$bytes = writeFileContents(new Path('output.txt'), "Hello, World!")
+    ->unsafeRunSync();
+```
+
+See [examples/bracket.php](examples/bracket.php) for more examples.
+
+## Error Handling
+
+Functional error handling with `attempt()` and `handleError()`:
+
+```php
+use function Phunkie\Streams\IO\File\readFileContents;
+
+// Using attempt() - returns Validation
+$result = readFileContents(new Path('/nonexistent/file.txt'))
+    ->attempt()
+    ->unsafeRunSync();
+
+$content = $result->getOrElse("default content");
+
+// Using handleError() - recover from errors
+$content = readFileContents(new Path('/nonexistent/file.txt'))
+    ->handleError(fn($e) => "Error: " . $e->getMessage())
+    ->unsafeRunSync();
+```
+
+See [examples/error-handling.php](examples/error-handling.php) and [doc/error-handling.md](doc/error-handling.md) for comprehensive patterns.
+
+## Stream Composition with flatMap
+
+Compose IO operations in type-safe pipelines:
+
+```php
+use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents};
+
+$result = writeFileContents($path, "original")
+    ->flatMap(fn($_) => readFileContents($path))
+    ->map(fn($content) => strtoupper($content))
+    ->flatMap(fn($upper) => writeFileContents($path, $upper))
+    ->flatMap(fn($_) => readFileContents($path))
+    ->unsafeRunSync();
+
+// Result: "ORIGINAL"
+```
+
+See [examples/composition.php](examples/composition.php) and [doc/composition.md](doc/composition.md) for detailed patterns.
+
+## Stream Operations
+
+### through() - Pipe Operator
+
+Apply transformation pipelines to streams:
+
+```php
+$uppercase = fn(Stream $s) => $s->map(fn($x) => strtoupper($x));
+
+$result = Stream(...['hello', 'world'])
+    ->through($uppercase)
+    ->toArray();
+// ['HELLO', 'WORLD']
+```
+
+### takeWhile() and dropWhile()
+
+```php
+// Take elements while condition is true
+Stream(...[1, 2, 3, 4, 5, 1, 2])
+    ->takeWhile(fn($x) => $x < 4)
+    ->toArray();
+// [1, 2, 3]
+
+// Drop elements while condition is true
+Stream(...[1, 2, 3, 4, 5])
+    ->dropWhile(fn($x) => $x < 3)
+    ->toArray();
+// [3, 4, 5]
+```
+
+### chunk() - Batch Processing
+
+```php
+Stream(...[1, 2, 3, 4, 5, 6])
+    ->chunk(2)
+    ->toArray();
+// [[1, 2], [3, 4], [5, 6]]
+```
+
+See [examples/stream-operations.php](examples/stream-operations.php) for 15 comprehensive examples.
+
 ## Documentation
 
-For detailed documentation, visit the [docs](./doc) directory.
+- [Error Handling Guide](doc/error-handling.md) - Error recovery strategies
+- [Composition Guide](doc/composition.md) - Monadic composition patterns
+- [Full Documentation](./doc) - Complete documentation directory
+
+## Examples
+
+- [examples/bracket.php](examples/bracket.php) - Resource management (10 examples)
+- [examples/error-handling.php](examples/error-handling.php) - Error handling (12 examples)
+- [examples/composition.php](examples/composition.php) - Stream composition (12 examples)
+- [examples/stream-operations.php](examples/stream-operations.php) - Stream operations (15 examples)
 
 ## Contributing
 

@@ -244,4 +244,80 @@ foreach ($result as $i => $stats) {
 }
 echo "\n";
 
+// Example 16: merge() - Combining multiple streams
+echo "16. Using merge() to combine streams:\n";
+$stream1 = Stream(...[1, 2, 3]);
+$stream2 = Stream(...[4, 5, 6]);
+$stream3 = Stream(...[7, 8, 9]);
+
+$result = $stream1->merge($stream2, $stream3)->toArray();
+
+echo "   Stream 1: [1, 2, 3]\n";
+echo "   Stream 2: [4, 5, 6]\n";
+echo "   Stream 3: [7, 8, 9]\n";
+echo "   Merged: " . json_encode($result) . "\n\n";
+
+// Example 17: zip() - Pairing elements from two streams
+echo "17. Using zip() to pair elements:\n";
+$names = Stream(...['Alice', 'Bob', 'Charlie']);
+$ages = Stream(...[25, 30, 35]);
+
+$result = $names->zip($ages)->toArray();
+
+echo "   Names: ['Alice', 'Bob', 'Charlie']\n";
+echo "   Ages: [25, 30, 35]\n";
+echo "   Zipped pairs: " . json_encode($result) . "\n\n";
+
+// Example 18: Processing zipped data
+echo "18. Processing zipped data:\n";
+$names = Stream(...['Alice', 'Bob', 'Charlie']);
+$ages = Stream(...[25, 30, 35]);
+
+$result = $names
+    ->zip($ages)
+    ->map(fn($pair) => "{$pair[0]} is {$pair[1]} years old")
+    ->toArray();
+
+echo "   Processed results:\n";
+foreach ($result as $line) {
+    echo "   - $line\n";
+}
+echo "\n";
+
+// Example 19: Combining merge and transformations
+echo "19. Merge with data transformation:\n";
+$morning = Stream(...['Coffee', 'Breakfast', 'Shower']);
+$afternoon = Stream(...['Lunch', 'Meeting', 'Work']);
+$evening = Stream(...['Dinner', 'Relax', 'Sleep']);
+
+$schedule = $morning
+    ->merge($afternoon, $evening)
+    ->map(fn($activity) => "[ ] $activity")
+    ->toArray();
+
+echo "   Daily schedule:\n";
+foreach ($schedule as $item) {
+    echo "   $item\n";
+}
+echo "\n";
+
+// Example 20: Zip for parallel data processing
+echo "20. Parallel data with zip():\n";
+$products = Stream(...['Laptop', 'Mouse', 'Keyboard']);
+$prices = Stream(...[999.99, 29.99, 79.99]);
+
+$catalog = $products
+    ->zip($prices)
+    ->map(fn($pair) => [
+        'product' => $pair[0],
+        'price' => '$' . number_format($pair[1], 2)
+    ])
+    ->toArray();
+
+echo "   Product catalog:\n";
+foreach ($catalog as $item) {
+    echo "   {$item['product']}: {$item['price']}\n";
+}
+echo "\n";
+
 echo "=== All stream operations examples completed! ===\n";
