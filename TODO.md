@@ -33,13 +33,13 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 - [x] Document error recovery strategies (`doc/error-handling.md`)
 - [x] All tests passing (43 tests, 66 assertions)
 
-### 2.3 Use flatMap() for stream composition
-**Status:** Already available via MonadOps trait on IO
+### 2.3 Use flatMap() for stream composition ✅ COMPLETED
+**Status:** Fully implemented and tested
 
-- [ ] Update examples to use `.flatMap()` for IO composition
-- [ ] Add documentation for monadic stream composition
-- [ ] Create nested stream examples
-- [ ] Add tests for complex stream compositions
+- [x] Create composition examples (`examples/composition.php`)
+- [x] Add comprehensive composition tests (`tests/Feature/Streams/CompositionSpec.php`)
+- [x] Document monadic composition patterns (`doc/composition.md`)
+- [x] All tests passing (61 tests, 92 assertions)
 
 ---
 
@@ -235,15 +235,16 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 ## Immediate Next Steps (Priority Order)
 
 1. ✅ **Phase 1 Complete** - Phunkie Effect Integration
-2. ✅ **Phase 2.1 Complete** - Bracket implementation with file I/O
-3. ✅ **Phase 2.2 Complete** - Error handling examples with attempt/handleError
-4. **Phase 2.3** - Stream composition examples with flatMap
-5. **Implement through()** - Essential for composability (Phase 3.1)
-6. **Implement chunk(), takeWhile(), dropWhile()** - Core operations (Phase 3.1)
-7. **Update documentation** - Reflect current state and phunkie/effect usage (Phase 5)
-8. **Enhance Scope** - Better resource management (Phase 4)
-9. **Add tests** - Comprehensive coverage (Phase 7)
-10. **Code quality** - CS Fixer, PHPStan, CI (Phase 7.2)
+2. ✅ **Phase 2 Complete** - Using Phunkie Effect Features
+   - ✅ Phase 2.1 - Bracket implementation with file I/O
+   - ✅ Phase 2.2 - Error handling with attempt/handleError
+   - ✅ Phase 2.3 - Stream composition with flatMap
+3. **Implement through()** - Essential for composability (Phase 3.1)
+4. **Implement chunk(), takeWhile(), dropWhile()** - Core operations (Phase 3.1)
+5. **Update documentation** - Reflect current state and phunkie/effect usage (Phase 5)
+6. **Enhance Scope** - Better resource management (Phase 4)
+7. **Add tests** - Comprehensive coverage (Phase 7)
+8. **Code quality** - CS Fixer, PHPStan, CI (Phase 7.2)
 
 ---
 
@@ -263,6 +264,6 @@ If changes to phunkie/effect are needed:
 ## Progress Tracking
 
 **Last Updated:** 2025-10-12
-**Current Phase:** Phase 2 - Using Phunkie Effect Features
-**Completed:** Phase 1, Phase 2.1 (bracket + file I/O), Phase 2.2 (error handling)
-**Next Milestone:** Phase 2.3 - Stream composition examples with flatMap
+**Current Phase:** Phase 3 - Implement Missing Stream-Specific Operations
+**Completed:** Phase 1 (phunkie/effect integration), Phase 2 (bracket, error handling, composition)
+**Next Milestone:** Implement core stream operations (through, chunk, takeWhile, dropWhile)
