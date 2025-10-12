@@ -7,6 +7,8 @@ use Phunkie\Effect\IO\IO;
 class Scope
 {
     private array $callables = [];
+    private array $maps = [];
+    private array $filters = [];
     private Transformation $transformation;
 
     public function appendTransformation(Transformation $transformation): void
@@ -16,6 +18,26 @@ class Scope
             return;
         }
         $this->transformation = $this->transformation->andThen($transformation);
+    }
+
+    public function addMap(callable $f): void
+    {
+        $this->maps[] = $f;
+    }
+
+    public function getMaps(): array
+    {
+        return $this->maps;
+    }
+
+    public function addFilter(callable $f): void
+    {
+        $this->filters[] = $f;
+    }
+
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
 
     public function runTransformations(iterable $chunk, $acceptIo = true): iterable | IO

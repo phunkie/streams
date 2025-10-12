@@ -22,6 +22,7 @@ use Phunkie\Streams\Ops\Stream\ImmListOps;
 use Phunkie\Streams\Ops\Stream\ShowOps;
 use Phunkie\Streams\Pull\InfinitePull;
 use Phunkie\Streams\Pull\ResourcePull;
+use Phunkie\Streams\Pull\ResourceObjectPull;
 use Phunkie\Streams\Pull\ValuesPull;
 use Phunkie\Streams\Showable;
 use Phunkie\Streams\Stream\Compiler;
@@ -61,6 +62,12 @@ class Stream implements Showable, Kind
     {
         $resourcePull = new ResourcePull($path, $bytes);
         return new Stream($resourcePull, $bytes);
+    }
+
+    public static function fromResourceObject(\Phunkie\Streams\IO\Resource $resource, int $bytes = 4096): Stream
+    {
+        $resourceObjectPull = new ResourceObjectPull($resource, $bytes);
+        return new Stream($resourceObjectPull, $bytes);
     }
 
     public static function fromInfinite(Infinite $infinite, int $bytes = 256): Stream
@@ -135,7 +142,7 @@ class Stream implements Showable, Kind
 
     public function getEffect(): string
     {
-        return $this->getPull() instanceof ResourcePull ? IO : Pure;
+        return ($this->getPull() instanceof ResourcePull || $this->getPull() instanceof ResourceObjectPull) ? IO : Pure;
     }
 
     public function toArray(): array

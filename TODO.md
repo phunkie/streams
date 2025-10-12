@@ -105,17 +105,32 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 - [x] All 101 tests passing (133 assertions)
 - [ ] Update documentation with file operations (deferred to Phase 5)
 
-### 3.3 Network stream operations (OPTIONAL)
-**HTTP and socket operations - may need external libraries:**
+### 3.3 Network stream operations ✅ FULLY COMPLETED
+**HTTP and socket operations implemented:**
 
-- [ ] Evaluate need for network operations
-- [ ] If needed, create `src/Functions/network.php` with:
-  - [ ] `httpGet(string $url): Pull`
-  - [ ] `httpPost(string $url, string $body): Pull`
-  - [ ] `socket(string $host, int $port): Pull`
-- [ ] All using `bracket()` for resource management
-- [ ] Add network tests
-- [ ] Add network examples
+- [x] Created comprehensive Network API
+- [x] Implemented `src/IO/Network/` with:
+  - [x] `SocketAddress` - Value object for socket addresses
+  - [x] `SocketRead` - TCP client resource
+  - [x] `SocketServer` - TCP server resource
+  - [x] `HttpRequest` - HTTP request resource
+- [x] Created `src/Functions/network.php` with functional API:
+  - [x] `httpGet()`, `httpPost()`, `httpPut()`, `httpDelete()`
+  - [x] `socket()` - Safe socket creation with bracket
+  - [x] `socketRead()`, `socketWrite()`, `socketServer()`
+- [x] Created `src/Network.php` - Static factory class with clean API:
+  - [x] `Network::server(host:, port:)` - TCP server
+  - [x] `Network::client(SocketAddress)` - TCP client
+  - [x] `Network::httpGet()`, `Network::httpPost()`, etc.
+  - [x] `Network::socketWrite()` - Socket write pipe
+- [x] Created `src/Pull/ResourceObjectPull.php` for Resource interface objects
+- [x] Extended `Stream()` function to handle Resource objects
+- [x] Added `addMap()` and `getMaps()` methods to Scope
+- [x] All network operations use bracket pattern for safety
+- [x] Add network examples (`examples/network.php` - 15 examples)
+- [x] Updated README with network operations section
+- [x] Updated TODO.md to mark Phase 3.3 complete
+- [x] All examples working and tested
 
 ---
 
@@ -270,6 +285,11 @@ If changes to phunkie/effect are needed:
 ## Progress Tracking
 
 **Last Updated:** 2025-10-12
-**Current Phase:** Phase 3 - Implement Missing Stream-Specific Operations
-**Completed:** Phase 1, Phase 2 (bracket, error handling, composition), Phase 3.1 (all stream operations), Phase 3.2 (file I/O pipes with writeFile)
-**Next Milestone:** Phase 3.3 (Network operations - optional), Phase 5 (documentation updates), or Phase 4 (Scope enhancement)
+**Current Phase:** Phase 3 - Implement Missing Stream-Specific Operations ✅ COMPLETE
+**Completed:**
+- Phase 1 (Phunkie Effect Integration)
+- Phase 2 (bracket, error handling, composition)
+- Phase 3.1 (all stream operations - through, takeWhile, dropWhile, chunk, merge, zip, drain)
+- Phase 3.2 (file I/O pipes with writeFile)
+- Phase 3.3 (network operations - HTTP and TCP sockets)
+**Next Milestone:** Phase 5 (documentation updates) or Phase 4 (Scope enhancement)

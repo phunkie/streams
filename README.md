@@ -252,6 +252,70 @@ Stream(...range(1, 20))
 
 See [examples/file-pipes.php](examples/file-pipes.php) for 12 comprehensive file I/O examples.
 
+## Network Operations
+
+### HTTP Requests
+
+Make HTTP requests as streams:
+
+```php
+use Phunkie\Streams\Network;
+
+// HTTP GET
+$data = Network::httpGet('https://api.example.com/data')
+    ->compile->toArray();
+
+// HTTP POST with JSON
+Network::httpPost(
+    'https://api.example.com/users',
+    json_encode(['name' => 'Alice']),
+    ['Content-Type: application/json']
+)->compile->toArray();
+
+// Stream processing
+Network::httpGet('https://api.example.com/stream')
+    ->map(fn($chunk) => json_decode($chunk, true))
+    ->filter(fn($data) => $data !== null)
+    ->compile->toArray();
+```
+
+### TCP Sockets
+
+#### TCP Client
+
+```php
+use Phunkie\Streams\{Network, IO\Network\SocketAddress};
+
+Network::client(new SocketAddress('localhost', 8080))
+    ->map(fn($data) => processData($data))
+    ->compile->toArray();
+```
+
+#### TCP Server
+
+```php
+Network::server(host: 'localhost', port: 8080)
+    ->map(function($client) {
+        $data = fread($client, 1024);
+        fwrite($client, "Echo: $data");
+        fclose($client);
+        return "Handled client";
+    })
+    ->take(10)
+    ->compile->drain;
+```
+
+#### Writing to Sockets
+
+```php
+Stream(...['message1', 'message2', 'message3'])
+    ->through(Network::socketWrite(
+        new SocketAddress('localhost', 8080)
+    ));
+```
+
+See [examples/network.php](examples/network.php) for 15 comprehensive network examples.
+
 ## Documentation
 
 - [Error Handling Guide](doc/error-handling.md) - Error recovery strategies
@@ -265,6 +329,7 @@ See [examples/file-pipes.php](examples/file-pipes.php) for 12 comprehensive file
 - [examples/composition.php](examples/composition.php) - Stream composition (12 examples)
 - [examples/stream-operations.php](examples/stream-operations.php) - Stream operations (20 examples)
 - [examples/file-pipes.php](examples/file-pipes.php) - File I/O with streams (12 examples)
+- [examples/network.php](examples/network.php) - Network operations (15 examples)
 
 ## Contributing
 

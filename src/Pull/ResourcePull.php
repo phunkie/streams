@@ -99,6 +99,21 @@ class ResourcePull implements Pull
         return $this->hasNext();
     }
 
+    public function getValues(): array
+    {
+        $values = [];
+        $this->rewind();
+
+        while ($this->hasNext()) {
+            $this->next();
+            if ($this->current !== null) {
+                $values[] = $this->current;
+            }
+        }
+
+        return $values;
+    }
+
     public function __destruct()
     {
         if (is_resource($this->resource)) {
