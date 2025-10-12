@@ -25,14 +25,13 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 - [x] All tests passing (35 tests, 44 assertions)
 - [ ] Update documentation to show bracket usage (deferred to Phase 5)
 
-### 2.2 Use attempt() and handleError() from IO
-**Status:** Already available on IO class
+### 2.2 Use attempt() and handleError() from IO ✅ COMPLETED
+**Status:** Fully implemented and tested
 
-- [ ] Update documentation showing `.attempt()` usage patterns
-- [ ] Create error handling examples (`examples/error-handling.php`)
-- [ ] Add `.handleError()` integration examples
-- [ ] Add comprehensive error handling tests
-- [ ] Document error recovery strategies
+- [x] Create error handling examples (`examples/error-handling.php`)
+- [x] Add comprehensive error handling tests (`tests/Feature/Streams/ErrorHandlingSpec.php`)
+- [x] Document error recovery strategies (`doc/error-handling.md`)
+- [x] All tests passing (43 tests, 66 assertions)
 
 ### 2.3 Use flatMap() for stream composition
 **Status:** Already available via MonadOps trait on IO
@@ -237,7 +236,7 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 1. ✅ **Phase 1 Complete** - Phunkie Effect Integration
 2. ✅ **Phase 2.1 Complete** - Bracket implementation with file I/O
-3. **Phase 2.2** - Error handling examples with attempt/handleError
+3. ✅ **Phase 2.2 Complete** - Error handling examples with attempt/handleError
 4. **Phase 2.3** - Stream composition examples with flatMap
 5. **Implement through()** - Essential for composability (Phase 3.1)
 6. **Implement chunk(), takeWhile(), dropWhile()** - Core operations (Phase 3.1)
@@ -265,5 +264,5 @@ If changes to phunkie/effect are needed:
 
 **Last Updated:** 2025-10-12
 **Current Phase:** Phase 2 - Using Phunkie Effect Features
-**Completed:** Phase 1 (phunkie/effect integration), Phase 2.1 (bracket + file I/O)
-**Next Milestone:** Phase 2.2/2.3 - Error handling and composition examples
+**Completed:** Phase 1, Phase 2.1 (bracket + file I/O), Phase 2.2 (error handling)
+**Next Milestone:** Phase 2.3 - Stream composition examples with flatMap
