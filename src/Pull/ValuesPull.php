@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Pull;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;

@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Functions\io {
 
-    use Phunkie\Streams\IO\IO;
+    use Phunkie\Effect\IO\IO;
 
     function io($f): IO
     {

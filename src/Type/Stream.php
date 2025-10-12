@@ -25,6 +25,7 @@ use Phunkie\Streams\Pull\ResourcePull;
 use Phunkie\Streams\Pull\ValuesPull;
 use Phunkie\Streams\Showable;
 use Phunkie\Streams\Stream\Compiler;
+use Phunkie\Types\ImmList;
 use Phunkie\Types\Kind;
 
 /**
@@ -78,6 +79,8 @@ class Stream implements Showable, Kind
             'compile' => $this->compile(),
             'repeat' => $this->repeat(),
             'runLog' => $this->runLog(),
+            'toList' => $this->toList(),
+            'toArray' => $this->toArray(),
             default => throw new \Error("value $property is not a member of Stream")
         };
     }
@@ -104,6 +107,15 @@ class Stream implements Showable, Kind
         $this->getPull()->setScope($scope);
     }
 
+    public function toList(): ImmList
+    {
+        if ($this->getPull() instanceof ValuesPull) {
+            return $this->compile->toList();
+        } else {
+            throw new \Error("Can only call toList on Pure Streams");
+        }
+    }
+
     public function getTypeArity(): int
     {
         return 2;
@@ -124,5 +136,14 @@ class Stream implements Showable, Kind
     public function getEffect(): string
     {
         return $this->getPull() instanceof ResourcePull ? IO : Pure;
+    }
+
+    public function toArray(): array
+    {
+        if ($this->getPull() instanceof ValuesPull) {
+            return $this->compile->toArray();
+        } else {
+            throw new \Error("Can only call toArray on Pure Streams");
+        }
     }
 }

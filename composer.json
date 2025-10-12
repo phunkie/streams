@@ -1,7 +1,8 @@
 {
     "name": "phunkie/streams",
     "require": {
-        "phunkie/phunkie": "^0.11.3"
+        "phunkie/phunkie": "^0.11.3",
+        "phunkie/effect": "^0.4.0"
     },
     "autoload": {
         "psr-4": {

@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Type;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 
 class Transformation implements \ArrayAccess
 {

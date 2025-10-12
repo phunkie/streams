@@ -1,8 +1,8 @@
 <?php
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Types\ImmList;
-use function Phunkie\Streams\Functions\io\io;
+use function Phunkie\Effect\Functions\io\io;
 
 describe("EffectfulStream", function () {
 

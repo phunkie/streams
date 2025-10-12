@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Type;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 
 class Scope
 {
@@ -26,7 +26,7 @@ class Scope
 
         if ($this->transformation->isPassthrough()) {
             $io = $this->transformation->run($chunk);
-            $io->run();
+            $io->unsafeRun();
             if ($acceptIo) {
                 return $io;
             }

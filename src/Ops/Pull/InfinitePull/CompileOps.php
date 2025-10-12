@@ -2,11 +2,11 @@
 
 namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
 use function Phunkie\Functions\show\show;
-use function Phunkie\Streams\Functions\io\io;
+use function Phunkie\Effect\Functions\io\io;
 
 trait CompileOps
 {

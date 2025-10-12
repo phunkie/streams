@@ -2,13 +2,13 @@
 
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Types\ImmList;
 use function Phunkie\Functions\function1\identity;
 use function Phunkie\Functions\show\show;
-use function Phunkie\Streams\Functions\io\io;
+use function Phunkie\Effect\Functions\io\io;
 use const Phunkie\Functions\function1\identity;
 
 /**

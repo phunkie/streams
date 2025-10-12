@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "97f1d1c06f8d22ddb5f105e38489e137",
+    "content-hash": "cd41377448612a6358319821d7df5ffc",
     "packages": [
+        {
+            "name": "phunkie/effect",
+            "version": "v0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phunkie/effect.git",
+                "reference": "234de097870fb0d526f80bdc4e57d16fbcef518c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phunkie/effect/zipball/234de097870fb0d526f80bdc4e57d16fbcef518c",
+                "reference": "234de097870fb0d526f80bdc4e57d16fbcef518c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "phunkie/phunkie": "^0.11"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "phunkie/phunkie-console": "dev-master"
+            },
+            "suggest": {
+                "ext-parallel": "Required for parallel execution using threads. PHP must be compiled with ZTS support."
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Functions/common.php"
+                ],
+                "psr-4": {
+                    "Phunkie\\Effect\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marcello Duarte",
+                    "email": "marcello.duarte@gmail.com"
+                }
+            ],
+            "description": "A functional effects library for PHP inspired by Scala's cats-effect",
+            "support": {
+                "issues": "https://github.com/phunkie/effect/issues",
+                "source": "https://github.com/phunkie/effect/tree/v0.4"
+            },
+            "time": "2025-06-28T20:59:40+00:00"
+        },
         {
             "name": "phunkie/phunkie",
             "version": "0.11.3",
@@ -3667,10 +3718,10 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

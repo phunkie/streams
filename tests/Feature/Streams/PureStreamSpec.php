@@ -12,6 +12,14 @@ it('can be compiled into another structure', function () {
         ->and(Stream(1, 2, 3)->compile->toArray())->toBe([1, 2, 3]);
 });
 
+it('does not need to be compiled to a list', function () {
+    expect(Stream(1, 2, 3)->toList())->toEqual(ImmList(1, 2, 3));
+});
+
+it('does not need to be compiled to an array', function () {
+    expect(Stream(1, 2, 3)->toArray())->toEqual(Array(1, 2, 3));
+});
+
 describe('streams are a functor', function () {
 
     it('implements map', function () {

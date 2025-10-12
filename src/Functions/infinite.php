@@ -8,6 +8,7 @@ namespace {
     use Phunkie\Streams\Infinite\Constant;
     use Phunkie\Streams\Infinite\Repeat;
     use Phunkie\Streams\Infinite\Timer;
+    use Phunkie\Streams\Infinite\Unfold;
 
     function fromRange(int $start, int $end, int $step = 1): Infinite
     {
@@ -17,6 +18,12 @@ namespace {
     function iterate(int $start) {
         return function (callable $f) use ($start) {
             return new Iterate($f, $start);
+        };
+    }
+
+    function unfold($seed) {
+        return function (callable $f) use ($seed) {
+            return new Unfold($f, $seed);
         };
     }
 

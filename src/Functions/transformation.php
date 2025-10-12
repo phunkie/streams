@@ -2,7 +2,6 @@
 
 namespace Phunkie\Streams\Functions\transformation {
 
-    use Phunkie\Streams\IO\IO;
     use Phunkie\Streams\Type\Transformation;
 
     const map = 'map';
@@ -46,7 +45,7 @@ namespace Phunkie\Streams\Functions\transformation {
     const evalMap = 'evalMap';
     function evalMap(callable $f): Transformation
     {
-        return new Transformation(fn ($chunk) => ImmList(...array_map($f, $chunk)));
+        return new Transformation(fn ($chunk) => ImmList(...array_map(fn($x) => $f($x)->unsafeRun(), $chunk)));
     }
 
     const evalFlatMap = 'evalFlatMap';
@@ -58,8 +57,7 @@ namespace Phunkie\Streams\Functions\transformation {
     const evalFilter = 'evalFilter';
     function evalFilter(callable $f): Transformation
     {
-        return new Transformation(fn ($chunk) => ImmList(...array_map(fn($x) => new IO(fn() =>$x),
-            array_filter($chunk, fn($v) => $f($v)->run()))));
+        return new Transformation(fn ($chunk) => ImmList(...array_filter($chunk, fn($v) => $f($v)->unsafeRun())));
     }
 
     function evalTap($f): Transformation
@@ -67,7 +65,7 @@ namespace Phunkie\Streams\Functions\transformation {
         $transformation = new Transformation(
             function($chunk) use ($f) {
                 foreach ($chunk as $v) {
-                    $f($v)->run();
+                    $f($v)->unsafeRun();
                 }
                 return $chunk;
             }

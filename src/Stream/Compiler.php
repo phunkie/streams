@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Stream;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\Ops\Stream\CompileOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Types\ImmList;

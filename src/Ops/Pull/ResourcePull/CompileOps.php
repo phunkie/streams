@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Ops\Pull\ResourcePull;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
 

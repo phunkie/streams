@@ -1,8 +1,8 @@
 <?php
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\Type\Range;
-use function Phunkie\Functions\io\io;
+use function Phunkie\Effect\Functions\io\io;
 use const Phunkie\Functions\numbers\increment;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
@@ -43,7 +43,7 @@ printLn(Stream(1, 2, 3, 4, 5)->filter(fn($x) => $x % 2 == 0)->compile->toList);
 printLn(Stream(1, 2, 3, 4, 5)->evalMap(fn($x) => io(fn() => $x * 2))
     ->compile
     ->toList
-    ->unsafeRunSync);
+    ->unsafeRunSync());
 
 $x = Stream(1, 2, 3, 4, 5);
 $y = Stream("Monday", "Tuesday", "Wednesday", "Thursday", "Friday");
@@ -56,7 +56,7 @@ printLn(Stream(1, 2, 3, 4)
     ->compile
     ->toList());
 
-//$y->interleave(Stream(awakeEvery(1)))->evalTap(fn($x) => new IO(fn() => printLn(strlen($x))))->compile->drain->unsafeRunSync;
+//$y->interleave(Stream(awakeEvery(1)))->evalTap(fn($x) => io(fn() => printLn(strlen($x))))->compile->drain->unsafeRunSync();
 
 $printTime = fn($time) => io(fn() => printLn(date('H:i:s', (int)$time)));
 

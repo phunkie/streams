@@ -2,7 +2,7 @@
 
 namespace Phunkie\Streams\Ops\Pull;
 
-use Phunkie\Streams\IO\IO;
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\Type\Transformation;
 
 /**
