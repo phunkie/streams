@@ -1,208 +1,474 @@
 # HTTP Streams
 
-This section provides recipes for working with HTTP streams using Phunkie Streams.
+This section provides recipes for working with HTTP streams using Phunkie Streams' Network API.
 
 ## HTTP Request/Response
 
-### Basic HTTP Client
+### Basic HTTP GET Request
 
-**Problem**: Make HTTP requests to a server.
+**Problem**: Fetch data from an API endpoint.
 
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\resource\bracket;
+use Phunkie\Streams\Network;
 
-$response = Stream(new HttpRequest("GET", "https://api.example.com/data"))
-    ->through(bracket())
-    ->map(fn($response) => json_decode($response->getBody(), true))
-    ->compile()
-    ->toList()
-    ->unsafeRunSync();
+$response = Network::httpGet('https://api.example.com/data')
+    ->compile->toArray();
+
+$body = implode('', $response);
+$data = json_decode($body, true);
 ```
 
-**Discussion**: This recipe demonstrates how to make HTTP requests and process responses using streams. The `bracket` pattern ensures proper resource cleanup.
+**Discussion**: `Network::httpGet()` creates a stream of response chunks. Resources are automatically cleaned up via `__destruct()`.
 
-### HTTP Server
+### HTTP POST Request
 
-**Problem**: Create an HTTP server that handles requests.
+**Problem**: Send data to an API endpoint.
+
+**Solution**:
+```php
+<?php
+use Phunkie\Streams\Network;
+
+$payload = json_encode(['name' => 'Alice', 'email' => 'alice@example.com']);
+
+$response = Network::httpPost(
+    'https://api.example.com/users',
+    $payload,
+    ['Content-Type: application/json']
+)->compile->toArray();
+
+$body = implode('', $response);
+$result = json_decode($body, true);
+```
+
+**Discussion**: `Network::httpPost()` accepts URL, body, and optional headers array.
+
+### Other HTTP Methods
+
+**Problem**: Use PUT, DELETE, or other HTTP methods.
+
+**Solution**:
+```php
+<?php
+use Phunkie\Streams\Network;
+
+// PUT request
+$response = Network::httpPut(
+    'https://api.example.com/users/123',
+    json_encode(['name' => 'Bob']),
+    ['Content-Type: application/json']
+)->compile->toArray();
+
+// DELETE request
+$response = Network::httpDelete(
+    'https://api.example.com/users/123',
+    ['Authorization: Bearer token123']
+)->compile->toArray();
+```
+
+**Discussion**: The Network API provides methods for all common HTTP verbs.
+
+## Processing JSON APIs
+
+### Fetching and Parsing JSON
+
+**Problem**: Fetch JSON data from an API and parse it.
+
+**Solution**:
+```php
+<?php
+use Phunkie\Streams\Network;
+
+$users = Network::httpGet('https://api.example.com/users')
+    ->map(fn($chunk) => json_decode($chunk, true))
+    ->filter(fn($data) => $data !== null)
+    ->compile->toArray();
+```
+
+**Discussion**: Process JSON responses by mapping over chunks and filtering nulls.
+
+### Streaming JSON Lines
+
+**Problem**: Process a JSON Lines (JSONL) API response.
+
+**Solution**:
+```php
+<?php
+use Phunkie\Streams\Network;
+
+$records = Network::httpGet('https://api.example.com/export')
+    ->map(fn($line) => json_decode($line, true))
+    ->filter(fn($data) => $data !== null)
+    ->filter(fn($data) => $data['active'] === true)
+    ->map(fn($data) => [
+        'id' => $data['id'],
+        'name' => $data['name']
+    ])
+    ->compile->toArray();
+```
+
+**Discussion**: JSON Lines format allows streaming large datasets line by line.
+
+### Aggregating API Data
+
+**Problem**: Fetch data from multiple endpoints and combine results.
 
 **Solution**:
 ```php
 <?php
 use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\resource\bracket;
+use Phunkie\Streams\Network;
 
-$server = Stream(new HttpServer("localhost", 8080))
-    ->through(bracket())
-    ->map(fn($request) => Stream($request)
-        ->through(bracket())
-        ->map(fn($data) => processRequest($data))
-        ->compile()
-        ->drain
+$endpoints = ['/users', '/products', '/orders'];
+
+$allData = Stream(...$endpoints)
+    ->map(fn($endpoint) =>
+        Network::httpGet("https://api.example.com$endpoint")
+            ->compile->toArray()
     )
-    ->compile()
-    ->drain;
+    ->map(fn($chunks) => implode('', $chunks))
+    ->map(fn($body) => json_decode($body, true))
+    ->toArray();
 ```
 
-**Discussion**: This recipe creates an HTTP server that processes incoming requests. The `bracket` pattern ensures proper resource cleanup.
+**Discussion**: Use Stream to iterate over endpoints and collect all responses.
 
-## Stream Context Integration
+## Error Handling
 
-### Custom Stream Context
+### Handling HTTP Errors
 
-**Problem**: Use a custom stream context for HTTP requests.
+**Problem**: Gracefully handle HTTP errors and network failures.
 
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\resource\bracket;
+use Phunkie\Streams\Network;
 
-$context = stream_context_create([
-    'http' => [
-        'method' => 'POST',
-        'header' => 'Content-Type: application/json',
-        'content' => json_encode(['key' => 'value'])
-    ]
-]);
+$data = Network::httpGet('https://api.example.com/data')
+    ->map(fn($chunk) => json_decode($chunk, true))
+    ->attempt()
+    ->unsafeRunSync()
+    ->getOrElse([]);  // Default empty array on error
+```
 
-$response = Stream(new HttpRequest("POST", "https://api.example.com/data", $context))
-    ->through(bracket())
-    ->map(fn($response) => json_decode($response->getBody(), true))
-    ->compile()
-    ->toList()
+**Discussion**: Use `attempt()` to convert exceptions to Validation for safe error handling.
+
+### Retry Logic
+
+**Problem**: Retry failed HTTP requests.
+
+**Solution**:
+```php
+<?php
+use Phunkie\Streams\Network;
+use function Phunkie\Effect\Functions\io\io;
+
+$fetchWithRetry = function(string $url, int $maxAttempts = 3) {
+    for ($attempt = 1; $attempt <= $maxAttempts; $attempt++) {
+        $result = Network::httpGet($url)
+            ->map(fn($chunk) => $chunk)
+            ->attempt()
+            ->unsafeRunSync();
+
+        if ($result->isSuccess()) {
+            return io(fn() => $result->getOrElse([]));
+        }
+
+        if ($attempt < $maxAttempts) {
+            sleep(pow(2, $attempt)); // Exponential backoff
+        }
+    }
+
+    return io(fn() => throw new \RuntimeException("Failed after $maxAttempts attempts"));
+};
+
+$data = $fetchWithRetry('https://api.example.com/data')
     ->unsafeRunSync();
 ```
 
-**Discussion**: Custom stream contexts allow you to configure HTTP requests with specific options like headers and content.
+**Discussion**: Implement exponential backoff for resilient API clients.
 
-## REST API Clients
+### Fallback Data Sources
 
-### REST API Client
-
-**Problem**: Create a REST API client for a service.
+**Problem**: Try multiple API endpoints with fallback.
 
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\resource\bracket;
+use Phunkie\Streams\Network;
 
-class RestApiClient
+$tryEndpoints = function(array $urls) {
+    foreach ($urls as $url) {
+        $result = Network::httpGet($url)
+            ->map(fn($chunk) => json_decode($chunk, true))
+            ->attempt()
+            ->unsafeRunSync();
+
+        if ($result->isSuccess()) {
+            return $result->getOrElse([]);
+        }
+    }
+
+    throw new \RuntimeException("All endpoints failed");
+};
+
+$data = $tryEndpoints([
+    'https://api-primary.example.com/data',
+    'https://api-backup.example.com/data',
+    'https://api-fallback.example.com/data'
+]);
+```
+
+**Discussion**: Iterate through endpoints until one succeeds.
+
+## REST API Client Pattern
+
+### Creating a Reusable API Client
+
+**Problem**: Build a reusable REST API client.
+
+**Solution**:
+```php
+<?php
+use Phunkie\Streams\Network;
+
+class ApiClient
 {
-    private $baseUrl;
-    
-    public function __construct($baseUrl)
+    private string $baseUrl;
+    private array $defaultHeaders;
+
+    public function __construct(string $baseUrl, array $defaultHeaders = [])
     {
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = rtrim($baseUrl, '/');
+        $this->defaultHeaders = $defaultHeaders;
     }
-    
-    public function get($endpoint)
+
+    public function get(string $endpoint): array
     {
-        return Stream(new HttpRequest("GET", $this->baseUrl . $endpoint))
-            ->through(bracket())
-            ->map(fn($response) => json_decode($response->getBody(), true))
-            ->compile()
-            ->toList()
-            ->unsafeRunSync();
+        return Network::httpGet(
+            $this->baseUrl . $endpoint,
+            $this->defaultHeaders
+        )
+            ->compile->toArray();
     }
-    
-    public function post($endpoint, $data)
+
+    public function post(string $endpoint, array $data): array
     {
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'POST',
-                'header' => 'Content-Type: application/json',
-                'content' => json_encode($data)
-            ]
-        ]);
-        
-        return Stream(new HttpRequest("POST", $this->baseUrl . $endpoint, $context))
-            ->through(bracket())
-            ->map(fn($response) => json_decode($response->getBody(), true))
-            ->compile()
-            ->toList()
-            ->unsafeRunSync();
+        return Network::httpPost(
+            $this->baseUrl . $endpoint,
+            json_encode($data),
+            array_merge($this->defaultHeaders, ['Content-Type: application/json'])
+        )
+            ->compile->toArray();
+    }
+
+    public function getJson(string $endpoint): ?array
+    {
+        $chunks = $this->get($endpoint);
+        $body = implode('', $chunks);
+        return json_decode($body, true);
+    }
+
+    public function postJson(string $endpoint, array $data): ?array
+    {
+        $chunks = $this->post($endpoint, $data);
+        $body = implode('', $chunks);
+        return json_decode($body, true);
     }
 }
 
-$client = new RestApiClient("https://api.example.com");
-$data = $client->get("/users");
+// Usage
+$client = new ApiClient('https://api.example.com', [
+    'Authorization: Bearer mytoken123'
+]);
+
+$users = $client->getJson('/users');
+$newUser = $client->postJson('/users', ['name' => 'Alice']);
 ```
 
-**Discussion**: This recipe shows how to create a REST API client that uses streams for HTTP requests.
+**Discussion**: Encapsulate common API operations in a reusable client class.
 
-## WebSocket Support
+## Advanced Patterns
 
-### WebSocket Server
+### Pagination Handling
 
-**Problem**: Create a WebSocket server for real-time communication.
+**Problem**: Fetch all pages from a paginated API.
+
+**Solution**:
+```php
+<?php
+use Phunkie\Streams\Network;
+
+$fetchAllPages = function(string $baseUrl) {
+    $allData = [];
+    $page = 1;
+    $hasMore = true;
+
+    while ($hasMore) {
+        $response = Network::httpGet("$baseUrl?page=$page")
+            ->compile->toArray();
+
+        $body = implode('', $response);
+        $data = json_decode($body, true);
+
+        if (empty($data['items'])) {
+            $hasMore = false;
+        } else {
+            $allData = array_merge($allData, $data['items']);
+            $page++;
+
+            if (!isset($data['hasMore']) || !$data['hasMore']) {
+                $hasMore = false;
+            }
+        }
+    }
+
+    return $allData;
+};
+
+$allUsers = $fetchAllPages('https://api.example.com/users');
+```
+
+**Discussion**: Loop through pages until no more data is available.
+
+### Rate Limiting
+
+**Problem**: Respect API rate limits.
 
 **Solution**:
 ```php
 <?php
 use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\resource\bracket;
+use Phunkie\Streams\Network;
 
-$server = Stream(new WebSocketServer("localhost", 8080))
-    ->through(bracket())
-    ->map(fn($client) => Stream($client)
-        ->through(bracket())
-        ->map(fn($message) => processMessage($message))
-        ->compile()
-        ->drain
-    )
-    ->compile()
-    ->drain;
+class RateLimitedClient
+{
+    private int $requestsPerSecond;
+    private float $lastRequestTime = 0;
+
+    public function __construct(int $requestsPerSecond = 10)
+    {
+        $this->requestsPerSecond = $requestsPerSecond;
+    }
+
+    public function get(string $url): array
+    {
+        $this->waitIfNeeded();
+
+        $response = Network::httpGet($url)
+            ->compile->toArray();
+
+        $this->lastRequestTime = microtime(true);
+        return $response;
+    }
+
+    private function waitIfNeeded(): void
+    {
+        $minInterval = 1.0 / $this->requestsPerSecond;
+        $elapsed = microtime(true) - $this->lastRequestTime;
+
+        if ($elapsed < $minInterval) {
+            usleep((int)(($minInterval - $elapsed) * 1000000));
+        }
+    }
+}
+
+$client = new RateLimitedClient(10); // 10 requests per second
+
+$endpoints = ['/users/1', '/users/2', '/users/3'];
+$results = Stream(...$endpoints)
+    ->map(fn($endpoint) => $client->get("https://api.example.com$endpoint"))
+    ->toArray();
 ```
 
-**Discussion**: WebSocket servers enable real-time, bidirectional communication between clients and servers.
+**Discussion**: Throttle requests to respect API rate limits.
 
-### WebSocket Client
+### Caching Responses
 
-**Problem**: Create a WebSocket client to connect to a server.
+**Problem**: Cache API responses to reduce load.
 
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\Functions\resource\bracket;
+use Phunkie\Streams\Network;
+use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents, exists};
+use Phunkie\Streams\IO\File\Path;
 
-$client = Stream(new WebSocketClient("ws://localhost:8080"))
-    ->through(bracket())
-    ->map(fn($message) => "Hello, Server!")
-    ->compile()
-    ->drain;
+class CachedApiClient
+{
+    private string $cacheDir;
+    private int $cacheTtl;
+
+    public function __construct(string $cacheDir, int $cacheTtl = 3600)
+    {
+        $this->cacheDir = $cacheDir;
+        $this->cacheTtl = $cacheTtl;
+    }
+
+    public function get(string $url): string
+    {
+        $cacheKey = md5($url);
+        $cachePath = new Path("{$this->cacheDir}/$cacheKey");
+
+        // Check cache
+        $fileExists = exists($cachePath)->unsafeRunSync();
+        if ($fileExists && (time() - filemtime($cachePath->toString()) < $this->cacheTtl)) {
+            return readFileContents($cachePath)->unsafeRunSync();
+        }
+
+        // Fetch from API
+        $chunks = Network::httpGet($url)->compile->toArray();
+        $body = implode('', $chunks);
+
+        // Cache the response
+        writeFileContents($cachePath, $body)->unsafeRunSync();
+
+        return $body;
+    }
+}
+
+$client = new CachedApiClient('/tmp/api-cache', 3600);
+$data = json_decode($client->get('https://api.example.com/data'), true);
 ```
 
-**Discussion**: WebSocket clients can send and receive messages in real-time.
+**Discussion**: Combine file I/O with HTTP requests for simple caching.
 
 ## Best Practices
 
 1. **Resource Management**
-   - Always use `bracket` or `Scope` for HTTP operations
-   - Implement proper connection cleanup
-   - Handle request timeouts
+   - Network resources clean up automatically via `__destruct()`
+   - No need for manual bracket - trust automatic cleanup
+   - Streams handle connection lifecycle
 
 2. **Error Handling**
-   - Use `Validation` for HTTP operations
-   - Handle HTTP errors
-   - Implement retry mechanisms
+   - Use `attempt()` for operations that may fail
+   - Implement retry logic with exponential backoff
+   - Provide fallback data sources
+   - Use `getOrElse()` for default values
 
 3. **Performance**
-   - Use appropriate buffer sizes
-   - Implement backpressure mechanisms
-   - Consider using connection pooling
+   - Process responses as streams when possible
+   - Use chunked processing for large responses
+   - Implement caching for frequently accessed data
+   - Respect API rate limits
 
 4. **Security**
-   - Validate HTTP data
-   - Implement proper authentication
-   - Use HTTPS for sensitive data
+   - Always use HTTPS for sensitive data
+   - Store API keys in environment variables
+   - Validate and sanitize API responses
+   - Implement proper authentication headers
+
+5. **API Design**
+   - Create reusable API client classes
+   - Encapsulate common patterns (pagination, retries)
+   - Use type hints and return types
+   - Document API requirements and limitations
 
 ## See Also
 
-- [Resource Management](../resource-management.md)
-- [Error Handling](../error-handling.md)
-- [Advanced Topics](../advanced-topics.md) 
+- [Network Operations](../getting-started.md#working-with-network-resources) - Network basics
+- [Resource Management](../resource-management.md) - Resource patterns
+- [Error Handling](../error-handling.md) - Comprehensive error handling
+- [Resource Streams](../resource-streams.md) - Deep dive into network I/O

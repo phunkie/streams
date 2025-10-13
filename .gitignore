@@ -2,3 +2,5 @@ vendor
 .phpunit.result.cache
 package.xml
 bin
+.php-cs-fixer.cache
+.phpstan.cache

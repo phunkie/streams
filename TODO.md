@@ -159,12 +159,13 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 - Stream-based resources (HttpRequest, SocketRead) rely on PHP GC + __destruct()
 - No coordination needed between resources
 
-**What COULD Be Done (Optional):**
-- [ ] Document how resource management currently works
-- [ ] Add tests verifying __destruct() cleanup behavior
-- [ ] Add resource cleanup tests for error scenarios
-- [ ] Document when to use bracket() vs __destruct()
-- [ ] (Phase 6) Connection pooling for performance (advanced feature)
+**What Was Done:**
+- [x] Document how resource management currently works (doc/resource-management.md)
+- [x] Document when to use bracket() vs __destruct() (doc/resource-management.md)
+
+**What Could Still Be Done (Optional):**
+- [ ] Add tests verifying __destruct() cleanup behavior → Moved to Phase 7.1
+- [ ] Add resource cleanup tests for error scenarios → Moved to Phase 7.1
 
 ---
 
@@ -189,12 +190,20 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
   - [x] Update to reflect __destruct() automatic cleanup
   - [x] Link to resource-management.md and error-handling.md guides
 
-- [ ] **doc/advanced-topics.md** updates: ⚠️ NEEDS EXTENSIVE REVISION
-  - [ ] Remove outdated custom Pull examples
-  - [ ] Remove references to ResourceScope (doesn't exist)
-  - [ ] Update error handling examples to use current API
-  - [ ] Document actual advanced features (Network API, complex pipelines)
-  - [ ] Add concurrency section (when Phase 6 implemented)
+- [x] **doc/advanced-topics.md** updates: ✅ COMPLETED - COMPLETELY REWRITTEN
+  - [x] Removed all outdated custom Pull examples
+  - [x] Removed references to ResourceScope (doesn't exist)
+  - [x] Updated all examples to use current API (Network, file I/O)
+  - [x] Documented actual implemented features:
+    - [x] Stream composition patterns (concat, merge, interleave, zip)
+    - [x] through() pipe operator usage
+    - [x] Complex multi-stage processing pipelines
+    - [x] Network data processing examples
+    - [x] Performance considerations (memory, buffer sizes)
+    - [x] Advanced error handling patterns (fallback chains)
+    - [x] Comprehensive testing examples (pure, resource, network)
+    - [x] Best practices for all areas
+  - [x] Links to related guides (resource-management, error-handling, composition)
 
 - [x] **doc/core-concepts.md** updates: ✅ COMPLETED
   - [x] Added ResourceObjectPull to Pull types list
@@ -212,10 +221,10 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 
 ### 5.2 Fix documentation gaps
 
-- [ ] Audit all `.md` files for unimplemented features
+- [x] Audit all `.md` files for unimplemented features (see doc/DOCUMENTATION-STATUS.md)
 - [ ] Either implement missing features OR remove from docs
 - [ ] Ensure all code examples actually work
-- [ ] Add "What's Implemented" section to README
+- [x] Add "What's Implemented" section to README
 
 ### 5.3 Create new examples
 
@@ -248,6 +257,13 @@ Evolve Phunkie Streams towards a feature set and capabilities inspired by functi
 - [ ] Improve chunk processing
 - [ ] Add performance benchmarks
 - [ ] Document performance best practices
+
+### 6.3 Connection pooling (from Phase 4)
+
+- [ ] Connection pooling for HTTP requests
+- [ ] Socket connection reuse
+- [ ] Resource pooling API design
+- [ ] Pool configuration and tuning
 
 ---
 

@@ -1,0 +1,11 @@
+parameters:
+    level: 6
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - vendor
+    ignoreErrors:
+        # Add specific errors to ignore if needed
+    checkMissingIterableValueType: false
+    checkGenericClassInNonGenericObjectType: false

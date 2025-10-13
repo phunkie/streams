@@ -71,7 +71,7 @@ While PHP provides native streaming capabilities through `stream_*` functions, `
 
 #### Resource Management
 - **PHP Native**: Manual resource management with `fopen`/`fclose`, `curl_init`/`curl_close`
-- **Phunkie Streams**: Automatic resource cleanup using the `bracket` pattern and `Scope`
+- **Phunkie Streams**: Automatic resource cleanup using the `bracket()` pattern from phunkie/effect and `__destruct()`
 
 #### Error Handling
 - **PHP Native**: Error handling through exceptions or return values
@@ -83,7 +83,7 @@ While PHP provides native streaming capabilities through `stream_*` functions, `
 
 #### Backpressure
 - **PHP Native**: No built-in backpressure mechanisms
-- **Phunkie Streams**: Built-in backpressure support for handling high-throughput streams
+- **Phunkie Streams**: Backpressure support planned for Phase 6 (not yet implemented)
 
 #### Testing
 - **PHP Native**: Difficult to test due to side effects and resource management
@@ -102,10 +102,10 @@ if ($handle) {
 
 // Phunkie Streams
 Stream(new Path("file.txt"))
-    ->through(bracket())
     ->map(fn($line) => processLine($line))
     ->compile()
-    ->drain;
+    ->drain
+    ->unsafeRunSync();
 ```
 
 #### Example: HTTP Request
@@ -121,11 +121,12 @@ curl_close($ch);
 processResponse($response);
 
 // Phunkie Streams
-Stream(new HttpRequest("GET", "https://api.example.com/data"))
-    ->through(bracket())
-    ->map(fn($response) => processResponse($response))
-    ->compile()
-    ->drain;
+use Phunkie\Streams\Network;
+
+Network::httpGet("https://api.example.com/data")
+    ->map(fn($chunk) => processResponse($chunk))
+    ->compile->drain
+    ->unsafeRunSync();
 ```
 
 #### Example: Process Output
@@ -140,11 +141,24 @@ if ($handle) {
 }
 
 // Phunkie Streams
-Stream(new Process("command"))
-    ->through(bracket())
-    ->map(fn($line) => processOutput($line))
-    ->compile()
-    ->drain;
+use function Phunkie\Streams\Functions\resource\bracket;
+use function Phunkie\Effect\Functions\io\io;
+
+$result = bracket(
+    io(fn() => popen("command", "r")),
+    fn($handle) => io(function() use ($handle) {
+        $lines = [];
+        while (!feof($handle)) {
+            $line = fgets($handle);
+            if ($line !== false) {
+                processOutput($line);
+                $lines[] = trim($line);
+            }
+        }
+        return $lines;
+    }),
+    fn($handle) => io(fn() => pclose($handle))
+)->unsafeRunSync();
 ```
 
 Phunkie Streams provides a more functional, composable, and resource-safe alternative to PHP's native streaming capabilities, making it easier to build robust streaming applications.

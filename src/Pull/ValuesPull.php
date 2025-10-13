@@ -8,6 +8,7 @@ use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\IteratorOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\MonadOps;
 use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ShowOps;
 use Phunkie\Streams\Type\Pull;
@@ -19,6 +20,7 @@ class ValuesPull implements Pull
     use ShowOps;
     use CompileOps;
     use FunctorOps;
+    use MonadOps;
     use IteratorOps;
     use ImmListOps;
     use EffectfulOps;

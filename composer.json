@@ -28,7 +28,15 @@
         "ext-sockets": "Required for socket communication in networking applications"
     },
     "require-dev": {
-        "pestphp/pest": "^2.35"
+        "pestphp/pest": "^2.35",
+        "phpstan/phpstan": "^1.10",
+        "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "scripts": {
+        "test": "pest",
+        "phpstan": "phpstan analyse",
+        "cs-fix": "php-cs-fixer fix",
+        "cs-check": "php-cs-fixer fix --dry-run --diff"
     },
     "config": {
         "bin-dir": "bin",

@@ -18,6 +18,54 @@ composer require phunkie/streams
 - **Monadic composition**: Compose IO operations with `flatMap()` for type-safe pipelines
 - **Stream operations**: Rich set of operations including `through()`, `takeWhile()`, `dropWhile()`, `chunk()`
 
+## What's Implemented
+
+Phunkie Streams has completed Phases 1-3 of development. Here's what's currently available:
+
+### Core Stream Types
+- **Pure Streams** - `Stream(1, 2, 3)` for finite in-memory sequences
+- **Infinite Streams** - `Stream(iterate(...))`, `Stream(fromRange(...))` for unbounded sequences
+- **Resource Streams** - File and network I/O streams with automatic resource management
+
+### Stream Operations
+- **Transformations**: `map()`, `filter()`, `flatMap()`
+- **Composition**: `concat()`, `merge()`, `interleave()`, `zip()`, `zipWith()`
+- **Control flow**: `take()`, `drop()`, `takeWhile()`, `dropWhile()`
+- **Batching**: `chunk()` for processing in fixed-size chunks
+- **Pipes**: `through()` for composable transformation pipelines
+- **Compilation**: `compile()->toArray()`, `compile()->toList()`, `compile->drain`
+
+### File I/O
+- **Reading**: `Stream(new Path('file.txt'))`, `readFileContents()`, `readLines()`
+- **Writing**: `writeFileContents()`, `writeLines()`, `writeFile()` pipe function
+- **Utilities**: `exists()`, `deleteFile()`
+- All file operations use `bracket()` internally for guaranteed cleanup
+
+### Network Operations
+- **HTTP**: `Network::httpGet()`, `Network::httpPost()`, `Network::httpPut()`, `Network::httpDelete()`
+- **TCP Client**: `Network::client(SocketAddress)` for socket connections
+- **TCP Server**: `Network::server(host:, port:)` for accepting connections
+- **Socket Writing**: `Network::socketWrite()` pipe function
+- All network resources use automatic cleanup via `__destruct()`
+
+### Resource Management
+- **Bracket pattern**: `bracket(acquire, use, release)` from phunkie/effect
+- **Automatic cleanup**: Resource objects (HttpRequest, SocketRead, etc.) clean up automatically
+- **Safe by default**: All provided file/network functions handle resources safely
+- See [Resource Management Guide](doc/resource-management.md) for patterns
+
+### Error Handling
+- **Validation**: `IO->attempt()` converts exceptions to `Validation<Throwable, A>`
+- **Recovery**: `IO->handleError(fn)` for error recovery with fallback values
+- **Composition**: Chain error handling with `flatMap()` for complex scenarios
+- See [Error Handling Guide](doc/error-handling.md) for comprehensive patterns
+
+### Not Yet Implemented
+- **Concurrency**: Parallel stream processing (planned for Phase 6)
+- **Backpressure**: Flow control mechanisms (planned for Phase 6)
+- **Connection pooling**: Resource pooling for HTTP/sockets (planned for Phase 6)
+- **Process integration**: System command execution (future consideration)
+
 ## Pure Streams
 
 ```php

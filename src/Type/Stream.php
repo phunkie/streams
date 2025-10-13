@@ -19,6 +19,9 @@ use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Ops\Stream\EffectfulOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
 use Phunkie\Streams\Ops\Stream\ImmListOps;
+use Phunkie\Streams\Ops\Stream\MergeOps;
+use Phunkie\Streams\Ops\Stream\MonadOps;
+use Phunkie\Streams\Ops\Stream\ParallelOps;
 use Phunkie\Streams\Ops\Stream\ShowOps;
 use Phunkie\Streams\Pull\InfinitePull;
 use Phunkie\Streams\Pull\ResourcePull;
@@ -42,8 +45,11 @@ class Stream implements Showable, Kind
         ShowOps::showType insteadof Show;
     }
     use FunctorOps;
+    use MonadOps;
     use ImmListOps;
     use EffectfulOps;
+    use ParallelOps;
+    use MergeOps;
 
     /**
      * Constructor for the Stream class.

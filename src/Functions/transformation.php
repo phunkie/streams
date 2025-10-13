@@ -16,6 +16,45 @@ namespace Phunkie\Streams\Functions\transformation {
         return new Transformation(fn($chunk) => array_filter($chunk, $f));
     }
 
+    const flatMap = 'flatMap';
+    function flatMap(callable $f): Transformation
+    {
+        return new Transformation(function($chunk) use ($f) {
+            $result = [];
+            foreach ($chunk as $value) {
+                $stream = $f($value);
+                if ($stream instanceof \Phunkie\Streams\Type\Stream) {
+                    $elements = $stream->compile()->toArray();
+                    $result = array_merge($result, $elements);
+                } elseif (is_array($stream)) {
+                    $result = array_merge($result, $stream);
+                } else {
+                    $result[] = $stream;
+                }
+            }
+            return $result;
+        });
+    }
+
+    const flatten = 'flatten';
+    function flatten(): Transformation
+    {
+        return new Transformation(function($chunk) {
+            $result = [];
+            foreach ($chunk as $value) {
+                if ($value instanceof \Phunkie\Streams\Type\Stream) {
+                    $elements = $value->compile()->toArray();
+                    $result = array_merge($result, $elements);
+                } elseif (is_array($value)) {
+                    $result = array_merge($result, $value);
+                } else {
+                    $result[] = $value;
+                }
+            }
+            return $result;
+        });
+    }
+
     const interleave = 'interleave';
     function interleave(...$others): Transformation
     {

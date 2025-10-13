@@ -2,6 +2,8 @@
 
 This guide covers the practical aspects of working with Phunkie Streams, providing detailed examples of stream creation, transformation, combination, and consumption techniques.
 
+> **Note**: This document describes both currently implemented operations and potential future operations. Some operations shown here (like `mapWithIndex`, `distinct`, `sorted`, `peek`, `recover`, statistical methods) are not yet implemented and are marked as examples of what could be added. For currently available operations, see the [API reference](getting-started.md) or the working examples in the [examples directory](../examples/).
+
 ## Creating Streams
 
 Phunkie Streams offers various ways to create streams from different data sources.
@@ -84,15 +86,14 @@ For working with files and other resources:
 ```php
 <?php
 use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\IO\fromResource;
 use Phunkie\Streams\IO\File\Path;
 
-// Create a stream from a file
+// Create a stream from a file (reads line by line)
 $filePath = new Path('path/to/file.txt');
-$fileStream = Stream(fromResource($filePath));
+$fileStream = Stream($filePath);
 
 // With a specific buffer size (in bytes)
-$largeFileStream = Stream(fromResource($filePath, 4096));
+$largeFileStream = Stream(new Path('path/to/file.txt'), 4096);
 ```
 
 ## Transforming Streams
@@ -389,21 +390,22 @@ Handling streams that interact with external resources:
 ```php
 <?php
 use function Phunkie\Streams\Stream;
-use function Phunkie\Streams\IO\fromResource;
 use Phunkie\Streams\IO\File\Path;
 
 // Process a file line by line
 $filePath = new Path('path/to/file.txt');
-$fileStream = Stream(fromResource($filePath))
+$lines = Stream($filePath)
     ->map(fn($line) => strtoupper($line))
     ->filter(fn($line) => !empty(trim($line)))
-    ->compile();
+    ->compile()
+    ->toArray();
 
-// Run and collect results
-$lines = $fileStream->runLog();
+// Using file I/O functions for simple operations
+use function Phunkie\Streams\IO\File\readFileContents;
 
-// Or run as an effect
-$result = $fileStream->runLog()->unsafeRun();
+$content = readFileContents($filePath)
+    ->map(fn($text) => strtoupper($text))
+    ->unsafeRunSync();
 ```
 
 ## Handling Errors

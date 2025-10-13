@@ -45,7 +45,16 @@ namespace Phunkie\Streams\IO\File {
     function readFileContents(Path $path): IO
     {
         return bracket(
-            io(fn() => fopen($path->toString(), 'r')),
+            io(function() use ($path) {
+                set_error_handler(function() {});
+                $handle = fopen($path->toString(), 'r');
+                restore_error_handler();
+
+                if ($handle === false) {
+                    throw new \RuntimeException("Failed to open file: " . $path->toString());
+                }
+                return $handle;
+            }),
             fn($handle) => io(fn() => stream_get_contents($handle)),
             fn($handle) => io(fn() => fclose($handle))
         );
@@ -61,7 +70,16 @@ namespace Phunkie\Streams\IO\File {
     function writeFileContents(Path $path, string $contents): IO
     {
         return bracket(
-            io(fn() => fopen($path->toString(), 'w')),
+            io(function() use ($path) {
+                set_error_handler(function() {});
+                $handle = fopen($path->toString(), 'w');
+                restore_error_handler();
+
+                if ($handle === false) {
+                    throw new \RuntimeException("Failed to open file: " . $path->toString());
+                }
+                return $handle;
+            }),
             fn($handle) => io(fn() => fwrite($handle, $contents)),
             fn($handle) => io(fn() => fclose($handle))
         );
@@ -76,7 +94,16 @@ namespace Phunkie\Streams\IO\File {
     function readLines(Path $path): IO
     {
         return bracket(
-            io(fn() => fopen($path->toString(), 'r')),
+            io(function() use ($path) {
+                set_error_handler(function() {});
+                $handle = fopen($path->toString(), 'r');
+                restore_error_handler();
+
+                if ($handle === false) {
+                    throw new \RuntimeException("Failed to open file: " . $path->toString());
+                }
+                return $handle;
+            }),
             fn($handle) => io(function() use ($handle) {
                 $lines = [];
                 while (($line = fgets($handle)) !== false) {
@@ -98,7 +125,16 @@ namespace Phunkie\Streams\IO\File {
     function writeLines(Path $path, array $lines): IO
     {
         return bracket(
-            io(fn() => fopen($path->toString(), 'w')),
+            io(function() use ($path) {
+                set_error_handler(function() {});
+                $handle = fopen($path->toString(), 'w');
+                restore_error_handler();
+
+                if ($handle === false) {
+                    throw new \RuntimeException("Failed to open file: " . $path->toString());
+                }
+                return $handle;
+            }),
             fn($handle) => io(function() use ($handle, $lines) {
                 $count = 0;
                 foreach ($lines as $line) {

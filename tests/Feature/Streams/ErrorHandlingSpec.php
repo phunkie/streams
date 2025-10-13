@@ -102,13 +102,13 @@ describe("Error Handling with attempt() and handleError()", function () {
 
             $result = readFileContents($nonExistentFile)
                 ->handleError(function($error) {
-                    // Error should be an exception (TypeError from fclose on failed fopen)
+                    // Error should be a RuntimeException from failed fopen
                     return get_class($error);
                 })
                 ->unsafeRunSync();
 
-            // Should return the exception class name (TypeError or Error)
-            expect($result)->toBeIn(['TypeError', 'Error']);
+            // Should return the exception class name
+            expect($result)->toBe('RuntimeException');
         });
 
         it("allows chaining after error recovery", function () {
