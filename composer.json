@@ -1,5 +1,8 @@
 {
     "name": "phunkie/streams",
+    "description": "Functional Streams for PHP",
+    "type": "library",
+    "license": "MIT",
     "require": {
         "phunkie/phunkie": "^0.11.3",
         "phunkie/effect": "^0.4.0"

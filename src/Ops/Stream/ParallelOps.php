@@ -117,12 +117,12 @@ trait ParallelOps
      *     ->toArray();
      * ```
      *
-     * @param int $maxConcurrent Maximum number of parallel operations (default: auto-detect CPU cores)
+     * @param int $maxConcurrent Maximum number of parallel operations (0 = auto-detect CPU cores)
      * @param callable $f Function to apply to each element
      * @param ExecutionContext|null $context Execution context (defaults to FiberExecutionContext)
      * @return Stream
      */
-    public function parMap(int $maxConcurrent = 0, callable $f, ?ExecutionContext $context = null): Stream
+    public function parMap(int $maxConcurrent, callable $f, ?ExecutionContext $context = null): Stream
     {
         if ($maxConcurrent === 0) {
             $maxConcurrent = $this->detectCpuCores();
@@ -154,12 +154,12 @@ trait ParallelOps
      *     ->toArray(); // Returns [Success(1), Failure($e), Success(3), ...]
      * ```
      *
-     * @param int $maxConcurrent Maximum number of parallel operations (default: auto-detect CPU cores)
+     * @param int $maxConcurrent Maximum number of parallel operations (0 = auto-detect CPU cores)
      * @param callable $f Function to apply to each element
      * @param ExecutionContext|null $context Execution context (defaults to FiberExecutionContext)
      * @return Stream<Validation>
      */
-    public function parMapValidation(int $maxConcurrent = 0, callable $f, ?ExecutionContext $context = null): Stream
+    public function parMapValidation(int $maxConcurrent, callable $f, ?ExecutionContext $context = null): Stream
     {
         if ($maxConcurrent === 0) {
             $maxConcurrent = $this->detectCpuCores();
@@ -235,12 +235,12 @@ trait ParallelOps
      *     ->unsafeRunSync();
      * ```
      *
-     * @param int $maxConcurrent Maximum number of parallel IO operations (default: auto-detect CPU cores)
+     * @param int $maxConcurrent Maximum number of parallel IO operations (0 = auto-detect CPU cores)
      * @param callable $f Function that takes an element and returns an IO
      * @param ExecutionContext|null $context Execution context (defaults to FiberExecutionContext)
      * @return Stream
      */
-    public function parEvalMap(int $maxConcurrent = 0, callable $f, ?ExecutionContext $context = null): Stream
+    public function parEvalMap(int $maxConcurrent, callable $f, ?ExecutionContext $context = null): Stream
     {
         if ($maxConcurrent === 0) {
             $maxConcurrent = $this->detectCpuCores();
@@ -283,12 +283,12 @@ trait ParallelOps
      * $results = $io->unsafeRunSync();
      * ```
      *
-     * @param int $maxConcurrent Maximum number of parallel IO operations (default: auto-detect CPU cores)
+     * @param int $maxConcurrent Maximum number of parallel IO operations (0 = auto-detect CPU cores)
      * @param callable $f Function that takes an element and returns an IO
      * @param ExecutionContext|null $context Execution context (defaults to FiberExecutionContext)
      * @return IO<Stream>
      */
-    public function parTraverse(int $maxConcurrent = 0, callable $f, ?ExecutionContext $context = null): IO
+    public function parTraverse(int $maxConcurrent, callable $f, ?ExecutionContext $context = null): IO
     {
         if ($maxConcurrent === 0) {
             $maxConcurrent = $this->detectCpuCores();
@@ -339,12 +339,12 @@ trait ParallelOps
      *     ->unsafeRunSync(); // Sends all emails in parallel
      * ```
      *
-     * @param int $maxConcurrent Maximum number of parallel operations (default: auto-detect CPU cores)
+     * @param int $maxConcurrent Maximum number of parallel operations (0 = auto-detect CPU cores)
      * @param callable $f Function that takes an element and returns an IO
      * @param ExecutionContext|null $context Execution context
      * @return IO
      */
-    public function parEval(int $maxConcurrent = 0, callable $f, ?ExecutionContext $context = null): IO
+    public function parEval(int $maxConcurrent, callable $f, ?ExecutionContext $context = null): IO
     {
         return $this->parEvalMap($maxConcurrent, $f, $context)
             ->compile()
