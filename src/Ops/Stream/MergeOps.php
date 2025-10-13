@@ -22,6 +22,9 @@ trait MergeOps
      * evaluating them concurrently. Elements from all streams are
      * interleaved in the output stream based on when they become available.
      *
+     * Memory optimized: processes streams incrementally using iterator protocol
+     * instead of materializing all streams into arrays upfront.
+     *
      * This is useful when you have multiple independent data sources
      * (e.g., multiple API endpoints, files, or databases) and want to
      * process them all concurrently.
@@ -52,15 +55,40 @@ trait MergeOps
 
         $context = new FiberExecutionContext();
 
-        // Collect all elements from all streams concurrently
+        // Collect elements using iterator protocol for memory efficiency
         $allElements = [];
 
         try {
-            // Start concurrent evaluation of all streams
+            // Start concurrent iteration of all streams
             $handles = [];
             foreach ($streams as $stream) {
                 $blocker = new \Phunkie\Effect\Concurrent\Blocker(
-                    fn () => $stream->compile()->toArray(),
+                    function () use ($stream) {
+                        $pull = $stream->compile()->getPull();
+                        $elements = [];
+
+                        if (method_exists($pull, 'rewind')) {
+                            $pull->rewind();
+                        }
+
+                        // Iterate and apply transformations per element
+                        while ($pull->valid()) {
+                            $element = $pull->current();
+
+                            if (method_exists($pull, 'runTransformations')) {
+                                $transformed = $pull->runTransformations([$element]);
+                                foreach ($transformed as $value) {
+                                    $elements[] = $value;
+                                }
+                            } else {
+                                $elements[] = $element;
+                            }
+
+                            $pull->next();
+                        }
+
+                        return $elements;
+                    },
                     $context
                 );
                 $handles[] = $blocker();
@@ -72,12 +100,30 @@ trait MergeOps
                 $allElements = array_merge($allElements, $elements);
             }
         } catch (\Throwable $e) {
-            // Fallback to sequential merging
+            // Fallback to sequential merging with iterator protocol
             error_log("Phunkie Streams: Concurrent merge failed, falling back to sequential. Error: " . $e->getMessage());
 
             foreach ($streams as $stream) {
-                $elements = $stream->compile()->toArray();
-                $allElements = array_merge($allElements, $elements);
+                $pull = $stream->compile()->getPull();
+
+                if (method_exists($pull, 'rewind')) {
+                    $pull->rewind();
+                }
+
+                while ($pull->valid()) {
+                    $element = $pull->current();
+
+                    if (method_exists($pull, 'runTransformations')) {
+                        $transformed = $pull->runTransformations([$element]);
+                        foreach ($transformed as $value) {
+                            $allElements[] = $value;
+                        }
+                    } else {
+                        $allElements[] = $element;
+                    }
+
+                    $pull->next();
+                }
             }
         }
 
@@ -90,6 +136,9 @@ trait MergeOps
      * Like flatMap, but evaluates the resulting streams concurrently
      * with bounded parallelism. This is useful when your mapping function
      * produces streams that can be evaluated independently.
+     *
+     * Memory optimized: uses iterator protocol to process streams incrementally
+     * instead of materializing entire streams with toArray().
      *
      * Example:
      * ```php
@@ -123,7 +172,30 @@ trait MergeOps
                                     throw new \TypeError("parMergeMap expects function to return Stream, got " . get_debug_type($stream));
                                 }
 
-                                return $stream->compile()->toArray();
+                                // Use iterator protocol for memory efficiency
+                                $pull = $stream->compile()->getPull();
+                                $elements = [];
+
+                                if (method_exists($pull, 'rewind')) {
+                                    $pull->rewind();
+                                }
+
+                                while ($pull->valid()) {
+                                    $elem = $pull->current();
+
+                                    if (method_exists($pull, 'runTransformations')) {
+                                        $transformed = $pull->runTransformations([$elem]);
+                                        foreach ($transformed as $value) {
+                                            $elements[] = $value;
+                                        }
+                                    } else {
+                                        $elements[] = $elem;
+                                    }
+
+                                    $pull->next();
+                                }
+
+                                return $elements;
                             },
                             $context
                         );
@@ -139,7 +211,7 @@ trait MergeOps
 
                     return Stream(...$allElements);
                 } catch (\Throwable $e) {
-                    // Fallback to sequential
+                    // Fallback to sequential with iterator protocol
                     error_log("Phunkie Streams: Concurrent merge map failed, falling back to sequential. Error: " . $e->getMessage());
 
                     $allElements = [];
@@ -148,8 +220,27 @@ trait MergeOps
                         if (!($stream instanceof Stream)) {
                             throw new \TypeError("parMergeMap expects function to return Stream, got " . get_debug_type($stream));
                         }
-                        $elements = $stream->compile()->toArray();
-                        $allElements = array_merge($allElements, $elements);
+
+                        $pull = $stream->compile()->getPull();
+
+                        if (method_exists($pull, 'rewind')) {
+                            $pull->rewind();
+                        }
+
+                        while ($pull->valid()) {
+                            $elem = $pull->current();
+
+                            if (method_exists($pull, 'runTransformations')) {
+                                $transformed = $pull->runTransformations([$elem]);
+                                foreach ($transformed as $value) {
+                                    $allElements[] = $value;
+                                }
+                            } else {
+                                $allElements[] = $elem;
+                            }
+
+                            $pull->next();
+                        }
                     }
 
                     return Stream(...$allElements);

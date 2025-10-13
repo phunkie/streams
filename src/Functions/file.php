@@ -167,9 +167,10 @@ namespace Phunkie\Streams\IO\File {
      * Create a pipe function for writing stream elements to a file
      *
      * This is a stream pipe that writes each element of the stream to a file.
-     * Each element is written on a new line. The pipe evaluates the stream
-     * and performs the write operation, returning a stream containing the
-     * number of lines written.
+     * Each element is written on a new line. The pipe uses true streaming,
+     * processing elements one at a time without materializing the entire stream
+     * into memory. This allows writing arbitrarily large streams with constant
+     * memory usage.
      *
      * @param Path $path The path to write to
      * @return callable A pipe function that takes a Stream and returns a Stream
@@ -183,11 +184,58 @@ namespace Phunkie\Streams\IO\File {
     function writeFile(Path $path): callable
     {
         return function (Stream $stream) use ($path): Stream {
-            $elements = $stream->toArray();
-            $writeIO = writeLines($path, array_map('strval', $elements));
-            // Return a stream that when compiled, performs the write
-            // For now, we'll eagerly write and return an empty stream
-            // This is a simplified implementation for pure streams
+            // Open the file and write elements one at a time with true streaming
+            $writeIO = bracket(
+                io(function () use ($path) {
+                    set_error_handler(function (int $errno, string $errstr): bool {
+                        return true; // Suppress the error
+                    });
+                    $handle = fopen($path->toString(), 'w');
+                    restore_error_handler();
+
+                    if ($handle === false) {
+                        throw new \RuntimeException("Failed to open file: " . $path->toString());
+                    }
+
+                    return $handle;
+                }),
+                fn ($handle) => io(function () use ($handle, $stream) {
+                    $count = 0;
+                    $pull = $stream->compile()->getPull();
+
+                    // Rewind to start
+                    if (method_exists($pull, 'rewind')) {
+                        $pull->rewind();
+                    }
+
+                    // Stream elements one at a time, applying transformations per element
+                    // This mirrors the approach used in drain() for memory-efficient processing
+                    while ($pull->valid()) {
+                        $element = $pull->current();
+
+                        // Apply transformations to this single element
+                        // This is how we get transformed values without materializing the whole stream
+                        if (method_exists($pull, 'runTransformations')) {
+                            $transformed = $pull->runTransformations([$element]);
+                            // runTransformations returns an array; write each transformed element
+                            foreach ($transformed as $value) {
+                                fwrite($handle, strval($value) . PHP_EOL);
+                                $count++;
+                            }
+                        } else {
+                            // Fallback for pulls that don't have runTransformations
+                            fwrite($handle, strval($element) . PHP_EOL);
+                            $count++;
+                        }
+
+                        $pull->next();
+                    }
+
+                    return $count;
+                }),
+                fn ($handle) => io(fn () => fclose($handle))
+            );
+
             $writeIO->unsafeRunSync();
 
             return Stream(); // Return empty stream after write

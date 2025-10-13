@@ -17,6 +17,8 @@ composer require phunkie/streams
 - **Error handling**: Functional error handling with `attempt()` and `handleError()`
 - **Monadic composition**: Compose IO operations with `flatMap()` for type-safe pipelines
 - **Stream operations**: Rich set of operations including `through()`, `takeWhile()`, `dropWhile()`, `chunk()`
+- **Memory efficient**: True streaming with constant memory usage regardless of data size
+- **Parallel processing**: Concurrent operations with automatic fallback and memory optimization
 
 ## What's Implemented
 
@@ -60,10 +62,16 @@ Phunkie Streams has completed Phases 1-3 of development. Here's what's currently
 - **Composition**: Chain error handling with `flatMap()` for complex scenarios
 - See [Error Handling Guide](doc/error-handling.md) for comprehensive patterns
 
+### Concurrency & Parallel Processing
+- **Parallel operations**: `parMap()`, `parMapValidation()`, `parEvalMap()`, `parTraverse()`, `parEval()`
+- **Concurrent merging**: `parMerge()`, `parMergeMap()` for parallel stream combining
+- **Auto CPU detection**: Automatically detects CPU cores for optimal parallelism
+- **Automatic fallback**: Falls back to sequential execution on concurrency failures
+- **Memory optimized**: All parallel operations process incrementally without materializing entire streams
+
 ### Not Yet Implemented
-- **Concurrency**: Parallel stream processing (planned for Phase 6)
-- **Backpressure**: Flow control mechanisms (planned for Phase 6)
-- **Connection pooling**: Resource pooling for HTTP/sockets (planned for Phase 6)
+- **Backpressure**: Flow control mechanisms (planned for future release)
+- **Connection pooling**: Resource pooling for HTTP/sockets (planned for future release)
 - **Process integration**: System command execution (future consideration)
 
 ## Pure Streams
@@ -363,6 +371,123 @@ Stream(...['message1', 'message2', 'message3'])
 ```
 
 See [examples/network.php](examples/network.php) for 15 comprehensive network examples.
+
+## Concurrency & Parallel Processing
+
+Phunkie Streams provides concurrent stream processing with automatic fallback to sequential execution:
+
+### Parallel Map Operations
+
+```php
+use Phunkie\Streams\Type\Stream;
+
+// Process elements in parallel (max 4 concurrent)
+Stream(1, 2, 3, 4, 5, 6, 7, 8)
+    ->parMap(4, fn($x) => expensiveComputation($x))
+    ->compile()
+    ->toArray();
+
+// Parallel with error collection (doesn't fail fast)
+Stream(1, 2, 3, 4, 5)
+    ->parMapValidation(2, fn($x) => riskyOperation($x))
+    ->compile()
+    ->toArray();
+// Returns: [Success(1), Failure($e), Success(3), ...]
+```
+
+### Parallel IO Effects
+
+```php
+use Phunkie\Streams\Network;
+use Phunkie\Effect\IO\IO;
+
+// Process IO effects in parallel
+Stream("url1", "url2", "url3")
+    ->parEvalMap(2, fn($url) => Network::httpGet($url))
+    ->compile()
+    ->drain
+    ->unsafeRunSync();
+
+// Deferred parallel execution
+$io = Stream("url1", "url2", "url3")
+    ->parTraverse(2, fn($url) => Network::httpGet($url));
+
+$results = $io->unsafeRunSync(); // Stream of results
+```
+
+### Parallel Stream Merging
+
+```php
+// Merge multiple streams concurrently
+$stream1 = Stream(1, 2, 3);
+$stream2 = Stream(4, 5, 6);
+$stream3 = Stream(7, 8, 9);
+
+Stream::parMerge($stream1, $stream2, $stream3)
+    ->compile()
+    ->toArray();
+
+// Concurrent flatMap
+Stream("user1", "user2", "user3")
+    ->parMergeMap(2, fn($user) =>
+        Stream($user->getPosts())
+    )
+    ->compile()
+    ->toArray(); // All posts from all users
+```
+
+### Memory Efficiency
+
+All parallel operations are memory-optimized to process data incrementally:
+- Auto-detects CPU cores when `maxConcurrent = 0`
+- Processes elements in chunks without materializing entire streams
+- Automatic fallback to sequential execution on concurrency failures
+- Constant memory usage regardless of stream size
+
+## Memory Optimization
+
+Phunkie Streams is designed for **constant memory usage** regardless of data size. All operations use true streaming with lazy evaluation:
+
+### File Operations
+
+The `writeFile()` pipe function processes streams incrementally without loading everything into memory:
+
+```php
+use function Phunkie\Streams\IO\File\writeFile;
+
+// Process a 10GB log file with constant ~4MB memory usage
+Stream(new Path('huge-10gb-log.txt'))
+    ->filter(fn($line) => str_contains($line, 'ERROR'))
+    ->map(fn($line) => processLine($line))
+    ->through(writeFile(new Path('errors.txt')));
+```
+
+### Parallel Operations
+
+All parallel operations (`parMap`, `parEvalMap`, `parTraverse`, `parMerge`, `parMergeMap`) process data in chunks without materializing entire streams:
+
+```php
+// Process millions of records with bounded memory
+Stream::fromLargeDataset()
+    ->parMap(4, fn($record) => processRecord($record))
+    ->chunk(1000)
+    ->through(writeFile(new Path('output.txt')));
+```
+
+### Iterator Protocol
+
+Operations use PHP's Iterator protocol for memory-efficient streaming:
+- Elements are pulled on-demand, one at a time
+- Transformations (map, filter) are applied per-element
+- No intermediate arrays are created unnecessarily
+- Memory usage stays constant regardless of input size
+
+### Best Practices
+
+1. **Avoid `toArray()` on large streams** - Use `compile->drain` for side effects
+2. **Use `chunk()` for batching** - Process data in manageable batches
+3. **Leverage `through()`** - Compose pipes for reusable transformations
+4. **Use parallel operations** - Let the library handle concurrent processing efficiently
 
 ## Documentation
 

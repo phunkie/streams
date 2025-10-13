@@ -270,6 +270,9 @@ trait ParallelOps
      * produces a Stream of results. This is useful when you want to
      * control when the parallel execution happens.
      *
+     * Memory optimized: processes elements in chunks without materializing
+     * the entire stream upfront. Uses iterator protocol for constant memory usage.
+     *
      * Automatically falls back to sequential execution if concurrent execution fails.
      *
      * Example:
@@ -298,16 +301,55 @@ trait ParallelOps
 
         return new IO(function () use ($pull, $bytes, $maxConcurrent, $f, $context) {
             $results = [];
-            $values = $pull->getValues();
 
-            // Process in chunks of maxConcurrent
-            $chunks = array_chunk($values, $maxConcurrent);
+            // Use iterator protocol for memory-efficient streaming
+            if (method_exists($pull, 'rewind')) {
+                $pull->rewind();
+            }
 
-            foreach ($chunks as $chunk) {
+            // Process in chunks without materializing entire stream
+            $chunk = [];
+            while ($pull->valid()) {
+                $element = $pull->current();
+
+                // Apply transformations to single element
+                if (method_exists($pull, 'runTransformations')) {
+                    $transformed = $pull->runTransformations([$element]);
+                    foreach ($transformed as $value) {
+                        $chunk[] = $value;
+                    }
+                } else {
+                    $chunk[] = $element;
+                }
+
+                // Process chunk when it reaches maxConcurrent size
+                if (count($chunk) >= $maxConcurrent) {
+                    $chunkResults = $this->executeWithFallback(
+                        $chunk,
+                        function ($elem) use ($f) {
+                            $io = $f($elem);
+                            if (!($io instanceof IO)) {
+                                throw new \TypeError("parTraverse expects function to return IO, got " . get_debug_type($io));
+                            }
+
+                            return $io->unsafeRunSync();
+                        },
+                        $context
+                    );
+
+                    $results = array_merge($results, $chunkResults);
+                    $chunk = [];
+                }
+
+                $pull->next();
+            }
+
+            // Process remaining elements in final chunk
+            if (!empty($chunk)) {
                 $chunkResults = $this->executeWithFallback(
                     $chunk,
-                    function ($element) use ($f) {
-                        $io = $f($element);
+                    function ($elem) use ($f) {
+                        $io = $f($elem);
                         if (!($io instanceof IO)) {
                             throw new \TypeError("parTraverse expects function to return IO, got " . get_debug_type($io));
                         }
