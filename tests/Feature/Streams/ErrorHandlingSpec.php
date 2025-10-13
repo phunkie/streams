@@ -1,12 +1,13 @@
 <?php
 
-use Phunkie\Effect\IO\IO;
-use Phunkie\Streams\IO\File\Path;
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\writeFileContents;
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\exists;
 use function Phunkie\Effect\Functions\io\io;
+use function Phunkie\Streams\IO\File\exists;
+
+use Phunkie\Streams\IO\File\Path;
+
+use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\IO\File\writeFileContents;
 
 describe("Error Handling with attempt() and handleError()", function () {
 
@@ -54,7 +55,7 @@ describe("Error Handling with attempt() and handleError()", function () {
 
                 $result = readFileContents($tempFile)
                     ->attempt()
-                    ->map(function($validation) {
+                    ->map(function ($validation) {
                         return $validation->getOrElse("error");
                     })
                     ->unsafeRunSync();
@@ -72,9 +73,10 @@ describe("Error Handling with attempt() and handleError()", function () {
 
             $result = readFileContents($nonExistentFile)
                 ->attempt()
-                ->map(function($validation) {
+                ->map(function ($validation) {
                     // Check if we got a default value (meaning failure)
                     $value = $validation->getOrElse("FAILED");
+
                     return $value === "FAILED" ? "error_detected" : $value;
                 })
                 ->unsafeRunSync();
@@ -89,7 +91,7 @@ describe("Error Handling with attempt() and handleError()", function () {
             $nonExistentFile = new Path('/nonexistent/recovery_' . uniqid() . '.txt');
 
             $result = readFileContents($nonExistentFile)
-                ->handleError(function($error) {
+                ->handleError(function ($error) {
                     return "recovered successfully";
                 })
                 ->unsafeRunSync();
@@ -101,7 +103,7 @@ describe("Error Handling with attempt() and handleError()", function () {
             $nonExistentFile = new Path('/nonexistent/error_access_' . uniqid() . '.txt');
 
             $result = readFileContents($nonExistentFile)
-                ->handleError(function($error) {
+                ->handleError(function ($error) {
                     // Error should be a RuntimeException from failed fopen
                     return get_class($error);
                 })
@@ -115,8 +117,8 @@ describe("Error Handling with attempt() and handleError()", function () {
             $nonExistentFile = new Path('/nonexistent/chain_' . uniqid() . '.txt');
 
             $result = readFileContents($nonExistentFile)
-                ->handleError(fn($e) => "fallback")
-                ->map(fn($content) => strtoupper($content))
+                ->handleError(fn ($e) => "fallback")
+                ->map(fn ($content) => strtoupper($content))
                 ->unsafeRunSync();
 
             expect($result)->toBe("FALLBACK");
@@ -131,7 +133,7 @@ describe("Error Handling with attempt() and handleError()", function () {
                     ->unsafeRunSync();
 
                 $result = readFileContents($primaryFile)
-                    ->handleError(function($error) use ($fallbackFile) {
+                    ->handleError(function ($error) use ($fallbackFile) {
                         return readFileContents($fallbackFile)
                             ->unsafeRunSync();
                     })
@@ -154,8 +156,9 @@ describe("Error Handling with attempt() and handleError()", function () {
                     ->unsafeRunSync();
 
                 $result = readFileContents($tempFile)
-                    ->handleError(function($error) use (&$handlerCalled) {
+                    ->handleError(function ($error) use (&$handlerCalled) {
                         $handlerCalled = true;
+
                         return "error";
                     })
                     ->unsafeRunSync();
@@ -176,9 +179,9 @@ describe("Error Handling with attempt() and handleError()", function () {
             $nonExistentFile = new Path('/nonexistent/combined_' . uniqid() . '.txt');
 
             $result = readFileContents($nonExistentFile)
-                ->handleError(fn($e) => "handled")
+                ->handleError(fn ($e) => "handled")
                 ->attempt()
-                ->map(fn($v) => $v->getOrElse("unexpected"))
+                ->map(fn ($v) => $v->getOrElse("unexpected"))
                 ->unsafeRunSync();
 
             expect($result)->toBe("handled");
@@ -192,9 +195,9 @@ describe("Error Handling with attempt() and handleError()", function () {
                     ->unsafeRunSync();
 
                 $result = readFileContents($tempFile)
-                    ->handleError(fn($e) => "error")
+                    ->handleError(fn ($e) => "error")
                     ->attempt()
-                    ->map(fn($v) => $v->getOrElse("fallback"))
+                    ->map(fn ($v) => $v->getOrElse("fallback"))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("content");
@@ -214,8 +217,8 @@ describe("Error Handling with attempt() and handleError()", function () {
 
             try {
                 $result = writeFileContents($tempFile, "step1")
-                    ->flatMap(fn($_) => readFileContents($nonExistentFile))
-                    ->handleError(fn($e) => "recovered")
+                    ->flatMap(fn ($_) => readFileContents($nonExistentFile))
+                    ->handleError(fn ($e) => "recovered")
                     ->unsafeRunSync();
 
                 expect($result)->toBe("recovered");
@@ -230,10 +233,10 @@ describe("Error Handling with attempt() and handleError()", function () {
             $nonExistentFile = new Path('/nonexistent/propagate_' . uniqid() . '.txt');
 
             $result = readFileContents($nonExistentFile)
-                ->map(fn($content) => strtoupper($content))
-                ->map(fn($content) => "PREFIX: " . $content)
+                ->map(fn ($content) => strtoupper($content))
+                ->map(fn ($content) => "PREFIX: " . $content)
                 ->attempt()
-                ->map(fn($v) => $v->getOrElse("failed"))
+                ->map(fn ($v) => $v->getOrElse("failed"))
                 ->unsafeRunSync();
 
             expect($result)->toBe("failed");
@@ -247,13 +250,14 @@ describe("Error Handling with attempt() and handleError()", function () {
                     ->unsafeRunSync();
 
                 $result = readFileContents($tempFile)
-                    ->map(function($content) {
+                    ->map(function ($content) {
                         if ($content === "data") {
                             throw new \RuntimeException("Simulated error");
                         }
+
                         return $content;
                     })
-                    ->handleError(fn($e) => "caught: " . $e->getMessage())
+                    ->handleError(fn ($e) => "caught: " . $e->getMessage())
                     ->unsafeRunSync();
 
                 expect($result)->toBe("caught: Simulated error");
@@ -277,11 +281,11 @@ describe("Error Handling with attempt() and handleError()", function () {
                     ->unsafeRunSync();
 
                 $result = readFileContents($primary)
-                    ->handleError(function($e) use ($secondary) {
+                    ->handleError(function ($e) use ($secondary) {
                         return readFileContents($secondary)
                             ->unsafeRunSync();
                     })
-                    ->handleError(function($e) use ($tertiary) {
+                    ->handleError(function ($e) use ($tertiary) {
                         return readFileContents($tertiary)
                             ->unsafeRunSync();
                     })
@@ -300,12 +304,13 @@ describe("Error Handling with attempt() and handleError()", function () {
 
             try {
                 $result = exists($tempFile)
-                    ->flatMap(function($fileExists) use ($tempFile) {
+                    ->flatMap(function ($fileExists) use ($tempFile) {
                         if (!$fileExists) {
                             return writeFileContents($tempFile, "created")
-                                ->map(fn($_) => "created");
+                                ->map(fn ($_) => "created");
                         }
-                        return io(fn() => "already exists");
+
+                        return io(fn () => "already exists");
                     })
                     ->unsafeRunSync();
 
@@ -319,13 +324,14 @@ describe("Error Handling with attempt() and handleError()", function () {
         });
 
         it("handles multiple error types differently", function () {
-            $result = io(function() {
+            $result = io(function () {
                 throw new \InvalidArgumentException("Invalid!");
             })
-                ->handleError(function($error) {
+                ->handleError(function ($error) {
                     if ($error instanceof \InvalidArgumentException) {
                         return "handled invalid argument";
                     }
+
                     return "handled other error";
                 })
                 ->unsafeRunSync();
@@ -334,9 +340,9 @@ describe("Error Handling with attempt() and handleError()", function () {
         });
 
         it("composes error handlers for reusability", function () {
-            $safeRead = function(Path $path) {
+            $safeRead = function (Path $path) {
                 return readFileContents($path)
-                    ->handleError(fn($e) => "");
+                    ->handleError(fn ($e) => "");
             };
 
             $nonExistent = new Path('/nonexistent/compose_' . uniqid() . '.txt');
@@ -352,7 +358,7 @@ describe("Error Handling with attempt() and handleError()", function () {
             $nonExistentFile = new Path('/nonexistent/lines_' . uniqid() . '.txt');
 
             $result = readLines($nonExistentFile)
-                ->handleError(fn($e) => [])
+                ->handleError(fn ($e) => [])
                 ->unsafeRunSync();
 
             expect($result)->toBe([]);
@@ -365,7 +371,7 @@ describe("Error Handling with attempt() and handleError()", function () {
                 file_put_contents($tempFile->toString(), "line1\nline2\nline3");
 
                 $result = readLines($tempFile)
-                    ->handleError(fn($e) => [])
+                    ->handleError(fn ($e) => [])
                     ->unsafeRunSync();
 
                 expect($result)->toBe(["line1", "line2", "line3"]);

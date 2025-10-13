@@ -29,7 +29,7 @@ trait CompileOps
 
     public function runLog($bytes)
     {
-        return new IO(function() use ($bytes) {
+        return new IO(function () use ($bytes) {
             $log = [];
             $count = 0;
 

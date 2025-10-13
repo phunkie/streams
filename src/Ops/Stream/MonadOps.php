@@ -26,7 +26,7 @@ trait MonadOps
 
     public function ap(Kind $f): Kind | Stream
     {
-        return $f->flatMap(fn($g) => $this->map($g));
+        return $f->flatMap(fn ($g) => $this->map($g));
     }
 
     public function bind(callable $f): Kind | Stream

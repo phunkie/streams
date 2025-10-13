@@ -2,8 +2,9 @@
 
 namespace Phunkie\Streams\Functions\resource {
 
-    use Phunkie\Effect\IO\IO;
     use function Phunkie\Effect\Functions\io\bracket as effectBracket;
+
+    use Phunkie\Effect\IO\IO;
 
     /**
      * Re-export bracket from phunkie/effect for convenience.

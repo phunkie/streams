@@ -30,6 +30,7 @@ class SocketRead implements Resource
     public static function readAll(SocketAddress $address, int $bytes = 4096, float $timeout = 30.0): Stream
     {
         $stream = Stream(new SocketRead($address, $timeout));
+
         return $stream->setBytes($bytes);
     }
 

@@ -2,24 +2,26 @@
 
 use Phunkie\Effect\Concurrent\FiberExecutionContext;
 use Phunkie\Effect\Concurrent\ParallelExecutionContext;
-use Phunkie\Effect\IO\IO;
-use Phunkie\Validation\Success;
-use Phunkie\Validation\Failure;
 
 use function Phunkie\Effect\Functions\io\io;
+
+use Phunkie\Effect\IO\IO;
+use Phunkie\Validation\Failure;
+use Phunkie\Validation\Success;
 
 // Stream() is in global namespace
 require_once __DIR__ . '/../../../src/Functions/stream.php';
 
-describe('Concurrency Operations', function() {
+describe('Concurrency Operations', function () {
 
-    describe('parMap', function() {
-        it('maps elements in parallel with bounded concurrency', function() {
+    describe('parMap', function () {
+        it('maps elements in parallel with bounded concurrency', function () {
             $start = microtime(true);
 
             $result = Stream(1, 2, 3, 4)
-                ->parMap(2, function($x) {
+                ->parMap(2, function ($x) {
                     usleep(100_000); // 100ms per element
+
                     return $x * 2;
                 })
                 ->compile()
@@ -33,22 +35,24 @@ describe('Concurrency Operations', function() {
             expect($duration)->toBeLessThan(0.5); // Allow overhead for PHP Fibers
         });
 
-        it('auto-detects CPU cores when maxConcurrent is 0', function() {
+        it('auto-detects CPU cores when maxConcurrent is 0', function () {
             $result = Stream(1, 2, 3, 4)
-                ->parMap(0, fn($x) => $x * 2) // 0 means auto-detect
+                ->parMap(0, fn ($x) => $x * 2) // 0 means auto-detect
                 ->compile()
                 ->toArray();
 
             expect($result)->toBe([2, 4, 6, 8]);
         });
 
-        it('throws immediately on error (fail-fast)', function() {
-            expect(fn() =>
+        it('throws immediately on error (fail-fast)', function () {
+            expect(
+                fn () =>
                 Stream(1, 2, 3, 4)
-                    ->parMap(2, function($x) {
+                    ->parMap(2, function ($x) {
                         if ($x === 2) {
                             throw new \Exception("Error on 2");
                         }
+
                         return $x * 2;
                     })
                     ->compile()
@@ -56,10 +60,10 @@ describe('Concurrency Operations', function() {
             )->toThrow(\Exception::class);
         });
 
-        it('falls back to sequential execution on concurrency failure', function() {
+        it('falls back to sequential execution on concurrency failure', function () {
             // This test verifies the fallback mechanism works
             $result = Stream(1, 2, 3, 4)
-                ->parMap(2, fn($x) => $x * 2)
+                ->parMap(2, fn ($x) => $x * 2)
                 ->compile()
                 ->toArray();
 
@@ -67,13 +71,14 @@ describe('Concurrency Operations', function() {
         });
     });
 
-    describe('parMapValidation', function() {
-        it('collects all successes and failures', function() {
+    describe('parMapValidation', function () {
+        it('collects all successes and failures', function () {
             $result = Stream(1, 2, 3, 4, 5)
-                ->parMapValidation(2, function($x) {
+                ->parMapValidation(2, function ($x) {
                     if ($x % 2 === 0) {
                         throw new \Exception("Even number: $x");
                     }
+
                     return $x * 2;
                 })
                 ->compile()
@@ -93,15 +98,16 @@ describe('Concurrency Operations', function() {
             expect($result[4])->toBeInstanceOf(Success::class);
         });
 
-        it('continues processing after errors', function() {
+        it('continues processing after errors', function () {
             $processedElements = [];
 
             $result = Stream(1, 2, 3, 4)
-                ->parMapValidation(2, function($x) use (&$processedElements) {
+                ->parMapValidation(2, function ($x) use (&$processedElements) {
                     $processedElements[] = $x;
                     if ($x === 2) {
                         throw new \Exception("Error on 2");
                     }
+
                     return $x * 2;
                 })
                 ->compile()
@@ -113,14 +119,15 @@ describe('Concurrency Operations', function() {
         });
     });
 
-    describe('parEvalMap', function() {
-        it('evaluates IO effects in parallel', function() {
+    describe('parEvalMap', function () {
+        it('evaluates IO effects in parallel', function () {
             $start = microtime(true);
 
             $result = Stream(1, 2, 3, 4)
-                ->parEvalMap(2, function($x) {
-                    return io(function() use ($x) {
+                ->parEvalMap(2, function ($x) {
+                    return io(function () use ($x) {
                         usleep(100_000); // 100ms per operation
+
                         return $x * 2;
                     });
                 })
@@ -133,23 +140,26 @@ describe('Concurrency Operations', function() {
             expect($duration)->toBeLessThan(0.5); // Should be faster than sequential
         });
 
-        it('throws if function does not return IO', function() {
-            expect(fn() =>
+        it('throws if function does not return IO', function () {
+            expect(
+                fn () =>
                 Stream(1, 2, 3)
-                    ->parEvalMap(2, fn($x) => $x * 2) // Not returning IO
+                    ->parEvalMap(2, fn ($x) => $x * 2) // Not returning IO
                     ->compile()
                     ->toArray()
             )->toThrow(\TypeError::class);
         });
 
-        it('handles IO errors properly', function() {
-            expect(fn() =>
+        it('handles IO errors properly', function () {
+            expect(
+                fn () =>
                 Stream(1, 2, 3)
-                    ->parEvalMap(2, function($x) {
-                        return io(function() use ($x) {
+                    ->parEvalMap(2, function ($x) {
+                        return io(function () use ($x) {
                             if ($x === 2) {
                                 throw new \Exception("Error on 2");
                             }
+
                             return $x * 2;
                         });
                     })
@@ -159,11 +169,11 @@ describe('Concurrency Operations', function() {
         });
     });
 
-    describe('parTraverse', function() {
-        it('returns an IO that produces a Stream', function() {
+    describe('parTraverse', function () {
+        it('returns an IO that produces a Stream', function () {
             $io = Stream(1, 2, 3, 4)
-                ->parTraverse(2, function($x) {
-                    return io(fn() => $x * 2);
+                ->parTraverse(2, function ($x) {
+                    return io(fn () => $x * 2);
                 });
 
             expect($io)->toBeInstanceOf(IO::class);
@@ -175,13 +185,14 @@ describe('Concurrency Operations', function() {
             expect($array)->toBe([2, 4, 6, 8]);
         });
 
-        it('allows deferred execution', function() {
+        it('allows deferred execution', function () {
             $executed = false;
 
             $io = Stream(1, 2, 3)
-                ->parTraverse(2, function($x) use (&$executed) {
-                    return io(function() use ($x, &$executed) {
+                ->parTraverse(2, function ($x) use (&$executed) {
+                    return io(function () use ($x, &$executed) {
                         $executed = true;
+
                         return $x * 2;
                     });
                 });
@@ -195,14 +206,15 @@ describe('Concurrency Operations', function() {
         });
     });
 
-    describe('parEval', function() {
-        it('processes effects without collecting results', function() {
+    describe('parEval', function () {
+        it('processes effects without collecting results', function () {
             $sideEffects = [];
 
             $io = Stream(1, 2, 3, 4)
-                ->parEval(2, function($x) use (&$sideEffects) {
-                    return io(function() use ($x, &$sideEffects) {
+                ->parEval(2, function ($x) use (&$sideEffects) {
+                    return io(function () use ($x, &$sideEffects) {
                         $sideEffects[] = $x;
+
                         return $x;
                     });
                 });
@@ -217,8 +229,8 @@ describe('Concurrency Operations', function() {
         });
     });
 
-    describe('parMerge', function() {
-        it('merges multiple streams concurrently', function() {
+    describe('parMerge', function () {
+        it('merges multiple streams concurrently', function () {
             $stream1 = Stream(1, 2, 3);
             $stream2 = Stream(4, 5, 6);
             $stream3 = Stream(7, 8, 9);
@@ -233,7 +245,7 @@ describe('Concurrency Operations', function() {
             expect($result)->toBe([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         });
 
-        it('handles single stream', function() {
+        it('handles single stream', function () {
             $stream = Stream(1, 2, 3);
             $result = \Phunkie\Streams\Type\Stream::parMerge($stream)
                 ->compile()
@@ -242,7 +254,7 @@ describe('Concurrency Operations', function() {
             expect($result)->toBe([1, 2, 3]);
         });
 
-        it('handles empty streams', function() {
+        it('handles empty streams', function () {
             $result = \Phunkie\Streams\Type\Stream::parMerge()
                 ->compile()
                 ->toArray();
@@ -250,13 +262,15 @@ describe('Concurrency Operations', function() {
             expect($result)->toBe([]);
         });
 
-        it('is faster than sequential merging', function() {
-            $stream1 = Stream(1, 2, 3)->map(function($x) {
+        it('is faster than sequential merging', function () {
+            $stream1 = Stream(1, 2, 3)->map(function ($x) {
                 usleep(100_000); // 100ms per element
+
                 return $x;
             });
-            $stream2 = Stream(4, 5, 6)->map(function($x) {
+            $stream2 = Stream(4, 5, 6)->map(function ($x) {
                 usleep(100_000);
+
                 return $x;
             });
 
@@ -272,10 +286,10 @@ describe('Concurrency Operations', function() {
         });
     });
 
-    describe('parMergeMap', function() {
-        it('flat maps with concurrent stream evaluation', function() {
+    describe('parMergeMap', function () {
+        it('flat maps with concurrent stream evaluation', function () {
             $result = Stream(1, 2, 3)
-                ->parMergeMap(2, fn($x) => Stream($x, $x * 10, $x * 100))
+                ->parMergeMap(2, fn ($x) => Stream($x, $x * 10, $x * 100))
                 ->compile()
                 ->toArray();
 
@@ -284,22 +298,24 @@ describe('Concurrency Operations', function() {
             expect($result)->toContain(1, 10, 100, 2, 20, 200, 3, 30, 300);
         });
 
-        it('throws if function does not return Stream', function() {
-            expect(fn() =>
+        it('throws if function does not return Stream', function () {
+            expect(
+                fn () =>
                 Stream(1, 2, 3)
-                    ->parMergeMap(2, fn($x) => $x * 2) // Not returning Stream
+                    ->parMergeMap(2, fn ($x) => $x * 2) // Not returning Stream
                     ->compile()
                     ->toArray()
             )->toThrow(\TypeError::class);
         });
 
-        it('processes streams concurrently', function() {
+        it('processes streams concurrently', function () {
             $start = microtime(true);
 
             $result = Stream(1, 2, 3)
-                ->parMergeMap(2, function($x) {
-                    return Stream(1, 2)->map(function($y) use ($x) {
+                ->parMergeMap(2, function ($x) {
+                    return Stream(1, 2)->map(function ($y) use ($x) {
                         usleep(100_000); // 100ms per element
+
                         return $x * 10 + $y;
                     });
                 })
@@ -314,23 +330,23 @@ describe('Concurrency Operations', function() {
         });
     });
 
-    describe('Execution Contexts', function() {
-        it('works with FiberExecutionContext by default', function() {
+    describe('Execution Contexts', function () {
+        it('works with FiberExecutionContext by default', function () {
             $result = Stream(1, 2, 3, 4)
-                ->parMap(2, fn($x) => $x * 2, new FiberExecutionContext())
+                ->parMap(2, fn ($x) => $x * 2, new FiberExecutionContext())
                 ->compile()
                 ->toArray();
 
             expect($result)->toBe([2, 4, 6, 8]);
         });
 
-        it('works with ParallelExecutionContext if parallel extension is available', function() {
+        it('works with ParallelExecutionContext if parallel extension is available', function () {
             if (!class_exists('\parallel\Runtime')) {
                 $this->markTestSkipped('parallel extension not available');
             }
 
             $result = Stream(1, 2, 3, 4)
-                ->parMap(2, fn($x) => $x * 2, new ParallelExecutionContext())
+                ->parMap(2, fn ($x) => $x * 2, new ParallelExecutionContext())
                 ->compile()
                 ->toArray();
 
@@ -338,17 +354,17 @@ describe('Concurrency Operations', function() {
         })->skip(!class_exists('\parallel\Runtime'), 'parallel extension not available');
     });
 
-    describe('Performance', function() {
-        it('provides same results for sequential and parallel', function() {
+    describe('Performance', function () {
+        it('provides same results for sequential and parallel', function () {
             // Sequential execution
             $sequential = Stream(1, 2, 3, 4)
-                ->map(fn($x) => $x * 2)
+                ->map(fn ($x) => $x * 2)
                 ->compile()
                 ->toArray();
 
             // Parallel execution
             $parallel = Stream(1, 2, 3, 4)
-                ->parMap(2, fn($x) => $x * 2)
+                ->parMap(2, fn ($x) => $x * 2)
                 ->compile()
                 ->toArray();
 

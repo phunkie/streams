@@ -28,6 +28,7 @@ class ResourcePullConcat implements Pull
         } catch (\OutOfBoundsException $e) {
             if ($this->currentPull === $this->pull1) {
                 $this->currentPull = $this->pull2;
+
                 return $this->currentPull->pull();
             } else {
                 throw new \OutOfBoundsException("No more data to pull from the resource.");

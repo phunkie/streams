@@ -1,8 +1,9 @@
 <?php
 
-use Phunkie\Effect\IO\IO;
-use Phunkie\Streams\Type\Range;
 use function Phunkie\Effect\Functions\io\io;
+
+use Phunkie\Effect\IO\IO;
+
 use const Phunkie\Functions\numbers\increment;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
@@ -25,7 +26,7 @@ $b = Stream("Paul", "Linda");
 
 printLn($a->concat($b)->compile->toList);
 
-$long = Stream(fromRange(1,100000000000));
+$long = Stream(fromRange(1, 100000000000));
 printLn($long);
 printLn($long->take(50)->compile->toList);
 
@@ -36,11 +37,11 @@ printLn($infinite->take(10)->compile->toList);
 
 printLn(Stream(1, 2, 3)->repeat->take(10)->compile->toList);
 
-printLn(Stream(1, 2, 3, 4, 5)->map(fn($x) => $x * 2)->compile->toList);
+printLn(Stream(1, 2, 3, 4, 5)->map(fn ($x) => $x * 2)->compile->toList);
 
-printLn(Stream(1, 2, 3, 4, 5)->filter(fn($x) => $x % 2 == 0)->compile->toList);
+printLn(Stream(1, 2, 3, 4, 5)->filter(fn ($x) => $x % 2 == 0)->compile->toList);
 
-printLn(Stream(1, 2, 3, 4, 5)->evalMap(fn($x) => io(fn() => $x * 2))
+printLn(Stream(1, 2, 3, 4, 5)->evalMap(fn ($x) => io(fn () => $x * 2))
     ->compile
     ->toList
     ->unsafeRunSync());
@@ -58,6 +59,6 @@ printLn(Stream(1, 2, 3, 4)
 
 //$y->interleave(Stream(awakeEvery(1)))->evalTap(fn($x) => io(fn() => printLn(strlen($x))))->compile->drain->unsafeRunSync();
 
-$printTime = fn($time) => io(fn() => printLn(date('H:i:s', (int)$time)));
+$printTime = fn ($time) => io(fn () => printLn(date('H:i:s', (int)$time)));
 
 printLn(Stream(awakeEvery(2))->take(2)->compile->toList()->unsafeRunSync());

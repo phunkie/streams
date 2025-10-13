@@ -7,7 +7,8 @@ namespace {
     use Phunkie\Streams\IO\Resource;
     use Phunkie\Streams\Type\Stream;
 
-    function Stream(...$t): Stream {
+    function Stream(...$t): Stream
+    {
         if (count($t) === 1 && $t[0] instanceof Path) {
             return Stream::fromResource($t[0]);
         }

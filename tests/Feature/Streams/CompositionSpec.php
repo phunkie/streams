@@ -1,14 +1,17 @@
 <?php
 
-use Phunkie\Effect\IO\IO;
-use Phunkie\Streams\IO\File\Path;
-use function Phunkie\Streams\IO\File\exists;
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\writeFileContents;
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\writeLines;
-use function Phunkie\Streams\IO\File\deleteFile;
 use function Phunkie\Effect\Functions\io\io;
+
+use Phunkie\Effect\IO\IO;
+
+use function Phunkie\Streams\IO\File\exists;
+
+use Phunkie\Streams\IO\File\Path;
+
+use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\IO\File\writeFileContents;
+use function Phunkie\Streams\IO\File\writeLines;
 
 describe("Stream Composition with flatMap", function () {
 
@@ -19,7 +22,7 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($tempFile, "test")
-                    ->flatMap(fn($_) => readFileContents($tempFile))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("test");
@@ -35,9 +38,9 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($tempFile, "hello")
-                    ->flatMap(fn($_) => readFileContents($tempFile))
-                    ->flatMap(fn($content) => writeFileContents($tempFile, strtoupper($content)))
-                    ->flatMap(fn($_) => readFileContents($tempFile))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
+                    ->flatMap(fn ($content) => writeFileContents($tempFile, strtoupper($content)))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("HELLO");
@@ -53,9 +56,10 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($tempFile, "data")
-                    ->flatMap(fn($bytesWritten) =>
+                    ->flatMap(
+                        fn ($bytesWritten) =>
                         readFileContents($tempFile)
-                            ->map(fn($content) => ['bytes' => $bytesWritten, 'content' => $content])
+                            ->map(fn ($content) => ['bytes' => $bytesWritten, 'content' => $content])
                     )
                     ->unsafeRunSync();
 
@@ -78,7 +82,7 @@ describe("Stream Composition with flatMap", function () {
                 writeFileContents($tempFile, "test")->unsafeRunSync();
 
                 $result = readFileContents($tempFile)
-                    ->map(fn($content) => strtoupper($content))
+                    ->map(fn ($content) => strtoupper($content))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("TEST");
@@ -96,7 +100,7 @@ describe("Stream Composition with flatMap", function () {
                 writeFileContents($tempFile, "test")->unsafeRunSync();
 
                 $result = readFileContents($tempFile)
-                    ->flatMap(fn($content) => io(fn() => strtoupper($content)))
+                    ->flatMap(fn ($content) => io(fn () => strtoupper($content)))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("TEST");
@@ -112,11 +116,11 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($tempFile, "hello")
-                    ->flatMap(fn($_) => readFileContents($tempFile))
-                    ->map(fn($content) => trim($content))
-                    ->map(fn($content) => strtoupper($content))
-                    ->flatMap(fn($upper) => writeFileContents($tempFile, $upper))
-                    ->flatMap(fn($_) => readFileContents($tempFile))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
+                    ->map(fn ($content) => trim($content))
+                    ->map(fn ($content) => strtoupper($content))
+                    ->flatMap(fn ($upper) => writeFileContents($tempFile, $upper))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("HELLO");
@@ -135,12 +139,12 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = exists($tempFile)
-                    ->flatMap(function($fileExists) use ($tempFile) {
+                    ->flatMap(function ($fileExists) use ($tempFile) {
                         if ($fileExists) {
                             return readFileContents($tempFile);
                         } else {
                             return writeFileContents($tempFile, "new")
-                                ->map(fn($_) => "created");
+                                ->map(fn ($_) => "created");
                         }
                     })
                     ->unsafeRunSync();
@@ -159,14 +163,15 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($tempFile, "valid content")
-                    ->flatMap(fn($_) => readFileContents($tempFile))
-                    ->flatMap(function($content) {
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
+                    ->flatMap(function ($content) {
                         if (empty($content)) {
-                            return io(fn() => throw new \RuntimeException("Empty content"));
+                            return io(fn () => throw new \RuntimeException("Empty content"));
                         }
-                        return io(fn() => "validated: $content");
+
+                        return io(fn () => "validated: $content");
                     })
-                    ->handleError(fn($e) => "error: " . $e->getMessage())
+                    ->handleError(fn ($e) => "error: " . $e->getMessage())
                     ->unsafeRunSync();
 
                 expect($result)->toBe("validated: valid content");
@@ -186,16 +191,20 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeLines($inputFile, ["line1", "line2", "line3"])
-                    ->flatMap(fn($_) => readLines($inputFile))
-                    ->map(fn($lines) => array_map('strtoupper', $lines))
-                    ->flatMap(fn($processed) => writeLines($outputFile, $processed))
-                    ->flatMap(fn($_) => readLines($outputFile))
+                    ->flatMap(fn ($_) => readLines($inputFile))
+                    ->map(fn ($lines) => array_map('strtoupper', $lines))
+                    ->flatMap(fn ($processed) => writeLines($outputFile, $processed))
+                    ->flatMap(fn ($_) => readLines($outputFile))
                     ->unsafeRunSync();
 
                 expect($result)->toBe(["LINE1", "LINE2", "LINE3"]);
             } finally {
-                if (file_exists($inputFile->toString())) unlink($inputFile->toString());
-                if (file_exists($outputFile->toString())) unlink($outputFile->toString());
+                if (file_exists($inputFile->toString())) {
+                    unlink($inputFile->toString());
+                }
+                if (file_exists($outputFile->toString())) {
+                    unlink($outputFile->toString());
+                }
             }
         });
 
@@ -205,10 +214,12 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($file1, "data1")
-                    ->flatMap(fn($_) =>
+                    ->flatMap(
+                        fn ($_) =>
                         writeFileContents($file2, "data2")
-                            ->flatMap(fn($_) =>
-                                io(fn() => [
+                            ->flatMap(
+                                fn ($_) =>
+                                io(fn () => [
                                     'file1' => readFileContents($file1)->unsafeRunSync(),
                                     'file2' => readFileContents($file2)->unsafeRunSync(),
                                 ])
@@ -219,8 +230,12 @@ describe("Stream Composition with flatMap", function () {
                 expect($result['file1'])->toBe("data1");
                 expect($result['file2'])->toBe("data2");
             } finally {
-                if (file_exists($file1->toString())) unlink($file1->toString());
-                if (file_exists($file2->toString())) unlink($file2->toString());
+                if (file_exists($file1->toString())) {
+                    unlink($file1->toString());
+                }
+                if (file_exists($file2->toString())) {
+                    unlink($file2->toString());
+                }
             }
         });
 
@@ -229,14 +244,15 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($tempFile, "short")
-                    ->flatMap(fn($_) => readFileContents($tempFile))
-                    ->flatMap(function($content) {
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
+                    ->flatMap(function ($content) {
                         if (strlen($content) < 10) {
-                            return io(fn() => "Content too short");
+                            return io(fn () => "Content too short");
                         }
-                        return io(fn() => $content);
+
+                        return io(fn () => $content);
                     })
-                    ->handleError(fn($e) => "error")
+                    ->handleError(fn ($e) => "error")
                     ->unsafeRunSync();
 
                 expect($result)->toBe("Content too short");
@@ -251,14 +267,15 @@ describe("Stream Composition with flatMap", function () {
     describe("Reusable compositions", function () {
 
         it("creates composable helper functions", function () {
-            $readOrCreate = function(Path $path, string $default): IO {
+            $readOrCreate = function (Path $path, string $default): IO {
                 return exists($path)
-                    ->flatMap(function($fileExists) use ($path, $default) {
+                    ->flatMap(function ($fileExists) use ($path, $default) {
                         if ($fileExists) {
                             return readFileContents($path);
                         }
+
                         return writeFileContents($path, $default)
-                            ->map(fn($_) => $default);
+                            ->map(fn ($_) => $default);
                     });
             };
 
@@ -278,21 +295,21 @@ describe("Stream Composition with flatMap", function () {
         });
 
         it("composes multiple helper functions", function () {
-            $safeWrite = function(Path $path, string $content): IO {
+            $safeWrite = function (Path $path, string $content): IO {
                 return writeFileContents($path, $content)
-                    ->handleError(fn($e) => 0);
+                    ->handleError(fn ($e) => 0);
             };
 
-            $safeRead = function(Path $path): IO {
+            $safeRead = function (Path $path): IO {
                 return readFileContents($path)
-                    ->handleError(fn($e) => "");
+                    ->handleError(fn ($e) => "");
             };
 
             $tempFile = new Path(sys_get_temp_dir() . '/composed_' . uniqid() . '.txt');
 
             try {
                 $result = $safeWrite($tempFile, "test")
-                    ->flatMap(fn($_) => $safeRead($tempFile))
+                    ->flatMap(fn ($_) => $safeRead($tempFile))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("test");
@@ -312,9 +329,9 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 $result = writeFileContents($sourceFile, "important")
-                    ->flatMap(fn($_) => readFileContents($sourceFile))
-                    ->flatMap(fn($content) => writeFileContents($backupFile, $content))
-                    ->flatMap(fn($_) => io(fn() => [
+                    ->flatMap(fn ($_) => readFileContents($sourceFile))
+                    ->flatMap(fn ($content) => writeFileContents($backupFile, $content))
+                    ->flatMap(fn ($_) => io(fn () => [
                         'source_exists' => file_exists($sourceFile->toString()),
                         'backup_exists' => file_exists($backupFile->toString()),
                     ]))
@@ -323,26 +340,30 @@ describe("Stream Composition with flatMap", function () {
                 expect($result['source_exists'])->toBeTrue();
                 expect($result['backup_exists'])->toBeTrue();
             } finally {
-                if (file_exists($sourceFile->toString())) unlink($sourceFile->toString());
-                if (file_exists($backupFile->toString())) unlink($backupFile->toString());
+                if (file_exists($sourceFile->toString())) {
+                    unlink($sourceFile->toString());
+                }
+                if (file_exists($backupFile->toString())) {
+                    unlink($backupFile->toString());
+                }
             }
         });
 
         it("implements update with validation", function () {
             $tempFile = new Path(sys_get_temp_dir() . '/update_valid_' . uniqid() . '.txt');
 
-            $updateFile = function(Path $path, callable $transform): IO {
+            $updateFile = function (Path $path, callable $transform): IO {
                 return readFileContents($path)
                     ->map($transform)
-                    ->flatMap(fn($newContent) => writeFileContents($path, $newContent))
-                    ->map(fn($_) => "updated");
+                    ->flatMap(fn ($newContent) => writeFileContents($path, $newContent))
+                    ->map(fn ($_) => "updated");
             };
 
             try {
                 writeFileContents($tempFile, "original")->unsafeRunSync();
 
-                $result = $updateFile($tempFile, fn($c) => strtoupper($c))
-                    ->flatMap(fn($_) => readFileContents($tempFile))
+                $result = $updateFile($tempFile, fn ($c) => strtoupper($c))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("ORIGINAL");
@@ -356,18 +377,20 @@ describe("Stream Composition with flatMap", function () {
         it("implements conditional create or update", function () {
             $tempFile = new Path(sys_get_temp_dir() . '/create_update_' . uniqid() . '.txt');
 
-            $createOrUpdate = function(Path $path, string $content): IO {
+            $createOrUpdate = function (Path $path, string $content): IO {
                 return exists($path)
-                    ->flatMap(function($fileExists) use ($path, $content) {
+                    ->flatMap(function ($fileExists) use ($path, $content) {
                         if ($fileExists) {
                             return readFileContents($path)
-                                ->flatMap(fn($existing) =>
+                                ->flatMap(
+                                    fn ($existing) =>
                                     writeFileContents($path, $existing . "\n" . $content)
                                 )
-                                ->map(fn($_) => "updated");
+                                ->map(fn ($_) => "updated");
                         }
+
                         return writeFileContents($path, $content)
-                            ->map(fn($_) => "created");
+                            ->map(fn ($_) => "created");
                     });
             };
 
@@ -400,16 +423,21 @@ describe("Stream Composition with flatMap", function () {
             try {
                 // Second operation depends on first (sequential)
                 $result = writeFileContents($file1, "first")
-                    ->flatMap(fn($bytes1) =>
+                    ->flatMap(
+                        fn ($bytes1) =>
                         writeFileContents($file2, "second (after $bytes1 bytes)")
                     )
-                    ->flatMap(fn($_) => readFileContents($file2))
+                    ->flatMap(fn ($_) => readFileContents($file2))
                     ->unsafeRunSync();
 
                 expect($result)->toContain("second (after 5 bytes)");
             } finally {
-                if (file_exists($file1->toString())) unlink($file1->toString());
-                if (file_exists($file2->toString())) unlink($file2->toString());
+                if (file_exists($file1->toString())) {
+                    unlink($file1->toString());
+                }
+                if (file_exists($file2->toString())) {
+                    unlink($file2->toString());
+                }
             }
         });
 
@@ -419,18 +447,21 @@ describe("Stream Composition with flatMap", function () {
 
             try {
                 writeFileContents($tempFile, "step1")
-                    ->map(function($_) use (&$steps) {
+                    ->map(function ($_) use (&$steps) {
                         $steps[] = "wrote";
+
                         return null;
                     })
-                    ->flatMap(fn($_) => readFileContents($tempFile))
-                    ->map(function($content) use (&$steps) {
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
+                    ->map(function ($content) use (&$steps) {
                         $steps[] = "read: $content";
+
                         return strtoupper($content);
                     })
-                    ->flatMap(fn($upper) => writeFileContents($tempFile, $upper))
-                    ->map(function($_) use (&$steps) {
+                    ->flatMap(fn ($upper) => writeFileContents($tempFile, $upper))
+                    ->map(function ($_) use (&$steps) {
                         $steps[] = "wrote again";
+
                         return null;
                     })
                     ->unsafeRunSync();

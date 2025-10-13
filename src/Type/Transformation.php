@@ -11,7 +11,8 @@ class Transformation implements \ArrayAccess
 
     private bool $isPassthrough = false;
 
-    public function __construct(\Closure $f) {
+    public function __construct(\Closure $f)
+    {
         $this->f = $f;
     }
 
@@ -20,17 +21,19 @@ class Transformation implements \ArrayAccess
         if ($this->isEffectful()) {
             try {
                 $effectClass = new \ReflectionClass($this->effect);
-                return $effectClass->newInstance(fn() => ($this->f)($chunk));
+
+                return $effectClass->newInstance(fn () => ($this->f)($chunk));
             } catch (\ReflectionException $e) {
                 throw new \Error($this->effect . " is not an Effect");
             }
         }
+
         return ($this->f)($chunk);
     }
 
     public function andThen(Transformation $transformation): Transformation
     {
-        return new Transformation(fn($chunk) => $transformation->run($this->run($chunk)));
+        return new Transformation(fn ($chunk) => $transformation->run($this->run($chunk)));
     }
 
     public function offsetExists(mixed $offset): bool
@@ -41,6 +44,7 @@ class Transformation implements \ArrayAccess
     public function offsetGet(mixed $offset): mixed
     {
         $this->effect = $offset;
+
         return $this;
     }
 

@@ -2,12 +2,13 @@
 
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
-use Phunkie\Streams\Pull\ValuesPull;
+use function Phunkie\Streams\Functions\transformation\chunk;
+use function Phunkie\Streams\Functions\transformation\dropWhile;
 use function Phunkie\Streams\Functions\transformation\filter;
 use function Phunkie\Streams\Functions\transformation\interleave;
 use function Phunkie\Streams\Functions\transformation\takeWhile;
-use function Phunkie\Streams\Functions\transformation\dropWhile;
-use function Phunkie\Streams\Functions\transformation\chunk;
+
+use Phunkie\Streams\Pull\ValuesPull;
 
 trait ImmListOps
 {
@@ -17,6 +18,7 @@ trait ImmListOps
             ...array_slice($this->getValues(), 0, $n)
         );
         $valuesPull->setScope($this->getScope());
+
         return $valuesPull;
     }
 
@@ -27,7 +29,7 @@ trait ImmListOps
         return $this;
     }
 
-    public function interleave(... $other): ValuesPull
+    public function interleave(...$other): ValuesPull
     {
         $this->appendTransformation(interleave(...$other));
 

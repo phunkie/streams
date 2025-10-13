@@ -7,7 +7,7 @@ describe("Stream Operations", function () {
     describe("through() operation", function () {
 
         it("applies a pipe function to the stream", function () {
-            $uppercase = fn(Stream $s) => $s->map(fn($x) => strtoupper($x));
+            $uppercase = fn (Stream $s) => $s->map(fn ($x) => strtoupper($x));
 
             $result = Stream(...str_split("hello"))
                 ->through($uppercase)
@@ -17,8 +17,8 @@ describe("Stream Operations", function () {
         });
 
         it("chains multiple transformations via through", function () {
-            $uppercase = fn(Stream $s) => $s->map(fn($x) => strtoupper($x));
-            $exclaim = fn(Stream $s) => $s->map(fn($x) => $x . '!');
+            $uppercase = fn (Stream $s) => $s->map(fn ($x) => strtoupper($x));
+            $exclaim = fn (Stream $s) => $s->map(fn ($x) => $x . '!');
 
             $result = Stream(...str_split("hi"))
                 ->through($uppercase)
@@ -29,10 +29,10 @@ describe("Stream Operations", function () {
         });
 
         it("composes complex pipelines", function () {
-            $pipeline = fn(Stream $s) => $s
-                ->map(fn($x) => $x * 2)
-                ->filter(fn($x) => $x > 5)
-                ->map(fn($x) => "value: $x");
+            $pipeline = fn (Stream $s) => $s
+                ->map(fn ($x) => $x * 2)
+                ->filter(fn ($x) => $x > 5)
+                ->map(fn ($x) => "value: $x");
 
             $result = Stream(...[1, 2, 3, 4, 5])
                 ->through($pipeline)
@@ -47,7 +47,7 @@ describe("Stream Operations", function () {
 
         it("takes elements while predicate is true", function () {
             $result = Stream(...[1, 2, 3, 4, 5, 1, 2])
-                ->takeWhile(fn($x) => $x < 4)
+                ->takeWhile(fn ($x) => $x < 4)
                 ->toArray();
 
             expect($result)->toBe([1, 2, 3]);
@@ -55,7 +55,7 @@ describe("Stream Operations", function () {
 
         it("stops at first false predicate", function () {
             $result = Stream(...['a', 'b', 'c', '1', 'd', 'e'])
-                ->takeWhile(fn($x) => ctype_alpha($x))
+                ->takeWhile(fn ($x) => ctype_alpha($x))
                 ->toArray();
 
             expect($result)->toBe(['a', 'b', 'c']);
@@ -63,7 +63,7 @@ describe("Stream Operations", function () {
 
         it("takes all if predicate always true", function () {
             $result = Stream(...[2, 4, 6, 8])
-                ->takeWhile(fn($x) => $x % 2 === 0)
+                ->takeWhile(fn ($x) => $x % 2 === 0)
                 ->toArray();
 
             expect($result)->toBe([2, 4, 6, 8]);
@@ -71,7 +71,7 @@ describe("Stream Operations", function () {
 
         it("takes none if first element fails predicate", function () {
             $result = Stream(...[5, 1, 2, 3])
-                ->takeWhile(fn($x) => $x < 4)
+                ->takeWhile(fn ($x) => $x < 4)
                 ->toArray();
 
             expect($result)->toBe([]);
@@ -82,7 +82,7 @@ describe("Stream Operations", function () {
 
         it("drops elements while predicate is true", function () {
             $result = Stream(...[1, 2, 3, 4, 5, 1, 2])
-                ->dropWhile(fn($x) => $x < 4)
+                ->dropWhile(fn ($x) => $x < 4)
                 ->toArray();
 
             expect($result)->toBe([4, 5, 1, 2]);
@@ -90,7 +90,7 @@ describe("Stream Operations", function () {
 
         it("starts including after first false", function () {
             $result = Stream(...['a', 'b', 'c', '1', 'd', 'e'])
-                ->dropWhile(fn($x) => ctype_alpha($x))
+                ->dropWhile(fn ($x) => ctype_alpha($x))
                 ->toArray();
 
             expect($result)->toBe(['1', 'd', 'e']);
@@ -98,7 +98,7 @@ describe("Stream Operations", function () {
 
         it("drops all if predicate always true", function () {
             $result = Stream(...[2, 4, 6, 8])
-                ->dropWhile(fn($x) => $x % 2 === 0)
+                ->dropWhile(fn ($x) => $x % 2 === 0)
                 ->toArray();
 
             expect($result)->toBe([]);
@@ -106,7 +106,7 @@ describe("Stream Operations", function () {
 
         it("drops none if first element fails predicate", function () {
             $result = Stream(...[5, 1, 2, 3])
-                ->dropWhile(fn($x) => $x < 4)
+                ->dropWhile(fn ($x) => $x < 4)
                 ->toArray();
 
             expect($result)->toBe([5, 1, 2, 3]);
@@ -154,8 +154,8 @@ describe("Stream Operations", function () {
 
         it("combines takeWhile with map", function () {
             $result = Stream(...[1, 2, 3, 4, 5])
-                ->takeWhile(fn($x) => $x < 4)
-                ->map(fn($x) => $x * 10)
+                ->takeWhile(fn ($x) => $x < 4)
+                ->map(fn ($x) => $x * 10)
                 ->toArray();
 
             expect($result)->toBe([10, 20, 30]);
@@ -163,8 +163,8 @@ describe("Stream Operations", function () {
 
         it("combines dropWhile with filter", function () {
             $result = Stream(...[1, 2, 3, 4, 5, 6, 7, 8])
-                ->dropWhile(fn($x) => $x < 4)
-                ->filter(fn($x) => $x % 2 === 0)
+                ->dropWhile(fn ($x) => $x < 4)
+                ->filter(fn ($x) => $x % 2 === 0)
                 ->toArray();
 
             // filter preserves keys
@@ -172,21 +172,21 @@ describe("Stream Operations", function () {
         });
 
         it("combines through with takeWhile", function () {
-            $double = fn(Stream $s) => $s->map(fn($x) => $x * 2);
+            $double = fn (Stream $s) => $s->map(fn ($x) => $x * 2);
 
             $result = Stream(...[1, 2, 3, 4, 5])
                 ->through($double)
-                ->takeWhile(fn($x) => $x < 8)
+                ->takeWhile(fn ($x) => $x < 8)
                 ->toArray();
 
             expect($result)->toBe([2, 4, 6]);
         });
 
         it("combines all new operations", function () {
-            $pipeline = fn(Stream $s) => $s
-                ->dropWhile(fn($x) => $x < 3)
-                ->takeWhile(fn($x) => $x < 8)
-                ->map(fn($x) => $x * 2);
+            $pipeline = fn (Stream $s) => $s
+                ->dropWhile(fn ($x) => $x < 3)
+                ->takeWhile(fn ($x) => $x < 8)
+                ->map(fn ($x) => $x * 2);
 
             $result = Stream(...[1, 2, 3, 4, 5, 6, 7, 8, 9])
                 ->through($pipeline)
@@ -198,7 +198,7 @@ describe("Stream Operations", function () {
 
         it("chunks after transformation", function () {
             $result = Stream(...[1, 2, 3, 4, 5, 6])
-                ->map(fn($x) => $x * 2)
+                ->map(fn ($x) => $x * 2)
                 ->chunk(2)
                 ->toArray();
 
@@ -210,7 +210,7 @@ describe("Stream Operations", function () {
 
         it("handles empty stream with takeWhile", function () {
             $result = Stream()
-                ->takeWhile(fn($x) => true)
+                ->takeWhile(fn ($x) => true)
                 ->toArray();
 
             expect($result)->toBe([]);
@@ -218,7 +218,7 @@ describe("Stream Operations", function () {
 
         it("handles empty stream with dropWhile", function () {
             $result = Stream()
-                ->dropWhile(fn($x) => true)
+                ->dropWhile(fn ($x) => true)
                 ->toArray();
 
             expect($result)->toBe([]);
@@ -233,7 +233,7 @@ describe("Stream Operations", function () {
         });
 
         it("handles empty stream with through", function () {
-            $identity = fn(Stream $s) => $s;
+            $identity = fn (Stream $s) => $s;
 
             $result = Stream()
                 ->through($identity)
@@ -279,7 +279,7 @@ describe("Stream Operations", function () {
 
             $result = $stream1
                 ->merge($stream2)
-                ->map(fn($x) => $x * 2)
+                ->map(fn ($x) => $x * 2)
                 ->toArray();
 
             expect($result)->toBe([2, 4, 6, 8, 10, 12]);
@@ -321,7 +321,7 @@ describe("Stream Operations", function () {
 
             $result = $stream1
                 ->zip($stream2)
-                ->map(fn($pair) => $pair[0] + $pair[1])
+                ->map(fn ($pair) => $pair[0] + $pair[1])
                 ->toArray();
 
             expect($result)->toBe([11, 22, 33]);
@@ -333,13 +333,13 @@ describe("Stream Operations", function () {
 
             $result = $names
                 ->zip($ages)
-                ->map(fn($pair) => "{$pair[0]} is {$pair[1]} years old")
+                ->map(fn ($pair) => "{$pair[0]} is {$pair[1]} years old")
                 ->toArray();
 
             expect($result)->toBe([
                 'Alice is 25 years old',
                 'Bob is 30 years old',
-                'Charlie is 35 years old'
+                'Charlie is 35 years old',
             ]);
         });
     });
@@ -356,8 +356,9 @@ describe("Stream Operations", function () {
         it("drain executes side effects", function () {
             $sideEffect = [];
             $stream = Stream(...[1, 2, 3])
-                ->map(function($x) use (&$sideEffect) {
+                ->map(function ($x) use (&$sideEffect) {
                     $sideEffect[] = $x * 2;
+
                     return $x;
                 });
 

@@ -52,6 +52,7 @@ class ResourceObjectPull implements Pull
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
+
         return $this;
     }
 
@@ -117,6 +118,7 @@ class ResourceObjectPull implements Pull
                 foreach ($this->getScope()->getFilters() as $filter) {
                     if (!$filter($value)) {
                         $passesFilters = false;
+
                         break;
                     }
                 }
@@ -133,12 +135,14 @@ class ResourceObjectPull implements Pull
     public function map($f): static
     {
         $this->getScope()->addMap($f);
+
         return $this;
     }
 
     public function filter(callable $f): static
     {
         $this->getScope()->addFilter($f);
+
         return $this;
     }
 }

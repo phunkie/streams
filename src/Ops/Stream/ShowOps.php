@@ -2,8 +2,6 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
-use Phunkie\Streams\Pull\ResourcePull;
-
 /**
  * @method getPull(): Phunkie\Streams\Pull
  */

@@ -2,12 +2,14 @@
 
 namespace Phunkie\Streams\text {
     const lines = "\\Phunkie\\Streams\\text\\lines";
-    function lines($chunk): array {
+    function lines($chunk): array
+    {
         return explode(PHP_EOL, $chunk);
     }
 
     const utf8Encode = "\\Phunkie\\Streams\\text\\utf8Encode";
-    function utf8Encode(string $chunk): string {
+    function utf8Encode(string $chunk): string
+    {
         static $useMbstring = null;
 
         if ($useMbstring === null) {
@@ -32,12 +34,14 @@ namespace Phunkie\Streams\text {
                     $encoded .= chr(128 + ($c & 63));
                 }
             }
+
             return $encoded;
         }
     }
 
     const utf8Decode = "\\Phunkie\\Streams\\text\\utf8Decode";
-    function utf8Decode(string $chunk): string {
+    function utf8Decode(string $chunk): string
+    {
         static $useMbstring = null;
 
         if ($useMbstring === null) {
@@ -59,16 +63,19 @@ namespace Phunkie\Streams\text {
                     $decoded .= chr(($c & 15) << 12 | (ord($chunk[++$i]) & 63) << 6 | ord($chunk[++$i]) & 63);
                 }
             }
+
             return $decoded;
         }
     }
 
     const trim = "\\Phunkie\\Streams\\text\\trim";
-    function trim($chunk): string {
+    function trim($chunk): string
+    {
         return \trim($chunk);
     }
 
-    function splitBy(string $delimiter): \Closure {
+    function splitBy(string $delimiter): \Closure
+    {
         return function ($chunk) use ($delimiter) {
             return explode($delimiter, $chunk);
         };

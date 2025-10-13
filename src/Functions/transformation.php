@@ -7,19 +7,19 @@ namespace Phunkie\Streams\Functions\transformation {
     const map = 'map';
     function map($f): Transformation
     {
-        return new Transformation(fn($chunk) => array_map($f, $chunk));
+        return new Transformation(fn ($chunk) => array_map($f, $chunk));
     }
 
     const filter = 'filter';
     function filter(callable $f): Transformation
     {
-        return new Transformation(fn($chunk) => array_filter($chunk, $f));
+        return new Transformation(fn ($chunk) => array_filter($chunk, $f));
     }
 
     const flatMap = 'flatMap';
     function flatMap(callable $f): Transformation
     {
-        return new Transformation(function($chunk) use ($f) {
+        return new Transformation(function ($chunk) use ($f) {
             $result = [];
             foreach ($chunk as $value) {
                 $stream = $f($value);
@@ -32,6 +32,7 @@ namespace Phunkie\Streams\Functions\transformation {
                     $result[] = $stream;
                 }
             }
+
             return $result;
         });
     }
@@ -39,7 +40,7 @@ namespace Phunkie\Streams\Functions\transformation {
     const flatten = 'flatten';
     function flatten(): Transformation
     {
-        return new Transformation(function($chunk) {
+        return new Transformation(function ($chunk) {
             $result = [];
             foreach ($chunk as $value) {
                 if ($value instanceof \Phunkie\Streams\Type\Stream) {
@@ -51,6 +52,7 @@ namespace Phunkie\Streams\Functions\transformation {
                     $result[] = $value;
                 }
             }
+
             return $result;
         });
     }
@@ -59,7 +61,7 @@ namespace Phunkie\Streams\Functions\transformation {
     function interleave(...$others): Transformation
     {
         return new Transformation(function ($chunk) use ($others) {
-            $pulls = array_merge([$chunk], array_map(fn($pull) => $pull->getValues(), $others));
+            $pulls = array_merge([$chunk], array_map(fn ($pull) => $pull->getValues(), $others));
 
             $indices = array_fill(0, count($pulls), 0);
 
@@ -84,7 +86,7 @@ namespace Phunkie\Streams\Functions\transformation {
     const evalMap = 'evalMap';
     function evalMap(callable $f): Transformation
     {
-        return new Transformation(fn ($chunk) => ImmList(...array_map(fn($x) => $f($x)->unsafeRun(), $chunk)));
+        return new Transformation(fn ($chunk) => ImmList(...array_map(fn ($x) => $f($x)->unsafeRun(), $chunk)));
     }
 
     const evalFlatMap = 'evalFlatMap';
@@ -96,28 +98,30 @@ namespace Phunkie\Streams\Functions\transformation {
     const evalFilter = 'evalFilter';
     function evalFilter(callable $f): Transformation
     {
-        return new Transformation(fn ($chunk) => ImmList(...array_filter($chunk, fn($v) => $f($v)->unsafeRun())));
+        return new Transformation(fn ($chunk) => ImmList(...array_filter($chunk, fn ($v) => $f($v)->unsafeRun())));
     }
 
     function evalTap($f): Transformation
     {
         $transformation = new Transformation(
-            function($chunk) use ($f) {
+            function ($chunk) use ($f) {
                 foreach ($chunk as $v) {
                     $f($v)->unsafeRun();
                 }
+
                 return $chunk;
             }
         );
 
         $transformation->setPassthrough(true);
+
         return $transformation;
     }
 
     const takeWhile = 'takeWhile';
     function takeWhile(callable $predicate): Transformation
     {
-        return new Transformation(function($chunk) use ($predicate) {
+        return new Transformation(function ($chunk) use ($predicate) {
             $result = [];
             foreach ($chunk as $value) {
                 if (!$predicate($value)) {
@@ -125,6 +129,7 @@ namespace Phunkie\Streams\Functions\transformation {
                 }
                 $result[] = $value;
             }
+
             return $result;
         });
     }
@@ -133,7 +138,8 @@ namespace Phunkie\Streams\Functions\transformation {
     function dropWhile(callable $predicate): Transformation
     {
         $dropping = true;
-        return new Transformation(function($chunk) use ($predicate, &$dropping) {
+
+        return new Transformation(function ($chunk) use ($predicate, &$dropping) {
             $result = [];
             foreach ($chunk as $value) {
                 if ($dropping && !$predicate($value)) {
@@ -143,6 +149,7 @@ namespace Phunkie\Streams\Functions\transformation {
                     $result[] = $value;
                 }
             }
+
             return array_values($result);
         });
     }
@@ -151,7 +158,8 @@ namespace Phunkie\Streams\Functions\transformation {
     function chunk(int $size): Transformation
     {
         $buffer = [];
-        return new Transformation(function($chunk) use ($size, &$buffer) {
+
+        return new Transformation(function ($chunk) use ($size, &$buffer) {
             $chunks = [];
             foreach ($chunk as $value) {
                 $buffer[] = $value;
@@ -165,6 +173,7 @@ namespace Phunkie\Streams\Functions\transformation {
                 $chunks[] = $buffer;
                 $buffer = [];
             }
+
             return $chunks;
         });
     }

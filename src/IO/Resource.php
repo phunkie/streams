@@ -4,5 +4,5 @@ namespace Phunkie\Streams\IO;
 
 interface Resource
 {
-    const EOF = 'Phunkie@Reserverd@Constant@EOF';
+    public const EOF = 'Phunkie@Reserverd@Constant@EOF';
 }

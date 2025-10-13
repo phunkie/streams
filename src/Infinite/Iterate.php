@@ -6,7 +6,7 @@ class Iterate implements Infinite
 {
     private \Generator $values;
 
-    public function __construct(readonly private \Closure|string $f, readonly private int $start)
+    public function __construct(private readonly \Closure|string $f, private readonly int $start)
     {
         $this->values = $this->generate();
     }

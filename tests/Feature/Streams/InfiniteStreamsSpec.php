@@ -22,28 +22,28 @@ describe('creates infinite streams', function () {
     it('can be created from unfold', function () {
         // Generate Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34
         $fibonacciUnfold = unfold(Pair(0, 1))(
-            fn($p) => Pair($p->_1, Pair($p->_2, $p->_1 + $p->_2))
+            fn ($p) => Pair($p->_1, Pair($p->_2, $p->_1 + $p->_2))
         );
-        
+
         expect(Stream($fibonacciUnfold)->take(10)->compile->toArray())
             ->toBe([0, 1, 1, 2, 3, 5, 8, 13, 21, 34]);
     });
 
-    it('demonstrates unfold vs iterate with powers of 2', function() {
+    it('demonstrates unfold vs iterate with powers of 2', function () {
         // Using iterate to generate powers of 2
-        $powersOfTwoIterate = Stream(iterate(1)(fn($x) => $x * 2))
+        $powersOfTwoIterate = Stream(iterate(1)(fn ($x) => $x * 2))
             ->take(10)
             ->compile
             ->toArray();
-            
+
         // Using unfold to generate powers of 2
         $powersOfTwoUnfold = Stream(unfold(1)(
-            fn($x) => Pair($x, $x * 2)
+            fn ($x) => Pair($x, $x * 2)
         ))
             ->take(10)
             ->compile
             ->toArray();
-            
+
         expect($powersOfTwoIterate)->toBe([1, 2, 4, 8, 16, 32, 64, 128, 256, 512]);
         expect($powersOfTwoUnfold)->toBe([1, 2, 4, 8, 16, 32, 64, 128, 256, 512]);
     });
@@ -58,7 +58,7 @@ describe('creates infinite streams', function () {
         )->toEqual(ImmList(1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3));
     });
 
-    it ('implements awakeEvery', function () {
+    it('implements awakeEvery', function () {
         expect(Stream(awakeEvery(0.000001))->take(2)->compile->toList()->unsafeRunSync()->toArray())->toHaveCount(2);
     });
 });

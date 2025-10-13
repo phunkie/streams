@@ -2,14 +2,13 @@
 
 namespace Phunkie\Streams\IO\Network {
 
-    use Phunkie\Effect\IO\IO;
-    use Phunkie\Streams\IO\Network\HttpRequest;
-    use Phunkie\Streams\IO\Network\SocketAddress;
-    use Phunkie\Streams\IO\Network\SocketRead;
-    use Phunkie\Streams\IO\Network\SocketServer;
-    use Phunkie\Streams\Type\Stream;
     use function Phunkie\Effect\Functions\io\io;
+
+    use Phunkie\Effect\IO\IO;
+
     use function Phunkie\Streams\Functions\resource\bracket;
+
+    use Phunkie\Streams\Type\Stream;
 
     /**
      * HTTP GET request as a stream
@@ -70,7 +69,7 @@ namespace Phunkie\Streams\IO\Network {
     function socket(SocketAddress $address, float $timeout = 30.0): IO
     {
         return bracket(
-            io(function() use ($address, $timeout) {
+            io(function () use ($address, $timeout) {
                 $errno = 0;
                 $errstr = '';
                 $socket = stream_socket_client(
@@ -84,10 +83,11 @@ namespace Phunkie\Streams\IO\Network {
                         "Failed to connect to {$address->toString()}: [{$errno}] {$errstr}"
                     );
                 }
+
                 return $socket;
             }),
-            fn($socket) => io(fn() => $socket),
-            fn($socket) => io(fn() => fclose($socket))
+            fn ($socket) => io(fn () => $socket),
+            fn ($socket) => io(fn () => fclose($socket))
         );
     }
 
@@ -113,7 +113,7 @@ namespace Phunkie\Streams\IO\Network {
      */
     function socketWrite(SocketAddress $address, float $timeout = 30.0): callable
     {
-        return function(Stream $stream) use ($address, $timeout): Stream {
+        return function (Stream $stream) use ($address, $timeout): Stream {
             $errno = 0;
             $errstr = '';
             $socket = stream_socket_client(

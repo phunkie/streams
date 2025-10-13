@@ -8,15 +8,16 @@ use Phunkie\Streams\Pull\ValuesPull;
 
 trait ImmListOps
 {
-
     public function take(int $n): InfinitePull | ValuesPull
     {
         $infinite = $this->getInfinite();
 
         if ($infinite instanceof Timer) {
             $smallerInfinite = new InfinitePull(
-                awakeEvery($infinite->getSeconds(), $n));
+                awakeEvery($infinite->getSeconds(), $n)
+            );
             $smallerInfinite->setScope($this->getScope());
+
             return $smallerInfinite;
         }
 
@@ -34,6 +35,7 @@ trait ImmListOps
             ...$values
         );
         $valuesPull->setScope($this->getScope());
+
         return $valuesPull;
     }
 }

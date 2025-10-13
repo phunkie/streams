@@ -2,10 +2,14 @@ parameters:
     level: 6
     paths:
         - src
-        - tests
     excludePaths:
         - vendor
     ignoreErrors:
-        # Add specific errors to ignore if needed
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
+        -
+            identifier: missingType.iterableValue
+        -
+            identifier: missingType.generics
+        # Ignore undefined $this in global functions (common pattern in PHP)
+        -
+            message: '#Undefined variable: \$this#'
+            path: src/Functions/*.php

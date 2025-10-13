@@ -3,7 +3,7 @@
 use const Phunkie\Functions\numbers\increment;
 
 it('creates pure streams', function () {
-    expect(Stream(1, 2, 3)->showType())->toBe('Stream<Pure, Int>',)
+    expect(Stream(1, 2, 3)->showType())->toBe('Stream<Pure, Int>', )
         ->and(Stream(1, 2, 3)->toString())->toBe('Stream(..)');
 });
 
@@ -17,7 +17,7 @@ it('does not need to be compiled to a list', function () {
 });
 
 it('does not need to be compiled to an array', function () {
-    expect(Stream(1, 2, 3)->toArray())->toEqual(Array(1, 2, 3));
+    expect(Stream(1, 2, 3)->toArray())->toEqual([1, 2, 3]);
 });
 
 describe('streams are a functor', function () {
@@ -54,7 +54,7 @@ describe("stream has list operations", function () {
     });
 
     it('implements filter', function () {
-        expect(Stream(1, 2, 3, 4)->filter(fn($x) => $x > 2)->compile->toList())
+        expect(Stream(1, 2, 3, 4)->filter(fn ($x) => $x > 2)->compile->toList())
             ->toEqual(ImmList(3, 4));
     });
 });

@@ -15,6 +15,7 @@ class Scope
     {
         if (!isset($this->transformation)) {
             $this->transformation = $transformation;
+
             return;
         }
         $this->transformation = $this->transformation->andThen($transformation);
@@ -52,6 +53,7 @@ class Scope
             if ($acceptIo) {
                 return $io;
             }
+
             return $io->unsafeRunSync();
         }
 

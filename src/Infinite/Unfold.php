@@ -84,6 +84,7 @@ class Unfold implements Infinite
     public function next($seed)
     {
         $pair = ($this->f)($seed);
+
         return [$pair->_1, $pair->_2];
     }
-} 
+}

@@ -13,6 +13,7 @@ trait TransformationOps
     public function appendTransformation(Transformation $transformation): static
     {
         $this->getScope()->appendTransformation($transformation);
+
         return $this;
     }
 

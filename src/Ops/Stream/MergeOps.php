@@ -2,8 +2,8 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
-use Phunkie\Effect\Concurrent\FiberExecutionContext;
 use Phunkie\Effect\Concurrent\ExecutionContext;
+use Phunkie\Effect\Concurrent\FiberExecutionContext;
 use Phunkie\Streams\Type\Stream;
 
 /**
@@ -60,7 +60,7 @@ trait MergeOps
             $handles = [];
             foreach ($streams as $stream) {
                 $blocker = new \Phunkie\Effect\Concurrent\Blocker(
-                    fn() => $stream->compile()->toArray(),
+                    fn () => $stream->compile()->toArray(),
                     $context
                 );
                 $handles[] = $blocker();
@@ -111,17 +111,18 @@ trait MergeOps
         $context = $context ?? new FiberExecutionContext();
 
         return $this->chunk($maxConcurrent)
-            ->flatMap(function($chunk) use ($f, $context) {
+            ->flatMap(function ($chunk) use ($f, $context) {
                 try {
                     // Start concurrent evaluation of all streams in chunk
                     $handles = [];
                     foreach ($chunk as $element) {
                         $blocker = new \Phunkie\Effect\Concurrent\Blocker(
-                            function() use ($f, $element) {
+                            function () use ($f, $element) {
                                 $stream = $f($element);
                                 if (!($stream instanceof Stream)) {
                                     throw new \TypeError("parMergeMap expects function to return Stream, got " . get_debug_type($stream));
                                 }
+
                                 return $stream->compile()->toArray();
                             },
                             $context

@@ -13,6 +13,7 @@
 namespace Phunkie\Streams\Ops\Pull;
 
 use Phunkie\Effect\IO\IO;
+
 use function Phunkie\Streams\Functions\transformation\evalFilter;
 use function Phunkie\Streams\Functions\transformation\evalMap;
 use function Phunkie\Streams\Functions\transformation\evalTap;

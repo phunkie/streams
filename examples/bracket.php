@@ -7,15 +7,17 @@
  * Bracket ensures resources are always properly released, even when errors occur.
  */
 
-use Phunkie\Streams\IO\File\Path;
-use function Phunkie\Streams\IO\File\exists;
-use function Phunkie\Streams\IO\File\deleteFile;
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\writeFileContents;
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\writeLines;
 use function Phunkie\Effect\Functions\io\io;
 use function Phunkie\Streams\Functions\resource\bracket;
+use function Phunkie\Streams\IO\File\deleteFile;
+use function Phunkie\Streams\IO\File\exists;
+
+use Phunkie\Streams\IO\File\Path;
+
+use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\IO\File\writeFileContents;
+use function Phunkie\Streams\IO\File\writeLines;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/printLn.php';
@@ -25,7 +27,7 @@ echo "=== Bracket Pattern Examples ===\n\n";
 // Example 1: Simple File Reading with Bracket
 echo "1. Reading a file with bracket:\n";
 $content = readFileContents(new Path(__FILE__))
-    ->map(fn($c) => substr($c, 0, 100) . "...")
+    ->map(fn ($c) => substr($c, 0, 100) . "...")
     ->unsafeRunSync();
 echo "   File content preview: " . substr($content, 0, 60) . "...\n\n";
 
@@ -60,10 +62,10 @@ echo "\n";
 // Example 5: Chaining file operations
 echo "5. Chaining file operations with flatMap:\n";
 $chainResult = writeFileContents($testFile, "Original content")
-    ->flatMap(fn($_) => readFileContents($testFile))
-    ->map(fn($content) => strtoupper($content))
-    ->flatMap(fn($upper) => writeFileContents($testFile, $upper))
-    ->flatMap(fn($_) => readFileContents($testFile))
+    ->flatMap(fn ($_) => readFileContents($testFile))
+    ->map(fn ($content) => strtoupper($content))
+    ->flatMap(fn ($upper) => writeFileContents($testFile, $upper))
+    ->flatMap(fn ($_) => readFileContents($testFile))
     ->unsafeRunSync();
 echo "   Final content: $chainResult\n\n";
 
@@ -83,14 +85,15 @@ echo "\n";
 echo "7. Custom bracket example (manual resource management):\n";
 $customBracket = bracket(
     // Acquire: Open file
-    io(fn() => fopen($testFile->toString(), 'r')),
+    io(fn () => fopen($testFile->toString(), 'r')),
     // Use: Read first line
-    fn($handle) => io(function() use ($handle) {
+    fn ($handle) => io(function () use ($handle) {
         $firstLine = fgets($handle);
+
         return trim($firstLine);
     }),
     // Release: Always close file
-    fn($handle) => io(function() use ($handle) {
+    fn ($handle) => io(function () use ($handle) {
         fclose($handle);
         echo "   [Resource released: file handle closed]\n";
     })
@@ -102,12 +105,13 @@ echo "   First line: $firstLine\n\n";
 // Example 8: Bracket with error handling
 echo "8. Bracket ensures cleanup even on errors:\n";
 $errorBracket = bracket(
-    io(fn() => fopen($testFile->toString(), 'r')),
-    fn($handle) => io(function() use ($handle) {
+    io(fn () => fopen($testFile->toString(), 'r')),
+    fn ($handle) => io(function () use ($handle) {
         fgets($handle); // Read one line
+
         throw new \RuntimeException("Simulated error!");
     }),
-    fn($handle) => io(function() use ($handle) {
+    fn ($handle) => io(function () use ($handle) {
         fclose($handle);
         echo "   [Cleanup called even after error!]\n";
     })
@@ -137,14 +141,15 @@ $tempFile1 = new Path(sys_get_temp_dir() . '/bracket_test1.txt');
 $tempFile2 = new Path(sys_get_temp_dir() . '/bracket_test2.txt');
 
 $composed = writeFileContents($tempFile1, "Content for file 1")
-    ->flatMap(fn($_) => writeFileContents($tempFile2, "Content for file 2"))
-    ->flatMap(fn($_) => io(fn() => [
+    ->flatMap(fn ($_) => writeFileContents($tempFile2, "Content for file 2"))
+    ->flatMap(fn ($_) => io(fn () => [
         'file1' => readFileContents($tempFile1)->unsafeRunSync(),
         'file2' => readFileContents($tempFile2)->unsafeRunSync(),
     ]))
-    ->flatMap(fn($contents) => io(function() use ($tempFile1, $tempFile2, $contents) {
+    ->flatMap(fn ($contents) => io(function () use ($tempFile1, $tempFile2, $contents) {
         deleteFile($tempFile1)->unsafeRunSync();
         deleteFile($tempFile2)->unsafeRunSync();
+
         return $contents;
     }))
     ->unsafeRunSync();

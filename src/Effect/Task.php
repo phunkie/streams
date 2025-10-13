@@ -33,7 +33,7 @@ class Task
      */
     public function map(\Closure $f): Task
     {
-        return new Task(function() use ($f) {
+        return new Task(function () use ($f) {
             return $f(($this->computation)());
         });
     }
@@ -46,9 +46,10 @@ class Task
      */
     public function flatMap(\Closure $f): Task
     {
-        return new Task(function() use ($f) {
+        return new Task(function () use ($f) {
             $result = ($this->computation)();
             $newTask = $f($result);
+
             return $newTask->run();
         });
     }
@@ -72,6 +73,7 @@ class Task
     {
         $fiber = new \Fiber($this->computation);
         $fiber->start();
+
         return $fiber;
     }
 }

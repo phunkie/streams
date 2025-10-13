@@ -2,12 +2,14 @@
 
 namespace Phunkie\Streams\IO\File {
 
+    use function Phunkie\Effect\Functions\io\io;
+
     use Phunkie\Effect\IO\IO;
-    use Phunkie\Streams\IO\File\Path;
+
+    use function Phunkie\Streams\Functions\resource\bracket;
+
     use Phunkie\Streams\IO\Read;
     use Phunkie\Streams\Type\Stream;
-    use function Phunkie\Effect\Functions\io\io;
-    use function Phunkie\Streams\Functions\resource\bracket;
 
     function readAll($path, $chunk): Stream
     {
@@ -22,7 +24,7 @@ namespace Phunkie\Streams\IO\File {
      */
     function exists(Path $path): IO
     {
-        return io(fn() => file_exists($path->toString()));
+        return io(fn () => file_exists($path->toString()));
     }
 
     /**
@@ -33,7 +35,7 @@ namespace Phunkie\Streams\IO\File {
      */
     function deleteFile(Path $path): IO
     {
-        return io(fn() => unlink($path->toString()));
+        return io(fn () => unlink($path->toString()));
     }
 
     /**
@@ -45,18 +47,21 @@ namespace Phunkie\Streams\IO\File {
     function readFileContents(Path $path): IO
     {
         return bracket(
-            io(function() use ($path) {
-                set_error_handler(function() {});
+            io(function () use ($path) {
+                set_error_handler(function (int $errno, string $errstr): bool {
+                    return true; // Suppress the error
+                });
                 $handle = fopen($path->toString(), 'r');
                 restore_error_handler();
 
                 if ($handle === false) {
                     throw new \RuntimeException("Failed to open file: " . $path->toString());
                 }
+
                 return $handle;
             }),
-            fn($handle) => io(fn() => stream_get_contents($handle)),
-            fn($handle) => io(fn() => fclose($handle))
+            fn ($handle) => io(fn () => stream_get_contents($handle)),
+            fn ($handle) => io(fn () => fclose($handle))
         );
     }
 
@@ -70,18 +75,21 @@ namespace Phunkie\Streams\IO\File {
     function writeFileContents(Path $path, string $contents): IO
     {
         return bracket(
-            io(function() use ($path) {
-                set_error_handler(function() {});
+            io(function () use ($path) {
+                set_error_handler(function (int $errno, string $errstr): bool {
+                    return true; // Suppress the error
+                });
                 $handle = fopen($path->toString(), 'w');
                 restore_error_handler();
 
                 if ($handle === false) {
                     throw new \RuntimeException("Failed to open file: " . $path->toString());
                 }
+
                 return $handle;
             }),
-            fn($handle) => io(fn() => fwrite($handle, $contents)),
-            fn($handle) => io(fn() => fclose($handle))
+            fn ($handle) => io(fn () => fwrite($handle, $contents)),
+            fn ($handle) => io(fn () => fclose($handle))
         );
     }
 
@@ -94,24 +102,28 @@ namespace Phunkie\Streams\IO\File {
     function readLines(Path $path): IO
     {
         return bracket(
-            io(function() use ($path) {
-                set_error_handler(function() {});
+            io(function () use ($path) {
+                set_error_handler(function (int $errno, string $errstr): bool {
+                    return true; // Suppress the error
+                });
                 $handle = fopen($path->toString(), 'r');
                 restore_error_handler();
 
                 if ($handle === false) {
                     throw new \RuntimeException("Failed to open file: " . $path->toString());
                 }
+
                 return $handle;
             }),
-            fn($handle) => io(function() use ($handle) {
+            fn ($handle) => io(function () use ($handle) {
                 $lines = [];
                 while (($line = fgets($handle)) !== false) {
                     $lines[] = rtrim($line, "\r\n");
                 }
+
                 return $lines;
             }),
-            fn($handle) => io(fn() => fclose($handle))
+            fn ($handle) => io(fn () => fclose($handle))
         );
     }
 
@@ -125,25 +137,29 @@ namespace Phunkie\Streams\IO\File {
     function writeLines(Path $path, array $lines): IO
     {
         return bracket(
-            io(function() use ($path) {
-                set_error_handler(function() {});
+            io(function () use ($path) {
+                set_error_handler(function (int $errno, string $errstr): bool {
+                    return true; // Suppress the error
+                });
                 $handle = fopen($path->toString(), 'w');
                 restore_error_handler();
 
                 if ($handle === false) {
                     throw new \RuntimeException("Failed to open file: " . $path->toString());
                 }
+
                 return $handle;
             }),
-            fn($handle) => io(function() use ($handle, $lines) {
+            fn ($handle) => io(function () use ($handle, $lines) {
                 $count = 0;
                 foreach ($lines as $line) {
                     fwrite($handle, $line . PHP_EOL);
                     $count++;
                 }
+
                 return $count;
             }),
-            fn($handle) => io(fn() => fclose($handle))
+            fn ($handle) => io(fn () => fclose($handle))
         );
     }
 
@@ -166,13 +182,14 @@ namespace Phunkie\Streams\IO\File {
      */
     function writeFile(Path $path): callable
     {
-        return function(Stream $stream) use ($path): Stream {
+        return function (Stream $stream) use ($path): Stream {
             $elements = $stream->toArray();
             $writeIO = writeLines($path, array_map('strval', $elements));
             // Return a stream that when compiled, performs the write
             // For now, we'll eagerly write and return an empty stream
             // This is a simplified implementation for pure streams
             $writeIO->unsafeRunSync();
+
             return Stream(); // Return empty stream after write
         };
     }

@@ -26,9 +26,10 @@ trait ImmListOps
         };
     }
 
-    public function interleave(... $streams): Stream
+    public function interleave(...$streams): Stream
     {
-        $pulls = array_map(fn($x) => $x->getPull(), $streams);
+        $pulls = array_map(fn ($x) => $x->getPull(), $streams);
+
         return new Stream($this->getPull()->interleave(...$pulls), $this->getBytes());
     }
 
@@ -69,6 +70,7 @@ trait ImmListOps
         foreach ($streams as $stream) {
             $allValues = array_merge($allValues, $stream->getPull()->getValues());
         }
+
         return Stream(...$allValues);
     }
 

@@ -12,6 +12,7 @@ use Phunkie\Types\Kind;
 trait FunctorOps
 {
     use \Phunkie\Ops\FunctorOps;
+
     public function map($f): Kind | Stream
     {
         $this->getPull()->map($f);

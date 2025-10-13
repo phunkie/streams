@@ -2,10 +2,10 @@
 
 namespace {
 
+    use Phunkie\Streams\Infinite\Constant;
     use Phunkie\Streams\Infinite\Infinite;
     use Phunkie\Streams\Infinite\Iterate;
     use Phunkie\Streams\Infinite\Range;
-    use Phunkie\Streams\Infinite\Constant;
     use Phunkie\Streams\Infinite\Repeat;
     use Phunkie\Streams\Infinite\Timer;
     use Phunkie\Streams\Infinite\Unfold;
@@ -15,13 +15,15 @@ namespace {
         return new Range($start, $end, $step);
     }
 
-    function iterate(int $start) {
+    function iterate(int $start)
+    {
         return function (callable $f) use ($start) {
             return new Iterate($f, $start);
         };
     }
 
-    function unfold($seed) {
+    function unfold($seed)
+    {
         return function (callable $f) use ($seed) {
             return new Unfold($f, $seed);
         };

@@ -4,7 +4,7 @@ namespace Phunkie\Streams\IO\File;
 
 class Path
 {
-    public function __construct(readonly private string $pathname)
+    public function __construct(private readonly string $pathname)
     {
     }
 
@@ -13,4 +13,3 @@ class Path
         return $this->pathname;
     }
 }
-

@@ -60,6 +60,7 @@ class Timer implements Infinite
         if ($this->isFraction) {
             return $this->count < $this->limit;
         }
+
         return $this->stopAt === null || $this->stopAt > $this->start;
     }
 }

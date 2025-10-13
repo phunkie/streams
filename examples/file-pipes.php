@@ -7,11 +7,14 @@
  * The writeFile() pipe allows you to write stream elements directly to files.
  */
 
-use Phunkie\Streams\IO\File\Path;
-use Phunkie\Streams\Type\Stream;
-use function Phunkie\Streams\IO\File\writeFile;
-use function Phunkie\Streams\IO\File\readLines;
 use function Phunkie\Streams\IO\File\deleteFile;
+
+use Phunkie\Streams\IO\File\Path;
+
+use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\IO\File\writeFile;
+
+use Phunkie\Streams\Type\Stream;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/printLn.php';
@@ -19,7 +22,7 @@ require_once dirname(__FILE__) . '/printLn.php';
 echo "=== File I/O Pipe Examples ===\n\n";
 
 // Helper function to create temp files
-$tempFile = fn($name) => new Path(sys_get_temp_dir() . "/file_pipe_{$name}_" . uniqid() . ".txt");
+$tempFile = fn ($name) => new Path(sys_get_temp_dir() . "/file_pipe_{$name}_" . uniqid() . ".txt");
 
 // Example 1: Basic writeFile usage
 echo "1. Writing a stream to a file:\n";
@@ -47,8 +50,8 @@ echo "\n";
 echo "3. Writing transformed data:\n";
 $file3 = $tempFile('transformed');
 Stream(...[1, 2, 3, 4, 5])
-    ->map(fn($x) => $x * 10)
-    ->map(fn($x) => "Number: $x")
+    ->map(fn ($x) => $x * 10)
+    ->map(fn ($x) => "Number: $x")
     ->through(writeFile($file3));
 
 $content = readLines($file3)->unsafeRunSync();
@@ -63,8 +66,8 @@ echo "\n";
 echo "4. Filtering data before writing:\n";
 $file4 = $tempFile('filtered');
 Stream(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    ->filter(fn($x) => $x % 2 === 0)
-    ->map(fn($x) => "Even: $x")
+    ->filter(fn ($x) => $x % 2 === 0)
+    ->map(fn ($x) => "Even: $x")
     ->through(writeFile($file4));
 
 $content = readLines($file4)->unsafeRunSync();
@@ -76,10 +79,10 @@ echo "\n";
 echo "5. Composing pipelines with through():\n";
 $file5 = $tempFile('pipeline');
 
-$processNumbers = fn(Stream $s) => $s
-    ->map(fn($x) => $x * 2)
-    ->filter(fn($x) => $x > 5)
-    ->map(fn($x) => "Processed: $x");
+$processNumbers = fn (Stream $s) => $s
+    ->map(fn ($x) => $x * 2)
+    ->filter(fn ($x) => $x > 5)
+    ->map(fn ($x) => "Processed: $x");
 
 Stream(...[1, 2, 3, 4, 5, 6])
     ->through($processNumbers)
@@ -99,7 +102,7 @@ $file6 = $tempFile('text');
 $lines = [
     "This is a story about streams.",
     "Streams can be transformed.",
-    "And written to files easily!"
+    "And written to files easily!",
 ];
 
 Stream(...$lines)
@@ -118,11 +121,11 @@ $data = [
     ['Name', 'Age', 'City'],
     ['Alice', 30, 'NYC'],
     ['Bob', 25, 'LA'],
-    ['Charlie', 35, 'Chicago']
+    ['Charlie', 35, 'Chicago'],
 ];
 
 Stream(...$data)
-    ->map(fn($row) => implode(',', $row))
+    ->map(fn ($row) => implode(',', $row))
     ->through(writeFile($file7));
 
 $content = readLines($file7)->unsafeRunSync();
@@ -140,11 +143,11 @@ $file8 = $tempFile('jsonl');
 $records = [
     ['id' => 1, 'name' => 'Product A', 'price' => 10.99],
     ['id' => 2, 'name' => 'Product B', 'price' => 25.50],
-    ['id' => 3, 'name' => 'Product C', 'price' => 5.75]
+    ['id' => 3, 'name' => 'Product C', 'price' => 5.75],
 ];
 
 Stream(...$records)
-    ->map(fn($record) => json_encode($record))
+    ->map(fn ($record) => json_encode($record))
     ->through(writeFile($file8));
 
 $content = readLines($file8)->unsafeRunSync();
@@ -162,11 +165,11 @@ $file9 = $tempFile('log');
 $events = [
     ['level' => 'INFO', 'message' => 'Application started'],
     ['level' => 'WARN', 'message' => 'Low memory warning'],
-    ['level' => 'ERROR', 'message' => 'Connection failed']
+    ['level' => 'ERROR', 'message' => 'Connection failed'],
 ];
 
 Stream(...$events)
-    ->map(fn($event) => sprintf("[%s] %s", $event['level'], $event['message']))
+    ->map(fn ($event) => sprintf("[%s] %s", $event['level'], $event['message']))
     ->through(writeFile($file9));
 
 $content = readLines($file9)->unsafeRunSync();
@@ -195,12 +198,12 @@ $file11 = $tempFile('complex');
 
 $rawData = range(1, 20);
 
-$processAndFormat = fn(Stream $s) => $s
-    ->dropWhile(fn($x) => $x < 5)      // Skip values less than 5
-    ->takeWhile(fn($x) => $x <= 15)    // Take values up to 15
-    ->filter(fn($x) => $x % 2 === 0)   // Only even numbers
-    ->map(fn($x) => $x * 10)           // Scale by 10
-    ->map(fn($x) => "Value: $x");      // Format as string
+$processAndFormat = fn (Stream $s) => $s
+    ->dropWhile(fn ($x) => $x < 5)      // Skip values less than 5
+    ->takeWhile(fn ($x) => $x <= 15)    // Take values up to 15
+    ->filter(fn ($x) => $x % 2 === 0)   // Only even numbers
+    ->map(fn ($x) => $x * 10)           // Scale by 10
+    ->map(fn ($x) => "Value: $x");      // Format as string
 
 Stream(...$rawData)
     ->through($processAndFormat)
@@ -222,7 +225,8 @@ $numbers = range(1, 12);
 
 Stream(...$numbers)
     ->chunk(3)
-    ->map(fn($chunk) => sprintf("Batch: [%s] Sum: %d",
+    ->map(fn ($chunk) => sprintf(
+        "Batch: [%s] Sum: %d",
         implode(', ', $chunk),
         array_sum($chunk)
     ))

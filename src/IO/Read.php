@@ -22,6 +22,7 @@ class Read implements Resource
     public static function readAll($path, $bytes = 256): Stream
     {
         $stream = Stream(new Read($path));
+
         return $stream->setBytes($bytes);
     }
 
@@ -52,6 +53,7 @@ class Read implements Resource
             if ($data === false || ($data === '' && feof($this->handle))) {
                 return Resource::EOF;
             }
+
             return $data;
         }
 

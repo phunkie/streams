@@ -1,15 +1,16 @@
 <?php
 
+use function Phunkie\Effect\Functions\io\io;
+
 use Phunkie\Effect\IO\IO;
 use Phunkie\Types\ImmList;
-use function Phunkie\Effect\Functions\io\io;
 
 describe("EffectfulStream", function () {
 
     describe("evalMap", function () {
-        beforeEach(function() {
+        beforeEach(function () {
             $this->stream = Stream("London", "Paris", "Amsterdam")
-                ->evalMap(fn($x) => io(fn() => strtoupper($x)));
+                ->evalMap(fn ($x) => io(fn () => strtoupper($x)));
         });
 
         it("implements evalMap", function () {
@@ -29,7 +30,7 @@ describe("EffectfulStream", function () {
     describe("evalFilter", function () {
         beforeEach(function () {
             $this->stream = Stream("London", "Paris", "Amsterdam")
-                ->evalFilter(fn($x) => io(fn() => strlen($x) > 5));
+                ->evalFilter(fn ($x) => io(fn () => strlen($x) > 5));
         });
 
         it("implements evalFilter", function () {
@@ -50,7 +51,7 @@ describe("EffectfulStream", function () {
     describe("evalTap", function () {
         beforeEach(function () {
             $this->stream = Stream("London", "Paris", "Amsterdam")
-                ->evalTap(fn($x) => io(fn() => strlen($x) > 5));
+                ->evalTap(fn ($x) => io(fn () => strlen($x) > 5));
         });
 
         it("implements evalTap", function () {
@@ -69,7 +70,7 @@ describe("EffectfulStream", function () {
             expect($this->stream
                 ->compile
                 ->drain)
-                ->toEqual(new IO(fn() => Unit()));
+                ->toEqual(new IO(fn () => Unit()));
         });
     });
 

@@ -74,7 +74,7 @@ class HttpRequest implements Resource
                 'header' => $this->formatHeaders(),
                 'timeout' => $this->timeout,
                 'ignore_errors' => true, // Get response even on error status codes
-            ]
+            ],
         ];
 
         if ($this->body !== null && in_array(strtoupper($this->method), ['POST', 'PUT', 'PATCH'])) {
@@ -145,6 +145,7 @@ class HttpRequest implements Resource
         }
 
         $metadata = stream_get_meta_data($this->handle);
+
         return $metadata['wrapper_data'] ?? [];
     }
 }

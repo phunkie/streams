@@ -8,8 +8,8 @@ namespace Phunkie\Streams\IO\Network;
 class SocketAddress
 {
     public function __construct(
-        readonly private string $host,
-        readonly private int $port
+        private readonly string $host,
+        private readonly int $port
     ) {
         if ($port < 1 || $port > 65535) {
             throw new \InvalidArgumentException("Port must be between 1 and 65535, got {$port}");

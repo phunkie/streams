@@ -2,16 +2,13 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
-use Phunkie\Effect\Concurrent\ParallelExecutionContext;
-use Phunkie\Effect\Concurrent\FiberExecutionContext;
 use Phunkie\Effect\Concurrent\ExecutionContext;
+use Phunkie\Effect\Concurrent\FiberExecutionContext;
 use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\Type\Stream;
 use Phunkie\Validation\Failure;
 use Phunkie\Validation\Success;
 use Phunkie\Validation\Validation;
-
-use function Phunkie\Effect\Functions\blocking\blocking;
 
 /**
  * Trait ParallelOps provides parallel/concurrent operations for Streams.
@@ -71,7 +68,7 @@ trait ParallelOps
             $handles = [];
             foreach ($chunk as $element) {
                 $blocker = new \Phunkie\Effect\Concurrent\Blocker(
-                    fn() => $f($element),
+                    fn () => $f($element),
                     $context
                 );
                 $handles[] = $blocker();
@@ -132,8 +129,8 @@ trait ParallelOps
 
         // Create a new stream that processes elements in parallel
         return $this->chunk($maxConcurrent)
-            ->map(fn($chunk) => $this->executeWithFallback($chunk, $f, $context))
-            ->flatMap(fn($results) => Stream(...$results));
+            ->map(fn ($chunk) => $this->executeWithFallback($chunk, $f, $context))
+            ->flatMap(fn ($results) => Stream(...$results));
     }
 
     /**
@@ -168,7 +165,7 @@ trait ParallelOps
         $context = $context ?? new FiberExecutionContext();
 
         return $this->chunk($maxConcurrent)
-            ->map(function($chunk) use ($f, $context) {
+            ->map(function ($chunk) use ($f, $context) {
                 try {
                     // Try concurrent execution
                     $handles = [];
@@ -177,7 +174,7 @@ trait ParallelOps
                     foreach ($chunk as $element) {
                         $elements[] = $element;
                         $blocker = new \Phunkie\Effect\Concurrent\Blocker(
-                            function() use ($f, $element) {
+                            function () use ($f, $element) {
                                 try {
                                     return Success($f($element));
                                 } catch (\Throwable $e) {
@@ -212,7 +209,7 @@ trait ParallelOps
                     return $results;
                 }
             })
-            ->flatMap(fn($results) => Stream(...$results));
+            ->flatMap(fn ($results) => Stream(...$results));
     }
 
     /**
@@ -249,20 +246,21 @@ trait ParallelOps
         $context = $context ?? new FiberExecutionContext();
 
         return $this->chunk($maxConcurrent)
-            ->map(function($chunk) use ($f, $context) {
+            ->map(function ($chunk) use ($f, $context) {
                 return $this->executeWithFallback(
                     $chunk,
-                    function($element) use ($f) {
+                    function ($element) use ($f) {
                         $io = $f($element);
                         if (!($io instanceof IO)) {
                             throw new \TypeError("parEvalMap expects function to return IO, got " . get_debug_type($io));
                         }
+
                         return $io->unsafeRunSync();
                     },
                     $context
                 );
             })
-            ->flatMap(fn($results) => Stream(...$results));
+            ->flatMap(fn ($results) => Stream(...$results));
     }
 
     /**
@@ -298,7 +296,7 @@ trait ParallelOps
         $pull = $this->getPull();
         $bytes = $this->getBytes();
 
-        return new IO(function() use ($pull, $bytes, $maxConcurrent, $f, $context) {
+        return new IO(function () use ($pull, $bytes, $maxConcurrent, $f, $context) {
             $results = [];
             $values = $pull->getValues();
 
@@ -308,11 +306,12 @@ trait ParallelOps
             foreach ($chunks as $chunk) {
                 $chunkResults = $this->executeWithFallback(
                     $chunk,
-                    function($element) use ($f) {
+                    function ($element) use ($f) {
                         $io = $f($element);
                         if (!($io instanceof IO)) {
                             throw new \TypeError("parTraverse expects function to return IO, got " . get_debug_type($io));
                         }
+
                         return $io->unsafeRunSync();
                     },
                     $context

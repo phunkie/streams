@@ -2,6 +2,8 @@
 
 namespace Phunkie\Streams\Pull;
 
+use const Phunkie\Functions\function1\identity;
+
 use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\CompileOps;
@@ -13,7 +15,6 @@ use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
-use const Phunkie\Functions\function1\identity;
 
 class InfinitePull implements Pull
 {
@@ -41,6 +42,7 @@ class InfinitePull implements Pull
         $current = $this->current();
 
         $this->next();
+
         return $current;
     }
 
@@ -66,10 +68,11 @@ class InfinitePull implements Pull
     {
         return $this->scope;
     }
-    
+
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
+
         return $this;
     }
 }

@@ -2,11 +2,11 @@
 
 namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 
+use function Phunkie\Effect\Functions\io\io;
+
 use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
-use function Phunkie\Functions\show\show;
-use function Phunkie\Effect\Functions\io\io;
 
 trait CompileOps
 {
@@ -41,7 +41,7 @@ trait CompileOps
 
     public function runLog($bytes)
     {
-        return new IO(function() use ($bytes) {
+        return new IO(function () use ($bytes) {
             $log = [];
             $count = 0;
 

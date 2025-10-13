@@ -15,7 +15,6 @@ namespace Phunkie\Streams\Type;
 use Phunkie\Cats\Show;
 use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\IO\File\Path;
-use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Ops\Stream\EffectfulOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
 use Phunkie\Streams\Ops\Stream\ImmListOps;
@@ -24,8 +23,8 @@ use Phunkie\Streams\Ops\Stream\MonadOps;
 use Phunkie\Streams\Ops\Stream\ParallelOps;
 use Phunkie\Streams\Ops\Stream\ShowOps;
 use Phunkie\Streams\Pull\InfinitePull;
-use Phunkie\Streams\Pull\ResourcePull;
 use Phunkie\Streams\Pull\ResourceObjectPull;
+use Phunkie\Streams\Pull\ResourcePull;
 use Phunkie\Streams\Pull\ValuesPull;
 use Phunkie\Streams\Showable;
 use Phunkie\Streams\Stream\Compiler;
@@ -56,23 +55,27 @@ class Stream implements Showable, Kind
      *
      * @param Pull $pull The underlying pull mechanism that drives the Stream.
      * @param int $bytes The size in bytes for internal processing of the Stream.
-     */private function __construct(private Pull $pull, private int $bytes)
+     */
+    private function __construct(private Pull $pull, private int $bytes)
     {
     }
 
-    public static function fromValues(...$pull): Stream {
+    public static function fromValues(...$pull): Stream
+    {
         return new Stream(new ValuesPull(...$pull), 256);
     }
 
     public static function fromResource(Path $path, int $bytes = 256)
     {
         $resourcePull = new ResourcePull($path, $bytes);
+
         return new Stream($resourcePull, $bytes);
     }
 
     public static function fromResourceObject(\Phunkie\Streams\IO\Resource $resource, int $bytes = 4096): Stream
     {
         $resourceObjectPull = new ResourceObjectPull($resource, $bytes);
+
         return new Stream($resourceObjectPull, $bytes);
     }
 

@@ -34,6 +34,7 @@ class SocketServer implements Resource
     public static function listen(string $host, int $port, int $backlog = SOMAXCONN): Stream
     {
         $stream = Stream(new SocketServer($host, $port, $backlog));
+
         return $stream;
     }
 

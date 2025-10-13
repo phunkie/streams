@@ -8,12 +8,14 @@
  * composition while maintaining type safety.
  */
 
-use Phunkie\Streams\IO\File\Path;
-use function Phunkie\Streams\IO\File\exists;
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\writeFileContents;
-use function Phunkie\Streams\IO\File\readLines;
 use function Phunkie\Effect\Functions\io\io;
+use function Phunkie\Streams\IO\File\exists;
+
+use Phunkie\Streams\IO\File\Path;
+
+use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\IO\File\writeFileContents;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/printLn.php';
@@ -46,7 +48,7 @@ echo "   Value or default: " . $result->getOrElse("default value") . "\n\n";
 // Example 3: handleError() for recovery
 echo "3. Using handleError() to recover from errors:\n";
 $recovered = readFileContents($nonExistentFile)
-    ->handleError(fn($error) => "Error recovered: " . $error->getMessage())
+    ->handleError(fn ($error) => "Error recovered: " . $error->getMessage())
     ->unsafeRunSync();
 
 echo "   Recovered value: $recovered\n\n";
@@ -57,9 +59,9 @@ $primaryFile = new Path('/nonexistent/primary.txt');
 $fallbackFile = new Path(__FILE__); // This file exists
 
 $withFallback = readFileContents($primaryFile)
-    ->handleError(function($error) use ($fallbackFile) {
+    ->handleError(function ($error) use ($fallbackFile) {
         return readFileContents($fallbackFile)
-            ->map(fn($content) => substr($content, 0, 100) . "...")
+            ->map(fn ($content) => substr($content, 0, 100) . "...")
             ->unsafeRunSync();
     })
     ->unsafeRunSync();
@@ -71,9 +73,9 @@ echo "5. Chaining operations with error handling:\n";
 $tempFile = new Path(sys_get_temp_dir() . '/error_test.txt');
 
 $chainedResult = writeFileContents($tempFile, "Original content")
-    ->flatMap(fn($_) => readFileContents($tempFile))
-    ->map(fn($content) => strtoupper($content))
-    ->handleError(fn($e) => "ERROR: " . $e->getMessage())
+    ->flatMap(fn ($_) => readFileContents($tempFile))
+    ->map(fn ($content) => strtoupper($content))
+    ->handleError(fn ($e) => "ERROR: " . $e->getMessage())
     ->unsafeRunSync();
 
 echo "   Result: $chainedResult\n";
@@ -87,9 +89,9 @@ echo "\n";
 // Example 6: attempt() in a chain
 echo "6. Using attempt() in a pipeline:\n";
 $pipelineResult = writeFileContents($tempFile, "Test content")
-    ->flatMap(fn($_) => readFileContents($tempFile))
+    ->flatMap(fn ($_) => readFileContents($tempFile))
     ->attempt()
-    ->map(function($validation) {
+    ->map(function ($validation) {
         // Process the Validation
         return $validation->getOrElse("Failed to read");
     })
@@ -109,19 +111,19 @@ echo "7. Multiple error handling strategies:\n";
 // Strategy 1: Provide default value
 $strategy1 = readFileContents($nonExistentFile)
     ->attempt()
-    ->map(fn($v) => $v->getOrElse("DEFAULT"))
+    ->map(fn ($v) => $v->getOrElse("DEFAULT"))
     ->unsafeRunSync();
 echo "   Strategy 1 (default): $strategy1\n";
 
 // Strategy 2: Recover with computation
 $strategy2 = readFileContents($nonExistentFile)
-    ->handleError(fn($e) => "Computed fallback: " . date('Y-m-d H:i:s'))
+    ->handleError(fn ($e) => "Computed fallback: " . date('Y-m-d H:i:s'))
     ->unsafeRunSync();
 echo "   Strategy 2 (computed): $strategy2\n";
 
 // Strategy 3: Transform error to success
 $strategy3 = readFileContents($nonExistentFile)
-    ->handleError(fn($e) => "Error was: " . get_class($e))
+    ->handleError(fn ($e) => "Error was: " . get_class($e))
     ->unsafeRunSync();
 echo "   Strategy 3 (transform): $strategy3\n\n";
 
@@ -130,14 +132,15 @@ echo "8. Validation with file operations:\n";
 $testFile = new Path(sys_get_temp_dir() . '/validation_test.txt');
 
 $validationResult = writeFileContents($testFile, "Valid content")
-    ->flatMap(fn($_) => exists($testFile))
-    ->flatMap(function($fileExists) use ($testFile) {
+    ->flatMap(fn ($_) => exists($testFile))
+    ->flatMap(function ($fileExists) use ($testFile) {
         if (!$fileExists) {
-            return io(fn() => throw new \RuntimeException("File should exist!"));
+            return io(fn () => throw new \RuntimeException("File should exist!"));
         }
+
         return readFileContents($testFile);
     })
-    ->handleError(fn($e) => "Validation failed: " . $e->getMessage())
+    ->handleError(fn ($e) => "Validation failed: " . $e->getMessage())
     ->unsafeRunSync();
 
 echo "   Validation result: $validationResult\n";
@@ -151,13 +154,15 @@ echo "\n";
 // Example 9: Composing error handlers
 echo "9. Composing multiple error handlers:\n";
 
-function safeReadFile(Path $path): string {
+function safeReadFile(Path $path): string
+{
     return readFileContents($path)
-        ->handleError(function($e) use ($path) {
+        ->handleError(function ($e) use ($path) {
             // First level: Try to provide context
             if ($e instanceof \RuntimeException) {
                 return "RuntimeException reading {$path->toString()}";
             }
+
             return "Unknown error reading file";
         })
         ->unsafeRunSync();
@@ -175,14 +180,15 @@ writeFileContents($cleanupFile, "Content to process")
     ->unsafeRunSync();
 
 $processWithError = readFileContents($cleanupFile)
-    ->map(function($content) {
+    ->map(function ($content) {
         // Simulate an error during processing
         if (strlen($content) > 0) {
             throw new \RuntimeException("Processing error!");
         }
+
         return $content;
     })
-    ->handleError(fn($e) => "Caught error: " . $e->getMessage())
+    ->handleError(fn ($e) => "Caught error: " . $e->getMessage())
     ->unsafeRunSync();
 
 echo "   Processed with error handling: $processWithError\n";
@@ -198,7 +204,7 @@ echo "\n";
 echo "11. Error handling with readLines:\n";
 $linesResult = readLines($nonExistentFile)
     ->attempt()
-    ->map(fn($v) => $v->getOrElse([]))
+    ->map(fn ($v) => $v->getOrElse([]))
     ->unsafeRunSync();
 
 echo "   Lines read (or empty): " . count($linesResult) . " lines\n\n";
@@ -206,17 +212,19 @@ echo "   Lines read (or empty): " . count($linesResult) . " lines\n\n";
 // Example 12: Practical error handling pattern
 echo "12. Practical error handling pattern:\n";
 
-function readFileOrCreate(Path $path, string $defaultContent): string {
+function readFileOrCreate(Path $path, string $defaultContent): string
+{
     return exists($path)
-        ->flatMap(function($fileExists) use ($path, $defaultContent) {
+        ->flatMap(function ($fileExists) use ($path, $defaultContent) {
             if ($fileExists) {
                 return readFileContents($path);
             }
+
             // File doesn't exist, create it with default content
             return writeFileContents($path, $defaultContent)
-                ->map(fn($_) => $defaultContent);
+                ->map(fn ($_) => $defaultContent);
         })
-        ->handleError(fn($e) => "Error: " . $e->getMessage())
+        ->handleError(fn ($e) => "Error: " . $e->getMessage())
         ->unsafeRunSync();
 }
 

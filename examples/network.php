@@ -7,8 +7,8 @@
  * Note: Some examples require external services or may be commented out for safety.
  */
 
-use Phunkie\Streams\Network;
 use Phunkie\Streams\IO\Network\SocketAddress;
+use Phunkie\Streams\Network;
 use Phunkie\Streams\Type\Stream;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
@@ -18,6 +18,7 @@ echo "=== Network Operations Examples ===\n\n";
 
 // Example 1: HTTP GET request (using httpbin.org for testing)
 echo "1. HTTP GET request:\n";
+
 try {
     $response = Network::httpGet('http://httpbin.org/get')
         ->compile->toArray();
@@ -32,6 +33,7 @@ echo "\n";
 
 // Example 2: HTTP POST request with JSON
 echo "2. HTTP POST request with JSON:\n";
+
 try {
     $payload = json_encode(['name' => 'Alice', 'age' => 30]);
     $headers = ['Content-Type: application/json'];
@@ -52,9 +54,10 @@ echo "\n";
 
 // Example 3: HTTP GET with stream processing
 echo "3. HTTP GET with stream processing:\n";
+
 try {
     $chunkCount = Network::httpGet('http://httpbin.org/stream/5')
-        ->map(fn($chunk) => strlen($chunk))
+        ->map(fn ($chunk) => strlen($chunk))
         ->compile->toArray();
 
     echo "   Received " . count($chunkCount) . " chunks\n";
@@ -110,6 +113,7 @@ echo "   Port: " . $addr->getPort() . "\n\n";
 // Example 8: HTTP with error handling
 echo "8. HTTP with error handling:\n";
 $url = 'http://httpbin.org/status/404';
+
 try {
     $response = Network::httpGet($url)
         ->compile->toArray();
@@ -142,9 +146,10 @@ echo "   ```\n\n";
 
 // Example 11: Processing JSON API response
 echo "11. Processing JSON API response:\n";
+
 try {
     $users = Network::httpGet('http://httpbin.org/json')
-        ->map(fn($chunk) => $chunk) // Could parse JSON here
+        ->map(fn ($chunk) => $chunk) // Could parse JSON here
         ->compile->toArray();
 
     $json = implode('', $users);
@@ -161,11 +166,12 @@ echo "\n";
 
 // Example 12: Real-world scenario - API client with transformation
 echo "12. API client with data transformation:\n";
+
 try {
     $transformed = Network::httpGet('http://httpbin.org/uuid')
-        ->map(fn($chunk) => json_decode($chunk, true))
-        ->filter(fn($data) => $data !== null)
-        ->map(fn($data) => $data['uuid'] ?? 'N/A')
+        ->map(fn ($chunk) => json_decode($chunk, true))
+        ->filter(fn ($data) => $data !== null)
+        ->map(fn ($data) => $data['uuid'] ?? 'N/A')
         ->compile->toArray();
 
     if (!empty($transformed)) {
@@ -190,11 +196,12 @@ echo "   ```\n\n";
 
 // Example 14: Building a simple HTTP client wrapper
 echo "14. Building a reusable API client:\n";
-$apiClient = function(string $endpoint) {
+$apiClient = function (string $endpoint) {
     $baseUrl = 'http://httpbin.org';
     $chunks = Network::httpGet($baseUrl . $endpoint)
-        ->map(fn($chunk) => $chunk)
+        ->map(fn ($chunk) => $chunk)
         ->compile->toArray();
+
     return implode('', $chunks);
 };
 

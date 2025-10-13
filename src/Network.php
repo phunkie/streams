@@ -3,16 +3,20 @@
 namespace Phunkie\Streams;
 
 use Phunkie\Effect\IO\IO;
-use Phunkie\Streams\IO\Network\SocketAddress;
-use Phunkie\Streams\Type\Stream;
+
+use function Phunkie\Streams\IO\Network\httpDelete as _httpDelete;
 use function Phunkie\Streams\IO\Network\httpGet as _httpGet;
 use function Phunkie\Streams\IO\Network\httpPost as _httpPost;
 use function Phunkie\Streams\IO\Network\httpPut as _httpPut;
-use function Phunkie\Streams\IO\Network\httpDelete as _httpDelete;
 use function Phunkie\Streams\IO\Network\socket as _socket;
+
+use Phunkie\Streams\IO\Network\SocketAddress;
+
 use function Phunkie\Streams\IO\Network\socketRead as _socketRead;
-use function Phunkie\Streams\IO\Network\socketWrite as _socketWrite;
 use function Phunkie\Streams\IO\Network\socketServer as _socketServer;
+use function Phunkie\Streams\IO\Network\socketWrite as _socketWrite;
+
+use Phunkie\Streams\Type\Stream;
 
 /**
  * Network operations for streams

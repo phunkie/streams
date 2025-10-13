@@ -16,7 +16,7 @@ echo "=== Stream Operations Examples ===\n\n";
 
 // Example 1: through() - Pipe operator
 echo "1. Using through() to apply transformations:\n";
-$uppercase = fn(Stream $s) => $s->map(fn($x) => strtoupper($x));
+$uppercase = fn (Stream $s) => $s->map(fn ($x) => strtoupper($x));
 
 $result = Stream(...['hello', 'world', 'php'])
     ->through($uppercase)
@@ -27,8 +27,8 @@ echo "   Output: " . json_encode($result) . "\n\n";
 
 // Example 2: Chaining through()
 echo "2. Chaining multiple through() operations:\n";
-$double = fn(Stream $s) => $s->map(fn($x) => $x * 2);
-$addTen = fn(Stream $s) => $s->map(fn($x) => $x + 10);
+$double = fn (Stream $s) => $s->map(fn ($x) => $x * 2);
+$addTen = fn (Stream $s) => $s->map(fn ($x) => $x + 10);
 
 $result = Stream(...[1, 2, 3, 4, 5])
     ->through($double)
@@ -41,10 +41,10 @@ echo "   After +10: " . json_encode($result) . "\n\n";
 
 // Example 3: Complex pipeline with through()
 echo "3. Complex pipeline composition:\n";
-$pipeline = fn(Stream $s) => $s
-    ->map(fn($x) => $x * 2)
-    ->filter(fn($x) => $x > 5)
-    ->map(fn($x) => "[$x]");
+$pipeline = fn (Stream $s) => $s
+    ->map(fn ($x) => $x * 2)
+    ->filter(fn ($x) => $x > 5)
+    ->map(fn ($x) => "[$x]");
 
 $result = Stream(...[1, 2, 3, 4, 5])
     ->through($pipeline)
@@ -56,7 +56,7 @@ echo "   Output: " . json_encode(array_values($result)) . "\n\n";
 // Example 4: takeWhile() - Take elements while predicate is true
 echo "4. Using takeWhile():\n";
 $result = Stream(...[1, 2, 3, 4, 5, 1, 2, 3])
-    ->takeWhile(fn($x) => $x < 4)
+    ->takeWhile(fn ($x) => $x < 4)
     ->toArray();
 
 echo "   Input: [1, 2, 3, 4, 5, 1, 2, 3]\n";
@@ -66,7 +66,7 @@ echo "   Stops at first element >= 4\n\n";
 // Example 5: takeWhile with strings
 echo "5. takeWhile() with string validation:\n";
 $result = Stream(...['apple', 'banana', 'cherry', '123', 'date'])
-    ->takeWhile(fn($x) => ctype_alpha($x))
+    ->takeWhile(fn ($x) => ctype_alpha($x))
     ->toArray();
 
 echo "   Input: ['apple', 'banana', 'cherry', '123', 'date']\n";
@@ -76,7 +76,7 @@ echo "   Stops at first non-alphabetic element\n\n";
 // Example 6: dropWhile() - Drop elements while predicate is true
 echo "6. Using dropWhile():\n";
 $result = Stream(...[1, 2, 3, 4, 5, 1, 2, 3])
-    ->dropWhile(fn($x) => $x < 4)
+    ->dropWhile(fn ($x) => $x < 4)
     ->toArray();
 
 echo "   Input: [1, 2, 3, 4, 5, 1, 2, 3]\n";
@@ -86,7 +86,7 @@ echo "   Includes all elements after first >= 4\n\n";
 // Example 7: dropWhile with strings
 echo "7. dropWhile() to skip headers:\n";
 $result = Stream(...['#', '#', '# Header', 'Data 1', 'Data 2', 'Data 3'])
-    ->dropWhile(fn($x) => str_starts_with($x, '#'))
+    ->dropWhile(fn ($x) => str_starts_with($x, '#'))
     ->toArray();
 
 echo "   Input: ['#', '#', '# Header', 'Data 1', 'Data 2', 'Data 3']\n";
@@ -95,8 +95,8 @@ echo "   dropWhile(starts with #): " . json_encode($result) . "\n\n";
 // Example 8: Combining takeWhile and dropWhile
 echo "8. Combining takeWhile and dropWhile:\n";
 $result = Stream(...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-    ->dropWhile(fn($x) => $x < 3)  // Skip first 2
-    ->takeWhile(fn($x) => $x < 8)  // Take until 8
+    ->dropWhile(fn ($x) => $x < 3)  // Skip first 2
+    ->takeWhile(fn ($x) => $x < 8)  // Take until 8
     ->toArray();
 
 echo "   Input: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n";
@@ -121,7 +121,7 @@ echo "10. Batch processing with chunk():\n";
 $numbers = range(1, 12);
 $result = Stream(...$numbers)
     ->chunk(4)
-    ->map(fn($chunk) => array_sum($chunk))
+    ->map(fn ($chunk) => array_sum($chunk))
     ->toArray();
 
 echo "   Input: " . json_encode($numbers) . "\n";
@@ -137,14 +137,14 @@ $data = [
     10, 15, 20, 25,    // Valid data
     30, 35, 40,        // More data
     999, 999,          // End markers
-    50, 60             // After markers (ignored)
+    50, 60,             // After markers (ignored)
 ];
 
-$processData = fn(Stream $s) => $s
-    ->dropWhile(fn($x) => $x === 0)     // Skip initial zeros
-    ->takeWhile(fn($x) => $x < 100)     // Stop at markers
-    ->filter(fn($x) => $x % 5 === 0)    // Only multiples of 5
-    ->map(fn($x) => $x * 2);            // Double them
+$processData = fn (Stream $s) => $s
+    ->dropWhile(fn ($x) => $x === 0)     // Skip initial zeros
+    ->takeWhile(fn ($x) => $x < 100)     // Stop at markers
+    ->filter(fn ($x) => $x % 5 === 0)    // Only multiples of 5
+    ->map(fn ($x) => $x * 2);            // Double them
 
 $result = Stream(...$data)
     ->through($processData)
@@ -164,15 +164,15 @@ $lines = [
     "line2: more data",
     "line3: even more",
     "END",
-    "ignored line"
+    "ignored line",
 ];
 
-$processText = fn(Stream $s) => $s
-    ->dropWhile(fn($line) => str_starts_with($line, '#'))
-    ->dropWhile(fn($line) => $line === 'START')  // Drop START marker
-    ->takeWhile(fn($line) => $line !== 'END')    // Stop at END marker
-    ->filter(fn($line) => str_contains($line, ':'))
-    ->map(fn($line) => explode(': ', $line)[1]);
+$processText = fn (Stream $s) => $s
+    ->dropWhile(fn ($line) => str_starts_with($line, '#'))
+    ->dropWhile(fn ($line) => $line === 'START')  // Drop START marker
+    ->takeWhile(fn ($line) => $line !== 'END')    // Stop at END marker
+    ->filter(fn ($line) => str_contains($line, ':'))
+    ->map(fn ($line) => explode(': ', $line)[1]);
 
 $result = Stream(...$lines)
     ->through($processText)
@@ -186,9 +186,10 @@ $items = range(1, 10);
 
 $result = Stream(...$items)
     ->chunk(3)
-    ->map(function($chunk) {
+    ->map(function ($chunk) {
         $sum = array_sum($chunk);
         $avg = $sum / count($chunk);
+
         return ['sum' => $sum, 'avg' => $avg, 'size' => count($chunk)];
     })
     ->toArray();
@@ -204,9 +205,9 @@ echo "\n";
 echo "14. Building reusable transformation pipes:\n";
 
 // Define reusable pipes
-$removeNegatives = fn(Stream $s) => $s->filter(fn($x) => $x >= 0);
-$doublePositives = fn(Stream $s) => $s->map(fn($x) => $x * 2);
-$formatNumbers = fn(Stream $s) => $s->map(fn($x) => "[$x]");
+$removeNegatives = fn (Stream $s) => $s->filter(fn ($x) => $x >= 0);
+$doublePositives = fn (Stream $s) => $s->map(fn ($x) => $x * 2);
+$formatNumbers = fn (Stream $s) => $s->map(fn ($x) => "[$x]");
 
 $result = Stream(...[-5, -3, 0, 2, 4, -1, 6, 8])
     ->through($removeNegatives)
@@ -222,15 +223,15 @@ echo "15. Complex example combining all operations:\n";
 
 $dataset = range(1, 20);
 
-$complexPipeline = fn(Stream $s) => $s
-    ->dropWhile(fn($x) => $x < 5)      // Skip first 4
-    ->takeWhile(fn($x) => $x <= 15)    // Take up to 15
-    ->filter(fn($x) => $x % 2 === 0)   // Only evens
+$complexPipeline = fn (Stream $s) => $s
+    ->dropWhile(fn ($x) => $x < 5)      // Skip first 4
+    ->takeWhile(fn ($x) => $x <= 15)    // Take up to 15
+    ->filter(fn ($x) => $x % 2 === 0)   // Only evens
     ->chunk(2)                          // Group in pairs
-    ->map(fn($pair) => [
+    ->map(fn ($pair) => [
         'pair' => $pair,
         'sum' => array_sum($pair),
-        'product' => array_product($pair)
+        'product' => array_product($pair),
     ]);
 
 $result = Stream(...$dataset)
@@ -275,7 +276,7 @@ $ages = Stream(...[25, 30, 35]);
 
 $result = $names
     ->zip($ages)
-    ->map(fn($pair) => "{$pair[0]} is {$pair[1]} years old")
+    ->map(fn ($pair) => "{$pair[0]} is {$pair[1]} years old")
     ->toArray();
 
 echo "   Processed results:\n";
@@ -292,7 +293,7 @@ $evening = Stream(...['Dinner', 'Relax', 'Sleep']);
 
 $schedule = $morning
     ->merge($afternoon, $evening)
-    ->map(fn($activity) => "[ ] $activity")
+    ->map(fn ($activity) => "[ ] $activity")
     ->toArray();
 
 echo "   Daily schedule:\n";
@@ -308,9 +309,9 @@ $prices = Stream(...[999.99, 29.99, 79.99]);
 
 $catalog = $products
     ->zip($prices)
-    ->map(fn($pair) => [
+    ->map(fn ($pair) => [
         'product' => $pair[0],
-        'price' => '$' . number_format($pair[1], 2)
+        'price' => '$' . number_format($pair[1], 2),
     ])
     ->toArray();
 

@@ -1,25 +1,25 @@
 <?php
 
-use Phunkie\Effect\IO\IO;
-use Phunkie\Streams\IO\File\Path;
-use Phunkie\Streams\Type\Stream;
-use function Phunkie\Streams\IO\File\exists;
-use function Phunkie\Streams\IO\File\deleteFile;
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\writeFileContents;
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\writeLines;
-use function Phunkie\Streams\IO\File\writeFile;
 use function Phunkie\Effect\Functions\io\io;
 use function Phunkie\Streams\Functions\resource\bracket;
+use function Phunkie\Streams\IO\File\deleteFile;
+use function Phunkie\Streams\IO\File\exists;
+
+use Phunkie\Streams\IO\File\Path;
+
+use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\IO\File\writeFileContents;
+use function Phunkie\Streams\IO\File\writeLines;
 
 describe("Bracket Resource Management", function () {
 
-    beforeEach(function() {
+    beforeEach(function () {
         $this->tempFile = new Path(sys_get_temp_dir() . '/bracket_test_' . uniqid() . '.txt');
     });
 
-    afterEach(function() {
+    afterEach(function () {
         // Clean up any test files
         if (file_exists($this->tempFile->toString())) {
             unlink($this->tempFile->toString());
@@ -32,10 +32,10 @@ describe("Bracket Resource Management", function () {
             $released = false;
 
             $result = bracket(
-                io(fn() => "resource"),
-                fn($r) => io(fn() => "result"),
-                function($r) use (&$released) {
-                    return io(function() use (&$released) {
+                io(fn () => "resource"),
+                fn ($r) => io(fn () => "result"),
+                function ($r) use (&$released) {
+                    return io(function () use (&$released) {
                         $released = true;
                     });
                 }
@@ -50,10 +50,10 @@ describe("Bracket Resource Management", function () {
 
             try {
                 bracket(
-                    io(fn() => "resource"),
-                    fn($r) => io(fn() => throw new \RuntimeException("Error in use")),
-                    function($r) use (&$released) {
-                        return io(function() use (&$released) {
+                    io(fn () => "resource"),
+                    fn ($r) => io(fn () => throw new \RuntimeException("Error in use")),
+                    function ($r) use (&$released) {
+                        return io(function () use (&$released) {
                             $released = true;
                         });
                     }
@@ -70,15 +70,16 @@ describe("Bracket Resource Management", function () {
             $releaseReceived = null;
 
             bracket(
-                io(fn() => "test-resource"),
-                function($r) use (&$useReceived) {
-                    return io(function() use ($r, &$useReceived) {
+                io(fn () => "test-resource"),
+                function ($r) use (&$useReceived) {
+                    return io(function () use ($r, &$useReceived) {
                         $useReceived = $r;
+
                         return "done";
                     });
                 },
-                function($r) use (&$releaseReceived) {
-                    return io(function() use ($r, &$releaseReceived) {
+                function ($r) use (&$releaseReceived) {
+                    return io(function () use ($r, &$releaseReceived) {
                         $releaseReceived = $r;
                     });
                 }
@@ -104,7 +105,9 @@ describe("Bracket Resource Management", function () {
 
                 expect($readContent)->toBe($content);
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -121,7 +124,9 @@ describe("Bracket Resource Management", function () {
 
                 expect($readLines)->toBe($lines);
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -140,7 +145,9 @@ describe("Bracket Resource Management", function () {
                     ->unsafeRunSync();
                 expect($existsAfter)->toBeTrue();
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -163,15 +170,17 @@ describe("Bracket Resource Management", function () {
 
             try {
                 $result = writeFileContents($tempFile, "original")
-                    ->flatMap(fn($_) => readFileContents($tempFile))
-                    ->map(fn($content) => strtoupper($content))
-                    ->flatMap(fn($upper) => writeFileContents($tempFile, $upper))
-                    ->flatMap(fn($_) => readFileContents($tempFile))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
+                    ->map(fn ($content) => strtoupper($content))
+                    ->flatMap(fn ($upper) => writeFileContents($tempFile, $upper))
+                    ->flatMap(fn ($_) => readFileContents($tempFile))
                     ->unsafeRunSync();
 
                 expect($result)->toBe("ORIGINAL");
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
     });
@@ -194,7 +203,7 @@ describe("Bracket Resource Management", function () {
             $nonExistentFile = new Path('/nonexistent/file.txt');
 
             $result = readFileContents($nonExistentFile)
-                ->handleError(fn($e) => "error handled")
+                ->handleError(fn ($e) => "error handled")
                 ->unsafeRunSync();
 
             expect($result)->toBe("error handled");
@@ -210,10 +219,10 @@ describe("Bracket Resource Management", function () {
             try {
                 try {
                     bracket(
-                        io(fn() => fopen($tempFile->toString(), 'w')),
-                        fn($handle) => io(fn() => throw new \RuntimeException("Error!")),
-                        function($handle) use (&$released) {
-                            return io(function() use ($handle, &$released) {
+                        io(fn () => fopen($tempFile->toString(), 'w')),
+                        fn ($handle) => io(fn () => throw new \RuntimeException("Error!")),
+                        function ($handle) use (&$released) {
+                            return io(function () use ($handle, &$released) {
                                 fclose($handle);
                                 $released = true;
                             });
@@ -225,7 +234,9 @@ describe("Bracket Resource Management", function () {
 
                 expect($released)->toBeTrue();
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -235,8 +246,8 @@ describe("Bracket Resource Management", function () {
 
             try {
                 $result = writeFileContents($file1, "Content 1")
-                    ->flatMap(fn($_) => writeFileContents($file2, "Content 2"))
-                    ->flatMap(fn($_) => io(fn() => [
+                    ->flatMap(fn ($_) => writeFileContents($file2, "Content 2"))
+                    ->flatMap(fn ($_) => io(fn () => [
                         readFileContents($file1)->unsafeRunSync(),
                         readFileContents($file2)->unsafeRunSync(),
                     ]))
@@ -244,8 +255,12 @@ describe("Bracket Resource Management", function () {
 
                 expect($result)->toBe(["Content 1", "Content 2"]);
             } finally {
-                if (file_exists($file1->toString())) unlink($file1->toString());
-                if (file_exists($file2->toString())) unlink($file2->toString());
+                if (file_exists($file1->toString())) {
+                    unlink($file1->toString());
+                }
+                if (file_exists($file2->toString())) {
+                    unlink($file2->toString());
+                }
             }
         });
     });
@@ -262,7 +277,9 @@ describe("Bracket Resource Management", function () {
                 $content = readLines($tempFile)->unsafeRunSync();
                 expect($content)->toBe(['line1', 'line2', 'line3']);
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -271,14 +288,16 @@ describe("Bracket Resource Management", function () {
 
             try {
                 Stream(...[1, 2, 3, 4, 5])
-                    ->map(fn($x) => $x * 2)
-                    ->filter(fn($x) => $x > 5)
+                    ->map(fn ($x) => $x * 2)
+                    ->filter(fn ($x) => $x > 5)
                     ->through(writeFile($tempFile));
 
                 $content = readLines($tempFile)->unsafeRunSync();
                 expect($content)->toBe(['6', '8', '10']);
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -292,7 +311,9 @@ describe("Bracket Resource Management", function () {
                 $content = readLines($tempFile)->unsafeRunSync();
                 expect($content)->toBe([]);
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -306,7 +327,9 @@ describe("Bracket Resource Management", function () {
                 $content = readLines($tempFile)->unsafeRunSync();
                 expect($content)->toBe(['1', '2.5', '1', '']);
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
 
@@ -314,9 +337,9 @@ describe("Bracket Resource Management", function () {
             $tempFile = new Path(sys_get_temp_dir() . '/stream_chain_test_' . uniqid() . '.txt');
 
             try {
-                $processData = fn($s) => $s
-                    ->map(fn($x) => $x * 2)
-                    ->filter(fn($x) => $x < 10);
+                $processData = fn ($s) => $s
+                    ->map(fn ($x) => $x * 2)
+                    ->filter(fn ($x) => $x < 10);
 
                 Stream(...[1, 2, 3, 4, 5, 6])
                     ->through($processData)
@@ -325,7 +348,9 @@ describe("Bracket Resource Management", function () {
                 $content = readLines($tempFile)->unsafeRunSync();
                 expect(array_values($content))->toBe(['2', '4', '6', '8']);
             } finally {
-                if (file_exists($tempFile->toString())) unlink($tempFile->toString());
+                if (file_exists($tempFile->toString())) {
+                    unlink($tempFile->toString());
+                }
             }
         });
     });
