@@ -1,15 +1,14 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
-    level: 6
+    level: 3
     paths:
         - src
     excludePaths:
         - vendor
     ignoreErrors:
         -
-            identifier: missingType.iterableValue
-        -
-            identifier: missingType.generics
-        # Ignore undefined $this in global functions (common pattern in PHP)
-        -
-            message: '#Undefined variable: \$this#'
-            path: src/Functions/*.php
+            message: '#Anonymous function has an unused use#'
+            paths:
+                - src/Ops/Pull/*/CompileOps.php

@@ -2,8 +2,8 @@
 
 namespace Phunkie\Streams\Pull;
 
-use Phunkie\Streams\Ops\Pull\CompileOps;
-use Phunkie\Streams\Ops\Pull\ShowOps;
+use Phunkie\Streams\Ops\Pull\ResourcePull\CompileOps;
+use Phunkie\Streams\Ops\Pull\ResourcePull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -55,6 +55,7 @@ class ResourcePull implements Pull
         return $this;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->current;

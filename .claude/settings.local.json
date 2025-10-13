@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source:*)",
+      "Bash(phpbrew use:*)",
+      "Bash(php:*)",
+      "Bash(composer phpstan:*)",
+      "Bash(composer test)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

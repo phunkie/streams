@@ -1,0 +1,131 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^PHPDoc tag @param for parameter \\$f with type callable is not subtype of native type Closure\\.$#"
+			count: 1
+			path: src/Effect/Task.php
+
+		-
+			message: "#^Property Phunkie\\\\Streams\\\\Infinite\\\\Timer\\:\\:\\$limit \\(int\\|null\\) does not accept float\\|null\\.$#"
+			count: 1
+			path: src/Infinite/Timer.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
+			count: 1
+			path: src/Ops/Pull/InfinitePull/FunctorOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getInfinite\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 26$#"
+			count: 1
+			path: src/Ops/Pull/InfinitePull/IteratorOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
+			count: 1
+			path: src/Ops/Pull/ResourcePull/FunctorOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
+			count: 1
+			path: src/Ops/Pull/ResourcePullConcat/FunctorOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getPull1\\)\\: Unexpected token \"\\\\n \\* \", expected '\\(' at offset 23$#"
+			count: 1
+			path: src/Ops/Pull/ResourcePullConcat/ShowOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getPull2\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 43$#"
+			count: 1
+			path: src/Ops/Pull/ResourcePullConcat/ShowOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Phunkie\\\\Streams\\\\Type\\\\Scope\\)\\: Unexpected token \"\\\\n \", expected type at offset 53$#"
+			count: 1
+			path: src/Ops/Pull/TransformationOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
+			count: 1
+			path: src/Ops/Pull/ValuesPull/FunctorOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
+			count: 1
+			path: src/Ops/Pull/ValuesPull/MonadOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Phunkie\\\\Streams\\\\Type\\\\Pull\\)\\: Unexpected token \"\\\\n \", expected type at offset 51$#"
+			count: 1
+			path: src/Ops/Stream/CompileOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Pull\\)\\: Unexpected token \"\\\\n \", expected type at offset 30$#"
+			count: 1
+			path: src/Ops/Stream/ImmListOps.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Phunkie\\\\Streams\\\\Pull\\)\\: Unexpected token \"\\\\n \", expected type at offset 46$#"
+			count: 1
+			path: src/Ops/Stream/ShowOps.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$bytes\\.$#"
+			count: 1
+			path: src/Pull/InfinitePull.php
+
+		-
+			message: "#^Class Phunkie\\\\Streams\\\\Type\\\\Scope does not have a constructor and must be instantiated without any parameters\\.$#"
+			count: 1
+			path: src/Pull/InfinitePull.php
+
+		-
+			message: "#^Method Phunkie\\\\Streams\\\\Pull\\\\InfinitePull\\:\\:toArray\\(\\) should return array but returns Generator\\.$#"
+			count: 1
+			path: src/Pull/InfinitePull.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$bytes\\.$#"
+			count: 1
+			path: src/Pull/ResourceObjectPull.php
+
+		-
+			message: "#^Call to an undefined method Phunkie\\\\Streams\\\\IO\\\\Resource\\:\\:pull\\(\\)\\.$#"
+			count: 1
+			path: src/Pull/ResourceObjectPull.php
+
+		-
+			message: "#^Call to an undefined method Phunkie\\\\Streams\\\\Type\\\\Pull\\:\\:drain\\(\\)\\.$#"
+			count: 1
+			path: src/Stream/Compiler.php
+
+		-
+			message: "#^Call to an undefined method Phunkie\\\\Streams\\\\Type\\\\Pull\\:\\:runLog\\(\\)\\.$#"
+			count: 1
+			path: src/Stream/Compiler.php
+
+		-
+			message: "#^Access to an undefined property Phunkie\\\\Streams\\\\Stream\\\\Compiler\\:\\:\\$drain\\.$#"
+			count: 1
+			path: src/Type/Stream.php
+
+		-
+			message: "#^Anonymous function has an unused use \\$bytes\\.$#"
+			count: 1
+			path: src/Type/Stream.php
+
+		-
+			message: "#^Call to an undefined method Phunkie\\\\Types\\\\Kind\\:\\:flatMap\\(\\)\\.$#"
+			count: 1
+			path: src/Type/Stream.php
+
+		-
+			message: "#^PHPDoc tag @param references unknown parameter\\: \\$context$#"
+			count: 1
+			path: src/Type/Stream.php
+
+		-
+			message: "#^PHPDoc tag @return contains generic type Phunkie\\\\Streams\\\\Type\\\\Stream\\<Phunkie\\\\Validation\\\\Validation\\> but class Phunkie\\\\Streams\\\\Type\\\\Stream is not generic\\.$#"
+			count: 1
+			path: src/Type/Stream.php

@@ -2,12 +2,17 @@
 
 namespace Phunkie\Streams\Pull;
 
+use Phunkie\Streams\Ops\Pull\ResourcePullConcat\CompileOps;
+use Phunkie\Streams\Ops\Pull\ResourcePullConcat\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
 
 class ResourcePullConcat implements Pull
 {
+    use CompileOps;
+    use ShowOps;
+
     private ResourcePull $pull1;
     private ResourcePull $pull2;
     private ResourcePull $currentPull;
@@ -76,5 +81,51 @@ class ResourcePullConcat implements Pull
     public function getPull2(): ResourcePull
     {
         return $this->pull2;
+    }
+
+    public function current(): mixed
+    {
+        return $this->currentPull->current();
+    }
+
+    public function key(): mixed
+    {
+        return $this->currentPull->key();
+    }
+
+    public function next(): void
+    {
+        try {
+            $this->currentPull->next();
+        } catch (\OutOfBoundsException $e) {
+            if ($this->currentPull === $this->pull1 && $this->pull2->hasNext()) {
+                $this->currentPull = $this->pull2;
+                $this->currentPull->next();
+            } else {
+                throw $e;
+            }
+        }
+    }
+
+    public function valid(): bool
+    {
+        return $this->hasNext();
+    }
+
+    public function getValues(): array
+    {
+        $values = [];
+        $this->rewind();
+
+        while ($this->hasNext()) {
+            try {
+                $this->next();
+                $values[] = $this->current();
+            } catch (\OutOfBoundsException $e) {
+                break;
+            }
+        }
+
+        return $values;
     }
 }
