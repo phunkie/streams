@@ -8,7 +8,7 @@ Phunkie Streams can be installed via Composer, the PHP package manager.
 
 ### Requirements
 
-- PHP 8.1 or higher
+- PHP 8.2 or higher
 - Composer
 
 ### Installing via Composer
@@ -27,8 +27,6 @@ To verify that Phunkie Streams is installed correctly, you can create a simple t
 <?php
 require 'vendor/autoload.php';
 
-use function Phunkie\Streams\Stream;
-
 // Create a simple stream
 $stream = Stream(1, 2, 3);
 var_dump($stream->toArray()); // Should output [1, 2, 3]
@@ -45,7 +43,6 @@ Phunkie Streams provides several ways to create streams:
 require 'vendor/autoload.php';
 
 // Import the necessary functions
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\fromRange;
 use function Phunkie\Streams\Infinite\iterate;
 

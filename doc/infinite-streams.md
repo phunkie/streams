@@ -21,7 +21,6 @@ The primary way to create infinite streams is through iteration functions:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Natural numbers: 1, 2, 3, 4, ...
@@ -49,7 +48,6 @@ The `unfold` function is another powerful way to create infinite streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\unfold;
 
 // Natural numbers using unfold
@@ -74,7 +72,6 @@ Create streams by repeating elements or sequences:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Repeat a single value infinitely
 $allOnes = Stream(1)->repeat();
@@ -89,7 +86,6 @@ For comparison, here's how you would create finite ranges:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\fromRange;
 
 // Finite range from 1 to 10
@@ -112,7 +108,6 @@ Use `take()` to limit an infinite stream to a specific number of elements:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Get the first 10 natural numbers
@@ -135,7 +130,6 @@ Use `takeWhile()` to take elements while a condition is true:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Take numbers until we reach 10
@@ -163,7 +157,6 @@ When working with infinite streams, always use `compile()` before terminal opera
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Correct way to process infinite streams
@@ -183,7 +176,6 @@ You can apply transformations to infinite streams just like with finite streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Find squares of the first 10 natural numbers
@@ -210,7 +202,6 @@ Combine multiple operations efficiently:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Find the sum of squares of the first 100 even numbers
@@ -228,7 +219,6 @@ Combine multiple infinite streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Create pairs of (number, square)
@@ -246,7 +236,6 @@ Alternate between multiple streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Interleave natural numbers with their negatives: 1, -1, 2, -2, 3, -3, ...
@@ -265,7 +254,6 @@ Infinite streams naturally model many mathematical concepts:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Arithmetic sequence with first term a=1 and common difference d=3
@@ -280,7 +268,6 @@ $arithmeticSequence = Stream(iterate(1)(fn($x) => $x + 3))
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Geometric sequence with first term a=1 and common ratio r=2
@@ -295,7 +282,6 @@ $geometricSequence = Stream(iterate(1)(fn($x) => $x * 2))
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // Generate prime numbers
@@ -322,7 +308,6 @@ Always limit infinite streams before terminal operations:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // GOOD: Limit then consume
@@ -341,7 +326,6 @@ Pay attention to the order of stream operations:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 
 // EFFICIENT: filter, then take
@@ -368,7 +352,6 @@ Process large or infinite streams in chunks if needed:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\iterate;
 use function Phunkie\Streams\Infinite\fromRange;
 

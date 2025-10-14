@@ -35,7 +35,6 @@ The most direct way to create a pure stream is from individual values:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Stream of integers
 $stream = Stream(1, 2, 3, 4, 5);
@@ -53,7 +52,6 @@ Convert PHP arrays to pure streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // From a numeric array
 $array = [1, 2, 3, 4, 5];
@@ -70,7 +68,6 @@ For more memory-efficient stream creation, especially with large datasets:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 function generateSequence($n) {
     for ($i = 1; $i <= $n; $i++) {
@@ -89,7 +86,6 @@ Create empty streams when needed:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // An empty stream
 $empty = Stream();
@@ -105,7 +101,6 @@ Map, filter, and other transformations create new streams without modifying the 
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $stream = Stream(1, 2, 3, 4, 5);
 
@@ -125,7 +120,6 @@ Operations can be composed to build complex transformations:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $result = Stream(1, 2, 3, 4, 5)
     ->map(fn($x) => $x * 2) // Stream(2, 4, 6, 8, 10)
@@ -140,7 +134,6 @@ Pure streams work well with higher-order functions:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Define reusable transformations
 $double = fn($x) => $x * 2;
@@ -163,7 +156,6 @@ Pure streams offer several terminal operations that consume the stream and produ
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $stream = Stream(1, 2, 3, 4, 5);
 
@@ -180,7 +172,6 @@ Aggregate stream elements into a single result:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $stream = Stream(1, 2, 3, 4, 5);
 
@@ -201,7 +192,6 @@ Access specific elements from the stream:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $stream = Stream(1, 2, 3, 4, 5);
 
@@ -224,7 +214,6 @@ $found = $stream->find(fn($x) => $x > 3); // Option(4)
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Process a list of user data
 $users = [
@@ -245,7 +234,6 @@ $result = Stream(...$users)
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Generate a sequence of squares
 $squares = Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
@@ -262,7 +250,6 @@ $factorial = Stream(...range(1, $n))
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Split text into words, count their occurrences
 $text = "The quick brown fox jumps over the lazy dog";
@@ -284,7 +271,6 @@ Pure operations are easier to test because they don't depend on external state:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // A pure function that processes a stream
 function doubleEvens($stream) {
@@ -314,7 +300,6 @@ Pure operations compose well, allowing complex transformations to be built from 
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Define reusable stream transformations
 function onlyPositive($stream) {

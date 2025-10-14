@@ -18,20 +18,20 @@ class Task
     /**
      * Task constructor.
      *
-     * @param \Closure $computation A function that performs the task's computation.
+     * @param callable $computation A function that performs the task's computation.
      */
-    public function __construct(\Closure $computation)
+    public function __construct(callable $computation)
     {
-        $this->computation = $computation;
+        $this->computation = $computation(...);
     }
 
     /**
      * Map over the result of the Task.
      *
-     * @param \Closure $f A function to transform the result of the task.
+     * @param callable $f A function to transform the result of the task.
      * @return Task A new Task with the transformed result.
      */
-    public function map(\Closure $f): Task
+    public function map(callable $f): Task
     {
         return new Task(function () use ($f) {
             return $f(($this->computation)());
@@ -44,7 +44,7 @@ class Task
      * @param callable $f A function that returns a new Task based on the result.
      * @return Task The result of applying the function to the task's result.
      */
-    public function flatMap(\Closure $f): Task
+    public function flatMap(callable $f): Task
     {
         return new Task(function () use ($f) {
             $result = ($this->computation)();
@@ -59,21 +59,8 @@ class Task
      *
      * @return mixed The result of the computation.
      */
-    public function run()
+    public function run(): mixed
     {
         return ($this->computation)();
-    }
-
-    /**
-     * Run the Task asynchronously by wrapping it in a Fiber.
-     *
-     * @return \Fiber
-     */
-    public function runAsync(): \Fiber
-    {
-        $fiber = new \Fiber($this->computation);
-        $fiber->start();
-
-        return $fiber;
     }
 }

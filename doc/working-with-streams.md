@@ -14,7 +14,6 @@ The most straightforward way to create a stream is from individual values:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Simple values
 $stream = Stream(1, 2, 3, 4, 5);
@@ -29,7 +28,6 @@ You can easily convert PHP arrays to streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // From a regular array
 $array = [1, 2, 3, 4, 5];
@@ -46,7 +44,6 @@ Streams can be created from generator functions for efficient, lazy evaluation:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Define a generator function
 function generateValues() {
@@ -66,7 +63,6 @@ Phunkie Streams provides functions for creating potentially infinite streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\fromRange;
 use function Phunkie\Streams\Infinite\iterate;
 
@@ -85,7 +81,6 @@ For working with files and other resources:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 // Create a stream from a file (reads line by line)
@@ -106,7 +101,6 @@ Map operations transform each element in a stream:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Basic map: double each element
 $doubled = Stream(1, 2, 3, 4, 5)
@@ -130,7 +124,6 @@ Filter operations select elements based on predicates:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Basic filter: keep only even numbers
 $evens = Stream(1, 2, 3, 4, 5, 6)
@@ -159,7 +152,6 @@ Control the number of elements in a stream:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Infinite\fromRange;
 
 // Take: keep only the first n elements
@@ -187,7 +179,6 @@ Additional useful transformations:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Distinct: keep only unique elements
 $unique = Stream(1, 2, 2, 3, 3, 3, 4)
@@ -215,7 +206,6 @@ Join streams sequentially:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Concatenate two streams
 $combined = Stream(1, 2, 3)
@@ -237,7 +227,6 @@ Combine streams element-wise:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Zip two streams into pairs
 $zipped = Stream(1, 2, 3)
@@ -261,7 +250,6 @@ Alternate elements from multiple streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Interleave two streams
 $interleaved = Stream(1, 3, 5)
@@ -286,7 +274,6 @@ Convert streams to other collection types:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $stream = Stream(1, 2, 3, 4, 5);
 
@@ -303,7 +290,6 @@ Process each element:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Process each element with foreach
 $stream = Stream(1, 2, 3, 4, 5);
@@ -323,7 +309,6 @@ Reduce a stream to a single value:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $stream = Stream(1, 2, 3, 4, 5);
 
@@ -344,7 +329,6 @@ Search for specific elements:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $stream = Stream(1, 2, 3, 4, 5);
 
@@ -365,7 +349,6 @@ Compute statistics on numeric streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $numbers = Stream(1, 2, 3, 4, 5);
 
@@ -389,7 +372,6 @@ Handling streams that interact with external resources:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 // Process a file line by line
@@ -414,7 +396,6 @@ Phunkie Streams provides methods for handling errors:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Recover from errors
 $safeStream = Stream(1, 2, "3", 4, "five")
@@ -450,7 +431,6 @@ $safeStream = Stream(1, 2, "3", 4, "five")
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Inspect elements during processing
 $result = Stream(1, 2, 3, 4, 5)
@@ -467,7 +447,6 @@ For reusable stream transformations:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Define reusable transformations
 function doubleAll($stream) {

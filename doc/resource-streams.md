@@ -21,7 +21,6 @@ You can create streams from files to process their contents line by line or byte
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 // Create a stream from a file
@@ -69,7 +68,6 @@ Resource streams support various file operations:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Functions\file\exists;
 use function Phunkie\Streams\Functions\file\deleteFile;
 use Phunkie\Streams\IO\File\Path;
@@ -314,7 +312,6 @@ One of the strengths of Phunkie Streams is the ability to compose complex resour
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 // Complex resource operation: read from one file, transform, and write to another

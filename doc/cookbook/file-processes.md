@@ -11,7 +11,6 @@ This section provides recipes for working with files using Phunkie Streams with 
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 $lines = Stream(new Path("file.txt"))
@@ -61,7 +60,6 @@ $lines = readLines(new Path("file.txt"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 $processed = Stream(new Path("large-file.txt"))
@@ -81,7 +79,6 @@ $processed = Stream(new Path("large-file.txt"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 // Small buffer for text files (default is 4096)
@@ -137,7 +134,6 @@ $bytes = writeLines(new Path("output.txt"), $lines)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
@@ -154,7 +150,6 @@ Stream("line1", "line2", "line3")
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
@@ -175,7 +170,6 @@ Stream(1, 2, 3, 4, 5)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
@@ -200,7 +194,6 @@ Stream(new Path("data.csv"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
@@ -263,7 +256,6 @@ $compressFile(
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
@@ -342,7 +334,6 @@ $result = writeFileContents($tempPath, "temporary data")
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
@@ -375,7 +366,6 @@ $results = Stream(...$files)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\readLines;
 use Phunkie\Streams\IO\File\Path;
 

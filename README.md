@@ -1,5 +1,10 @@
 # Phunkie Streams #
 
+[![Latest Stable Version](https://poser.pugx.org/phunkie/streams/v/stable)](https://packagist.org/packages/phunkie/streams)
+[![Total Downloads](https://poser.pugx.org/phunkie/streams/downloads)](https://packagist.org/packages/phunkie/streams)
+[![License](https://poser.pugx.org/phunkie/streams/license)](https://packagist.org/packages/phunkie/streams)
+[![PHP Version](https://img.shields.io/packagist/php-v/phunkie/streams.svg)](https://packagist.org/packages/phunkie/streams)
+
 Phunkie Streams is a PHP functional library for working with streams inspired by functional streaming libraries like fs2 (Scala). It allows you to process data in a declarative, composable way.
 
 ## Installation
@@ -158,7 +163,6 @@ $x->interleave($y, $z)->compile()->toList();
 require 'vendor/autoload.php';
 
 // Import the necessary functions
-use function Phunkie\Streams\Stream;
 
 // Create a stream
 $stream = Stream(1, 2, 3, 4, 5);

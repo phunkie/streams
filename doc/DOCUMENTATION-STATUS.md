@@ -76,14 +76,43 @@ No files require updates at this time. All documentation accurately reflects the
 - `IO->map()`, `IO->flatMap()` - Compose IO operations
 - Validation pattern matching
 
+## What's Newly Implemented (Phase 6)
+
+### Parallel Stream Processing ✅
+- `parMap()` - Parallel element transformation with bounded concurrency
+- `parMapValidation()` - Parallel with error collection (non-fail-fast)
+- `parEvalMap()` - Parallel IO effect evaluation
+- `parTraverse()` - Deferred parallel execution returning IO<Stream>
+- `parEval()` - Parallel effect processing without collecting results
+- `Stream::parMerge()` - Merge multiple streams concurrently
+- `parMergeMap()` - Concurrent flatMap with stream evaluation
+- Auto CPU detection when `maxConcurrent = 0`
+- Automatic fallback to sequential execution
+- Memory-optimized with iterator protocol
+
+### Memory Optimizations ✅
+- All operations use constant memory regardless of stream size
+- Iterator protocol with per-element transformation
+- `writeFile()` streams data without materialization
+- Parallel operations process in chunks (O(maxConcurrent) memory)
+- Documented in README with examples and best practices
+
 ## What's NOT Implemented
 
 These features don't exist yet (planned for future phases):
 
 - ❌ `Process` class for system commands (planned)
-- ❌ Concurrency features (Phase 6 - not yet implemented)
-- ❌ Backpressure mechanisms (Phase 6 - not yet implemented)
-- ❌ Connection pooling (Phase 6 - not yet implemented)
+- ❌ Async backpressure mechanisms (not needed until async operations added)
+- ❌ Rate limiting (throttle/debounce) (planned for future)
+- ❌ Connection pooling (planned for future)
+
+## Current Flow Control
+
+While true async backpressure isn't implemented, the library provides adequate flow control:
+- ✅ Lazy evaluation - Pull-based model for natural backpressure
+- ✅ `chunk(n)` - Batches elements for rate limiting
+- ✅ `maxConcurrent` - Bounded parallelism prevents resource exhaustion
+- ✅ Memory-efficient streaming - Constant memory usage
 
 ## Internal Implementation Details
 
@@ -97,7 +126,22 @@ These exist in the codebase but are not part of the public API:
 
 ## Recommendations
 
-### All Priorities - COMPLETE ✅
+### Documentation Updates Needed for Phase 6
+
+1. **README.md** - ✅ UPDATED
+   - Added "Concurrency & Parallel Processing" section
+   - Added "Memory Optimization" section with examples
+   - Updated feature list to highlight memory efficiency and parallel processing
+   - Updated "What's Implemented" to show concurrency features
+
+2. **Need Updates:**
+   - [ ] **getting-started.md** - Add concurrency quick start examples
+   - [ ] **advanced-topics.md** - Add parallel processing patterns section
+   - [ ] Create **doc/concurrency.md** - Comprehensive guide to parallel operations
+   - [ ] Create **doc/memory-optimization.md** - Deep dive into memory efficiency
+   - [ ] Update **doc/cookbook/** files with parallel processing recipes
+
+### All Phase 1-5 Priorities - COMPLETE ✅
 1. ~~Update **getting-started.md**~~ ✅ DONE
 2. ~~Update **cookbook/** files~~ ✅ DONE (all 4 cookbook files updated)
 3. ~~Add **"What's Implemented"** section to README.md~~ ✅ DONE

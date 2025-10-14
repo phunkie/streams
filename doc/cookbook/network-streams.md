@@ -89,7 +89,6 @@ foreach ($messages as $message) {
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\{Network, IO\Network\SocketAddress};
 
 Stream('message1', 'message2', 'message3')

@@ -10,7 +10,6 @@ Phunkie Streams provides several ways to combine multiple streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Concatenation - streams processed sequentially
 $stream1 = Stream(1, 2, 3);
@@ -43,7 +42,6 @@ The `through()` operator allows you to compose transformation pipelines:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Define reusable transformations
 $uppercase = fn(Stream $s) => $s->map(fn($x) => strtoupper($x));
@@ -77,7 +75,6 @@ Combine file I/O, transformations, and output:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\{writeFile, readLines};
 use Phunkie\Streams\IO\File\Path;
 
@@ -126,7 +123,6 @@ When working with large files or infinite streams, manage memory carefully:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 // Process large files in chunks
@@ -150,7 +146,6 @@ Optimize buffer sizes based on your use case:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 
 // Small buffer for text processing (default 4096)
@@ -220,7 +215,6 @@ $processFile = function(string $filename) {
 ```php
 <?php
 use PHPUnit\Framework\TestCase;
-use function Phunkie\Streams\Stream;
 
 class StreamProcessingTest extends TestCase
 {
@@ -250,7 +244,6 @@ class StreamProcessingTest extends TestCase
 ```php
 <?php
 use PHPUnit\Framework\TestCase;
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents};
 use Phunkie\Streams\IO\File\Path;
 

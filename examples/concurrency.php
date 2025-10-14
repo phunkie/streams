@@ -5,11 +5,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Phunkie\Effect\Concurrent\FiberExecutionContext;
 use Phunkie\Effect\Concurrent\ParallelExecutionContext;
 
+use Phunkie\Validation\Failure;
+use Phunkie\Validation\Success;
 use function Phunkie\Effect\Functions\io\io;
 
 use Phunkie\Streams\Network;
-
-use function Phunkie\Streams\Stream;
+use function Phunkie\Functions\show\show;
 
 echo "=== Phunkie Streams Concurrency Examples ===\n\n";
 
@@ -69,7 +70,7 @@ echo "Fetching " . count($urls) . " URLs with 1 second delay each...\n";
 
 $start = microtime(true);
 $responses = Stream(...$urls)
-    ->parEvalMap(3, fn ($url) => Network::httpGet($url))
+    ->parEvalMap(3, fn ($url) => io(fn () => Network::httpGet($url)->compile()->toArray()))
     ->compile()
     ->drain
     ->unsafeRunSync();
@@ -98,8 +99,8 @@ $results = Stream(1, 2, 3, 4, 5, 6, 7, 8, 9)
     ->compile()
     ->toArray();
 
-$successes = array_filter($results, fn ($v) => $v->isSuccess());
-$failures = array_filter($results, fn ($v) => $v->isFailure());
+$successes = array_filter($results, fn ($v) => $v instanceof Success);
+$failures = array_filter($results, fn ($v) => $v instanceof Failure);
 
 echo "Total operations: " . count($results) . "\n";
 echo "Successes: " . count($successes) . "\n";
@@ -107,12 +108,15 @@ echo "Failures: " . count($failures) . "\n";
 
 echo "\nSuccessful results: ";
 foreach ($successes as $success) {
-    echo $success->value . " ";
+    show($success);
+    echo " ";
 }
 
-echo "\n\nFailed on values: ";
+echo "\n\nFailed values: ";
 foreach ($failures as $failure) {
-    echo $failure->value->getMessage() . ", ";
+    // Failures store the exception; we can display it via toString()
+    show($failure);
+    echo ", ";
 }
 echo "\n\n";
 

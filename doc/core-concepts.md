@@ -21,7 +21,6 @@ Internally, a Stream is a thin wrapper around a `Pull` object, which handles the
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Creating a stream of values
 $stream = Stream(1, 2, 3, 4);
@@ -107,7 +106,6 @@ When you chain operations on a stream, Scope accumulates the transformations:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 // Each operation adds to the Scope
 $stream = Stream(1, 2, 3, 4, 5)
@@ -161,7 +159,6 @@ IO streams represent computations that interact with the outside world:
 
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\{Network, IO\File\Path};
 
 // File I/O stream

@@ -27,7 +27,7 @@ $tempFile = fn ($name) => new Path(sys_get_temp_dir() . "/file_pipe_{$name}_" . 
 // Example 1: Basic writeFile usage
 echo "1. Writing a stream to a file:\n";
 $file1 = $tempFile('basic');
-Stream(...['Line 1', 'Line 2', 'Line 3'])
+Stream('Line 1', 'Line 2', 'Line 3')
     ->through(writeFile($file1));
 
 $content = readLines($file1)->unsafeRunSync();
@@ -38,7 +38,7 @@ echo "\n";
 // Example 2: Writing numbers to file
 echo "2. Writing numbers to a file:\n";
 $file2 = $tempFile('numbers');
-Stream(...[1, 2, 3, 4, 5])
+Stream(1, 2, 3, 4, 5)
     ->through(writeFile($file2));
 
 $content = readLines($file2)->unsafeRunSync();
@@ -49,7 +49,7 @@ echo "\n";
 // Example 3: Writing transformed data
 echo "3. Writing transformed data:\n";
 $file3 = $tempFile('transformed');
-Stream(...[1, 2, 3, 4, 5])
+Stream(1, 2, 3, 4, 5)
     ->map(fn ($x) => $x * 10)
     ->map(fn ($x) => "Number: $x")
     ->through(writeFile($file3));

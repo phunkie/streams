@@ -13,7 +13,6 @@ This section provides recipes for integrating Phunkie Streams with system-level 
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\Functions\resource\bracket;
 use function Phunkie\Effect\Functions\io\io;
 
@@ -59,7 +58,6 @@ $result = $executeCommand('ls -la')
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 
 $executeCommand = function(string $command) {
     return bracket(
@@ -101,7 +99,6 @@ $result = $executeCommand('find /tmp -name "*.txt"')
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\{readLines, writeLines};
 use Phunkie\Streams\IO\File\Path;
 
@@ -130,7 +127,6 @@ $processUtf8(
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\IO\File\Path;
 use function Phunkie\Streams\IO\File\writeFile;
 
@@ -196,7 +192,6 @@ $decompressFile(
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Effect\Functions\io\io;
 
 // Read config from environment
@@ -229,7 +224,6 @@ $result = $processData->unsafeRunSync();
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Effect\Functions\io\io;
 
 // Gather system metrics
@@ -262,7 +256,6 @@ $metrics = Stream(
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
@@ -295,7 +288,6 @@ $results = Stream(...$files)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents, deleteFile};
 use Phunkie\Streams\IO\File\Path;
 

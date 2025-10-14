@@ -118,7 +118,6 @@ $records = Network::httpGet('https://api.example.com/export')
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\Network;
 
 $endpoints = ['/users', '/products', '/orders'];
@@ -340,7 +339,6 @@ $allUsers = $fetchAllPages('https://api.example.com/users');
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\Stream;
 use Phunkie\Streams\Network;
 
 class RateLimitedClient

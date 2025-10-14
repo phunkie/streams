@@ -4,8 +4,9 @@
     "type": "library",
     "license": "MIT",
     "require": {
+        "php": ">=8.2",
         "phunkie/phunkie": "^0.11.3",
-        "phunkie/effect": "^0.4.0"
+        "phunkie/effect": "^0.4.1"
     },
     "autoload": {
         "psr-4": {
@@ -23,6 +24,7 @@
         }
     ],
     "suggest": {
+        "ext-parallel": "Required for parallel processing capabilities",
         "ext-mbstring": "Required for encoding and decoding text in various encodings",
         "ext-json": "Required for JSON encoding and decoding",
         "ext-pcntl": "Required for process control in Unix-like operating systems",
