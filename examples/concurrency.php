@@ -8,9 +8,9 @@ use Phunkie\Effect\Concurrent\ParallelExecutionContext;
 use function Phunkie\Effect\Functions\io\io;
 use function Phunkie\Functions\show\show;
 
+use Phunkie\Streams\Network;
 use Phunkie\Validation\Failure;
 use Phunkie\Validation\Success;
-use Phunkie\Streams\Network;
 
 echo "=== Phunkie Streams Concurrency Examples ===\n\n";
 
