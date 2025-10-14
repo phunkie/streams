@@ -4,12 +4,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Phunkie\Effect\Concurrent\FiberExecutionContext;
 use Phunkie\Effect\Concurrent\ParallelExecutionContext;
-
 use Phunkie\Validation\Failure;
 use Phunkie\Validation\Success;
-use function Phunkie\Effect\Functions\io\io;
-
 use Phunkie\Streams\Network;
+use function Phunkie\Effect\Functions\io\io;
 use function Phunkie\Functions\show\show;
 
 echo "=== Phunkie Streams Concurrency Examples ===\n\n";
