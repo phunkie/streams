@@ -12,7 +12,6 @@ use Phunkie\Validation\Failure;
 use Phunkie\Validation\Success;
 use Phunkie\Streams\Network;
 
-
 echo "=== Phunkie Streams Concurrency Examples ===\n\n";
 
 // ============================================================================
