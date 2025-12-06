@@ -4,9 +4,9 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": ">=8.2",
-        "phunkie/phunkie": "^0.11.3",
-        "phunkie/effect": "^0.4.1"
+        "php": "^8.2 || ^8.3 || ^8.4",
+        "phunkie/phunkie": "^1.0.0",
+        "phunkie/effect": "^1.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -40,8 +40,8 @@
     "scripts": {
         "test": "pest",
         "phpstan": "phpstan analyse",
-        "cs-fix": "php-cs-fixer fix",
-        "cs-check": "php-cs-fixer fix --dry-run --diff"
+        "cs-fix": "php-cs-fixer fix --allow-risky=yes",
+        "cs-check": "php-cs-fixer fix --dry-run --diff --allow-risky=yes"
     },
     "config": {
         "bin-dir": "bin",
