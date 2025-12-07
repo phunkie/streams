@@ -35,7 +35,7 @@
     "require-dev": {
         "pestphp/pest": "^2.35",
         "phpstan/phpstan": "^1.10",
-        "friendsofphp/php-cs-fixer": "^3.0"
+        "friendsofphp/php-cs-fixer": "^3.90"
     },
     "scripts": {
         "test": "pest",
