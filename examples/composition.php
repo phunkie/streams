@@ -12,15 +12,15 @@ use function Phunkie\Effect\Functions\io\io;
 
 use Phunkie\Effect\IO\IO;
 
-use function Phunkie\Streams\IO\File\deleteFile;
-use function Phunkie\Streams\IO\File\exists;
+use function Phunkie\Streams\Functions\file\deleteFile;
+use function Phunkie\Streams\Functions\file\exists;
 
 use Phunkie\Streams\IO\File\Path;
 
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\writeFileContents;
-use function Phunkie\Streams\IO\File\writeLines;
+use function Phunkie\Streams\Functions\file\readFileContents;
+use function Phunkie\Streams\Functions\file\readLines;
+use function Phunkie\Streams\Functions\file\writeFileContents;
+use function Phunkie\Streams\Functions\file\writeLines;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/printLn.php';

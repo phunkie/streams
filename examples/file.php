@@ -1,6 +1,6 @@
 <?php
 
-use function Phunkie\Streams\IO\File\readAll;
+use function Phunkie\Streams\Functions\file\readAll;
 
 require_once dirname(dirname(__FILE__)) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/printLn.php';
