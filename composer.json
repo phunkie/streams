@@ -41,7 +41,16 @@
         "test": "pest",
         "phpstan": "phpstan analyse",
         "cs-fix": "php-cs-fixer fix --allow-risky=yes",
-        "cs-check": "php-cs-fixer fix --dry-run --diff --allow-risky=yes"
+        "cs-check": "php-cs-fixer fix --dry-run --diff --allow-risky=yes",
+        "lint": [
+            "@cs-check",
+            "@phpstan"
+        ],
+        "test-all": "scripts/test-all-versions.sh",
+        "check": [
+            "@lint",
+            "@test"
+        ]
     },
     "config": {
         "bin-dir": "bin",
