@@ -63,8 +63,7 @@ Phunkie Streams provides functions for creating potentially infinite streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Functions\infinite\{fromRange, iterate};
-
+// These functions are available in global namespace
 // From a number range (potentially infinite)
 $naturals = Stream(fromRange(1)); // All natural numbers starting from 1
 $specificRange = Stream(fromRange(1, 100)); // Numbers from 1 to 100
