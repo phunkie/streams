@@ -19,7 +19,7 @@ namespace {
     use Phunkie\Streams\Infinite\Timer;
     use Phunkie\Streams\Infinite\Unfold;
 
-    function fromRange(int $start, int $end, int $step = 1): Infinite
+    function fromRange(int $start, int $end = PHP_INT_MAX, int $step = 1): Infinite
     {
         return new Range($start, $end, $step);
     }
@@ -51,5 +51,46 @@ namespace {
     function awakeEvery(float $seconds, $stopAt = null): Infinite
     {
         return new Timer($seconds, $stopAt);
+    }
+}
+
+namespace Phunkie\Streams\Functions\infinite {
+
+    use Phunkie\Streams\Infinite\Infinite;
+
+    const fromRange = '\\Phunkie\\Streams\\Functions\\infinite\\fromRange';
+    function fromRange(int $start, int $end = PHP_INT_MAX, int $step = 1): Infinite
+    {
+        return \fromRange($start, $end, $step);
+    }
+
+    const iterate = '\\Phunkie\\Streams\\Functions\\infinite\\iterate';
+    function iterate(int $start): callable
+    {
+        return \iterate($start);
+    }
+
+    const unfold = '\\Phunkie\\Streams\\Functions\\infinite\\unfold';
+    function unfold($seed): callable
+    {
+        return \unfold($seed);
+    }
+
+    const fromConstant = '\\Phunkie\\Streams\\Functions\\infinite\\fromConstant';
+    function fromConstant(mixed $pattern): Infinite
+    {
+        return \fromConstant($pattern);
+    }
+
+    const repeat = '\\Phunkie\\Streams\\Functions\\infinite\\repeat';
+    function repeat(...$values): Infinite
+    {
+        return \repeat(...$values);
+    }
+
+    const awakeEvery = '\\Phunkie\\Streams\\Functions\\infinite\\awakeEvery';
+    function awakeEvery(float $seconds, $stopAt = null): Infinite
+    {
+        return \awakeEvery($seconds, $stopAt);
     }
 }
