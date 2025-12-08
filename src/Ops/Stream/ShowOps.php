@@ -11,8 +11,10 @@
 
 namespace Phunkie\Streams\Ops\Stream;
 
+use Phunkie\Streams\Type\Pull;
+
 /**
- * @method getPull(): Phunkie\Streams\Pull
+ * @method Pull getPull()
  */
 trait ShowOps
 {

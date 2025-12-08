@@ -1,13 +1,12 @@
 <?php
 
 use function Phunkie\Effect\Functions\io\io;
-use function Phunkie\Streams\IO\File\exists;
+use function Phunkie\Streams\Functions\file\exists;
+use function Phunkie\Streams\Functions\file\readFileContents;
+use function Phunkie\Streams\Functions\file\readLines;
+use function Phunkie\Streams\Functions\file\writeFileContents;
 
 use Phunkie\Streams\IO\File\Path;
-
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\writeFileContents;
 
 describe("Error Handling with attempt() and handleError()", function () {
 

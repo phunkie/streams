@@ -19,7 +19,7 @@ namespace {
     use Phunkie\Streams\Infinite\Timer;
     use Phunkie\Streams\Infinite\Unfold;
 
-    function fromRange(int $start, int $end, int $step = 1): Infinite
+    function fromRange(int $start, int $end = PHP_INT_MAX, int $step = 1): Infinite
     {
         return new Range($start, $end, $step);
     }

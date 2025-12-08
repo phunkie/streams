@@ -9,7 +9,23 @@
  * file that was distributed with this source code.
  */
 
-namespace Phunkie\Streams\IO\File {
+namespace {
+
+    use Phunkie\Streams\IO\File\Path as PathClass;
+
+    /**
+     * Creates a Path from a string
+     *
+     * @param string $pathname The path string
+     * @return PathClass The Path object
+     */
+    function Path(string $pathname): PathClass
+    {
+        return new PathClass($pathname);
+    }
+}
+
+namespace Phunkie\Streams\Functions\file {
 
     use function Phunkie\Effect\Functions\io\io;
 
@@ -17,9 +33,17 @@ namespace Phunkie\Streams\IO\File {
 
     use function Phunkie\Streams\Functions\resource\bracket;
 
+    use Phunkie\Streams\IO\File\Path;
     use Phunkie\Streams\IO\Read;
     use Phunkie\Streams\Type\Stream;
 
+    /**
+     * Read all contents from a file as a Stream
+     *
+     * @param Path $path The file path to read from
+     * @param int $chunk The chunk size in bytes for reading
+     * @return Stream<string> A stream of file contents
+     */
     function readAll($path, $chunk): Stream
     {
         return Read::readAll($path, $chunk);

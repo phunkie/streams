@@ -1,17 +1,16 @@
 <?php
 
 use function Phunkie\Effect\Functions\io\io;
+use function Phunkie\Streams\Functions\file\deleteFile;
+use function Phunkie\Streams\Functions\file\exists;
+use function Phunkie\Streams\Functions\file\readFileContents;
+use function Phunkie\Streams\Functions\file\readLines;
+use function Phunkie\Streams\Functions\file\writeFile;
+use function Phunkie\Streams\Functions\file\writeFileContents;
+use function Phunkie\Streams\Functions\file\writeLines;
 use function Phunkie\Streams\Functions\resource\bracket;
-use function Phunkie\Streams\IO\File\deleteFile;
-use function Phunkie\Streams\IO\File\exists;
 
 use Phunkie\Streams\IO\File\Path;
-
-use function Phunkie\Streams\IO\File\readFileContents;
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\writeFile;
-use function Phunkie\Streams\IO\File\writeFileContents;
-use function Phunkie\Streams\IO\File\writeLines;
 
 describe("Bracket Resource Management", function () {
 

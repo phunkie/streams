@@ -63,9 +63,7 @@ Phunkie Streams provides functions for creating potentially infinite streams:
 
 ```php
 <?php
-use function Phunkie\Streams\Infinite\fromRange;
-use function Phunkie\Streams\Infinite\iterate;
-
+// These functions are available in global namespace
 // From a number range (potentially infinite)
 $naturals = Stream(fromRange(1)); // All natural numbers starting from 1
 $specificRange = Stream(fromRange(1, 100)); // Numbers from 1 to 100
@@ -81,14 +79,14 @@ For working with files and other resources:
 
 ```php
 <?php
-use Phunkie\Streams\IO\File\Path;
+use function Phunkie\Streams\IO\File\Path;
 
 // Create a stream from a file (reads line by line)
-$filePath = new Path('path/to/file.txt');
+$filePath = Path('path/to/file.txt');
 $fileStream = Stream($filePath);
 
 // With a specific buffer size (in bytes)
-$largeFileStream = Stream(new Path('path/to/file.txt'), 4096);
+$largeFileStream = Stream(Path('path/to/file.txt'), 4096);
 ```
 
 ## Transforming Streams

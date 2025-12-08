@@ -14,8 +14,10 @@ namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 use function Phunkie\Streams\Functions\transformation\flatMap;
 use function Phunkie\Streams\Functions\transformation\flatten;
 
+use Phunkie\Streams\Type\Scope;
+
 /**
- * @method getScope
+ * @method Scope getScope()
  */
 trait MonadOps
 {

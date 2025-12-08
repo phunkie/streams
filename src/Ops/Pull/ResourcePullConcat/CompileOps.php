@@ -13,10 +13,11 @@ namespace Phunkie\Streams\Ops\Pull\ResourcePullConcat;
 
 use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\Resource;
+use Phunkie\Streams\Type\Pull;
 use Phunkie\Types\ImmList;
 
 /**
- * @method pull()
+ * @method Pull pull()
  */
 trait CompileOps
 {

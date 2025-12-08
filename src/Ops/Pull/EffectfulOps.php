@@ -18,10 +18,12 @@ use function Phunkie\Streams\Functions\transformation\evalFilter;
 use function Phunkie\Streams\Functions\transformation\evalMap;
 use function Phunkie\Streams\Functions\transformation\evalTap;
 
+use Phunkie\Streams\Type\Scope;
+
 /**
  * This trait allows you to add operations with side effects to the scope of the stream.
  *
- * @method getScope()
+ * @method Scope getScope()
  */
 trait EffectfulOps
 {

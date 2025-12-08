@@ -1,5 +1,6 @@
 # Phunkie Streams #
 
+[![CI](https://github.com/phunkie/streams/actions/workflows/ci.yml/badge.svg)](https://github.com/phunkie/streams/actions)
 [![Latest Stable Version](https://poser.pugx.org/phunkie/streams/v/stable)](https://packagist.org/packages/phunkie/streams)
 [![Total Downloads](https://poser.pugx.org/phunkie/streams/downloads)](https://packagist.org/packages/phunkie/streams)
 [![License](https://poser.pugx.org/phunkie/streams/license)](https://packagist.org/packages/phunkie/streams)

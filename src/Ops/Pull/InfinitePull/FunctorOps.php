@@ -13,8 +13,10 @@ namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 
 use function Phunkie\Streams\Functions\transformation\map;
 
+use Phunkie\Streams\Type\Scope;
+
 /**
- * @method getScope
+ * @method Scope getScope()
  */
 trait FunctorOps
 {

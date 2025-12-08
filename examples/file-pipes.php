@@ -7,13 +7,11 @@
  * The writeFile() pipe allows you to write stream elements directly to files.
  */
 
-use function Phunkie\Streams\IO\File\deleteFile;
+use function Phunkie\Streams\Functions\file\deleteFile;
+use function Phunkie\Streams\Functions\file\readLines;
+use function Phunkie\Streams\Functions\file\writeFile;
 
 use Phunkie\Streams\IO\File\Path;
-
-use function Phunkie\Streams\IO\File\readLines;
-use function Phunkie\Streams\IO\File\writeFile;
-
 use Phunkie\Streams\Type\Stream;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
