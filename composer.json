@@ -3,10 +3,20 @@
     "description": "Functional Streams for PHP",
     "type": "library",
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../phunkie"
+        },
+        {
+            "type": "path",
+            "url": "../effect"
+        }
+    ],
     "require": {
         "php": "^8.2 || ^8.3 || ^8.4",
-        "phunkie/phunkie": "^1.0.0",
-        "phunkie/effect": "^1.0.0"
+        "phunkie/phunkie": "dev-developing-1.0.0 as 1.0.0",
+        "phunkie/effect": "dev-developing-1.0.0 as 1.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -34,8 +44,9 @@
     },
     "require-dev": {
         "pestphp/pest": "^2.35",
-        "phpstan/phpstan": "^1.10",
-        "friendsofphp/php-cs-fixer": "^3.90"
+        "phpstan/phpstan": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.90",
+        "phunkie/phpstan": "@dev"
     },
     "scripts": {
         "test": "pest",
