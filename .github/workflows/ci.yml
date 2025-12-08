@@ -19,9 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Unset local path repositories
-        run: composer config --unset repositories
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -31,6 +28,9 @@ jobs:
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
+
+      - name: Unset local path repositories
+        run: composer config --unset repositories
 
       - name: Cache Composer packages
         id: composer-cache
@@ -42,7 +42,7 @@ jobs:
             ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer update --prefer-dist --no-progress
 
       - name: Run test suite
         run: composer test
@@ -102,7 +102,7 @@ jobs:
             ${{ runner.os }}-php-${{ matrix.php }}-
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer update --prefer-dist --no-progress
 
       - name: Run PHPStan
         run: composer phpstan
