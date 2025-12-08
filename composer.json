@@ -18,7 +18,7 @@
         "pestphp/pest": "^2.35",
         "phpstan/phpstan": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.90",
-        "phunkie/phpstan": "@dev"
+        "phunkie/phpstan": "^1.0"
     },
     "autoload": {
         "psr-4": {

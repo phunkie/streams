@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e2c8a8335b03c305c0be71f32f5fa61",
+    "content-hash": "b5d55d05f73a184a5d5338f7f7149610",
     "packages": [
         {
             "name": "phunkie/effect",
@@ -2252,7 +2252,7 @@
         },
         {
             "name": "phunkie/phpstan",
-            "version": "dev-main",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phunkie/phpstan.git",
@@ -2273,7 +2273,6 @@
                 "phunkie/effect": "dev-developing-1.0.0 as 1.0.0",
                 "phunkie/phunkie": "dev-developing-1.0.0 as 1.0.0"
             },
-            "default-branch": true,
             "type": "phpstan-extension",
             "extra": {
                 "phpstan": {
@@ -5528,9 +5527,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "phunkie/phpstan": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
