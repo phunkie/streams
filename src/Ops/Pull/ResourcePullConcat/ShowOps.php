@@ -11,9 +11,11 @@
 
 namespace Phunkie\Streams\Ops\Pull\ResourcePullConcat;
 
+use Phunkie\Streams\Type\Pull;
+
 /**
- * @method getPull1
- * @method getPull2
+ * @method Pull getPull1()
+ * @method Pull getPull2()
  */
 trait ShowOps
 {

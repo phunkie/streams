@@ -1,116 +1,73 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property Phunkie\\\\Streams\\\\Infinite\\\\Timer\\:\\:\\$limit \\(int\\|null\\) does not accept float\\|null\\.$#"
+			message: '#^PHPDoc tag @return contains generic type Phunkie\\Streams\\Type\\Stream\<string\> but class Phunkie\\Streams\\Type\\Stream is not generic\.$#'
+			identifier: generics.notGeneric
+			count: 1
+			path: src/Functions/file.php
+
+		-
+			message: '#^Property Phunkie\\Streams\\Infinite\\Timer\:\:\$limit \(int\|null\) does not accept float\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: src/Infinite/Timer.php
 
 		-
-			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
-			count: 1
-			path: src/Ops/Pull/InfinitePull/FunctorOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(getInfinite\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 26$#"
-			count: 1
-			path: src/Ops/Pull/InfinitePull/IteratorOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
-			count: 1
-			path: src/Ops/Pull/ResourcePull/FunctorOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
-			count: 1
-			path: src/Ops/Pull/ResourcePullConcat/FunctorOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(getPull1\\)\\: Unexpected token \"\\\\n \\* \", expected '\\(' at offset 23$#"
-			count: 1
-			path: src/Ops/Pull/ResourcePullConcat/ShowOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(getPull2\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 43$#"
-			count: 1
-			path: src/Ops/Pull/ResourcePullConcat/ShowOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Phunkie\\\\Streams\\\\Type\\\\Scope\\)\\: Unexpected token \"\\\\n \", expected type at offset 53$#"
-			count: 1
-			path: src/Ops/Pull/TransformationOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
-			count: 1
-			path: src/Ops/Pull/ValuesPull/FunctorOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(getScope\\)\\: Unexpected token \"\\\\n \", expected '\\(' at offset 23$#"
-			count: 1
-			path: src/Ops/Pull/ValuesPull/MonadOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Phunkie\\\\Streams\\\\Type\\\\Pull\\)\\: Unexpected token \"\\\\n \", expected type at offset 51$#"
-			count: 1
-			path: src/Ops/Stream/CompileOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Pull\\)\\: Unexpected token \"\\\\n \", expected type at offset 30$#"
-			count: 1
-			path: src/Ops/Stream/ImmListOps.php
-
-		-
-			message: "#^PHPDoc tag @method has invalid value \\(\\(\\)\\: Phunkie\\\\Streams\\\\Pull\\)\\: Unexpected token \"\\\\n \", expected type at offset 46$#"
-			count: 1
-			path: src/Ops/Stream/ShowOps.php
-
-		-
-			message: "#^Class Phunkie\\\\Streams\\\\Type\\\\Scope does not have a constructor and must be instantiated without any parameters\\.$#"
+			message: '#^Class Phunkie\\Streams\\Type\\Scope does not have a constructor and must be instantiated without any parameters\.$#'
+			identifier: new.noConstructor
 			count: 1
 			path: src/Pull/InfinitePull.php
 
 		-
-			message: "#^Method Phunkie\\\\Streams\\\\Pull\\\\InfinitePull\\:\\:toArray\\(\\) should return array but returns Generator\\.$#"
+			message: '#^Method Phunkie\\Streams\\Pull\\InfinitePull\:\:toArray\(\) should return array but returns Generator\.$#'
+			identifier: return.type
 			count: 1
 			path: src/Pull/InfinitePull.php
 
 		-
-			message: "#^Call to an undefined method Phunkie\\\\Streams\\\\IO\\\\Resource\\:\\:pull\\(\\)\\.$#"
+			message: '#^Call to an undefined method Phunkie\\Streams\\IO\\Resource\:\:pull\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Pull/ResourceObjectPull.php
 
 		-
-			message: "#^Call to an undefined method Phunkie\\\\Streams\\\\Type\\\\Pull\\:\\:drain\\(\\)\\.$#"
+			message: '#^Call to an undefined method Phunkie\\Streams\\Type\\Pull\:\:drain\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Stream/Compiler.php
 
 		-
-			message: "#^Call to an undefined method Phunkie\\\\Streams\\\\Type\\\\Pull\\:\\:runLog\\(\\)\\.$#"
+			message: '#^Call to an undefined method Phunkie\\Streams\\Type\\Pull\:\:runLog\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Stream/Compiler.php
 
 		-
-			message: "#^Access to an undefined property Phunkie\\\\Streams\\\\Stream\\\\Compiler\\:\\:\\$drain\\.$#"
+			message: '#^Access to an undefined property Phunkie\\Streams\\Stream\\Compiler\:\:\$drain\.$#'
+			identifier: property.notFound
 			count: 1
 			path: src/Type/Stream.php
 
 		-
-			message: "#^Anonymous function has an unused use \\$bytes\\.$#"
+			message: '#^Anonymous function has an unused use \$bytes\.$#'
+			identifier: closure.unusedUse
 			count: 1
 			path: src/Type/Stream.php
 
 		-
-			message: "#^Call to an undefined method Phunkie\\\\Types\\\\Kind\\:\\:flatMap\\(\\)\\.$#"
+			message: '#^Call to an undefined method Phunkie\\Types\\Kind\:\:flatMap\(\)\.$#'
+			identifier: method.notFound
 			count: 1
 			path: src/Type/Stream.php
 
 		-
-			message: "#^PHPDoc tag @param references unknown parameter\\: \\$context$#"
+			message: '#^PHPDoc tag @param references unknown parameter\: \$context$#'
+			identifier: parameter.notFound
 			count: 1
 			path: src/Type/Stream.php
 
 		-
-			message: "#^PHPDoc tag @return contains generic type Phunkie\\\\Streams\\\\Type\\\\Stream\\<Phunkie\\\\Validation\\\\Validation\\> but class Phunkie\\\\Streams\\\\Type\\\\Stream is not generic\\.$#"
+			message: '#^PHPDoc tag @return contains generic type Phunkie\\Streams\\Type\\Stream\<Phunkie\\Validation\\Validation\> but class Phunkie\\Streams\\Type\\Stream is not generic\.$#'
+			identifier: generics.notGeneric
 			count: 1
 			path: src/Type/Stream.php

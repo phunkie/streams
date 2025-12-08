@@ -11,8 +11,10 @@
 
 namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 
+use Phunkie\Streams\Infinite\Infinite;
+
 /**
- * @method getInfinite
+ * @method Infinite getInfinite()
  */
 trait IteratorOps
 {

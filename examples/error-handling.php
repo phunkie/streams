@@ -10,12 +10,11 @@
 
 use function Phunkie\Effect\Functions\io\io;
 use function Phunkie\Streams\Functions\file\exists;
-
-use Phunkie\Streams\IO\File\Path;
-
 use function Phunkie\Streams\Functions\file\readFileContents;
 use function Phunkie\Streams\Functions\file\readLines;
 use function Phunkie\Streams\Functions\file\writeFileContents;
+
+use Phunkie\Streams\IO\File\Path;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';
 require_once dirname(__FILE__) . '/printLn.php';

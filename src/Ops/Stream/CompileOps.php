@@ -12,10 +12,11 @@
 namespace Phunkie\Streams\Ops\Stream;
 
 use Phunkie\Effect\IO\IO;
+use Phunkie\Streams\Type\Pull;
 use Phunkie\Types\ImmList;
 
 /**
- * @method getPull(): Phunkie\Streams\Type\Pull
+ * @method Pull getPull()
  */
 trait CompileOps
 {

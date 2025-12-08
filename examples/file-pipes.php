@@ -8,12 +8,10 @@
  */
 
 use function Phunkie\Streams\Functions\file\deleteFile;
-
-use Phunkie\Streams\IO\File\Path;
-
 use function Phunkie\Streams\Functions\file\readLines;
 use function Phunkie\Streams\Functions\file\writeFile;
 
+use Phunkie\Streams\IO\File\Path;
 use Phunkie\Streams\Type\Stream;
 
 require_once dirname(__FILE__, 2) . '/vendor/autoload.php';

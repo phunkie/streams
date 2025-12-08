@@ -12,10 +12,11 @@
 namespace Phunkie\Streams\Ops\Pull;
 
 use Phunkie\Effect\IO\IO;
+use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Transformation;
 
 /**
- * @method getScope(): Phunkie\Streams\Type\Scope
+ * @method Scope getScope()
  */
 trait TransformationOps
 {

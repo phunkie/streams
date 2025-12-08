@@ -11,8 +11,10 @@
 
 namespace Phunkie\Streams\Ops\Pull\ResourcePullConcat;
 
+use Phunkie\Streams\Type\Scope;
+
 /**
- * @method getScope
+ * @method Scope getScope()
  */
 trait FunctorOps
 {

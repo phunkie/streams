@@ -5,13 +5,12 @@ use function Phunkie\Effect\Functions\io\io;
 use Phunkie\Effect\IO\IO;
 
 use function Phunkie\Streams\Functions\file\exists;
-
-use Phunkie\Streams\IO\File\Path;
-
 use function Phunkie\Streams\Functions\file\readFileContents;
 use function Phunkie\Streams\Functions\file\readLines;
 use function Phunkie\Streams\Functions\file\writeFileContents;
 use function Phunkie\Streams\Functions\file\writeLines;
+
+use Phunkie\Streams\IO\File\Path;
 
 describe("Stream Composition with flatMap", function () {
 

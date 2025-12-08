@@ -14,10 +14,11 @@ namespace Phunkie\Streams\Ops\Stream;
 use Phunkie\Streams\Pull\ResourcePull;
 use Phunkie\Streams\Pull\ResourcePullConcat;
 use Phunkie\Streams\Pull\ValuesPull;
+use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Stream;
 
 /**
- * @method getPull(): Pull
+ * @method Pull getPull()
  */
 trait ImmListOps
 {
