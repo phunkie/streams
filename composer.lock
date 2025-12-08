@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../effect",
-                "reference": "ea55dd81d9af4a202774e628168c698e10841d91"
+                "reference": "7a357030252dfe938f8d4f08c9f81a01461745ed"
             },
             "require": {
                 "php": "^8.2 || ^8.3 || ^8.4",
@@ -86,7 +86,7 @@
             "dist": {
                 "type": "path",
                 "url": "../phunkie",
-                "reference": "c15ee399a943f038bfa45c18a4d9a9ddc09c1f5b"
+                "reference": "f3a07eca4d6262858b34f2e362f20876ae454b5c"
             },
             "require": {
                 "php": "^8.2 || ^8.3 || ^8.4"
