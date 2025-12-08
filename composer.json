@@ -3,20 +3,22 @@
     "description": "Functional Streams for PHP",
     "type": "library",
     "license": "MIT",
-    "repositories": [
+    "authors": [
         {
-            "type": "path",
-            "url": "../phunkie"
-        },
-        {
-            "type": "path",
-            "url": "../effect"
+            "name": "Marcello Duarte",
+            "email": "marcello.duarte@gmail.com"
         }
     ],
     "require": {
         "php": "^8.2 || ^8.3 || ^8.4",
-        "phunkie/phunkie": "dev-developing-1.0.0 as 1.0.0",
-        "phunkie/effect": "dev-developing-1.0.0 as 1.0.0"
+        "phunkie/phunkie": "^1.0",
+        "phunkie/effect": "^1.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.35",
+        "phpstan/phpstan": "^2.0",
+        "friendsofphp/php-cs-fixer": "^3.90",
+        "phunkie/phpstan": "@dev"
     },
     "autoload": {
         "psr-4": {
@@ -27,12 +29,6 @@
             "src/Functions/common.php"
         ]
     },
-    "authors": [
-        {
-            "name": "Marcello Duarte",
-            "email": "marcello.duarte@gmail.com"
-        }
-    ],
     "suggest": {
         "ext-parallel": "Required for parallel processing capabilities",
         "ext-mbstring": "Required for encoding and decoding text in various encodings",
@@ -41,12 +37,6 @@
         "ext-posix": "Required for POSIX functions, useful for multi-threading and process control",
         "ext-zlib": "Required for stream compression and decompression",
         "ext-sockets": "Required for socket communication in networking applications"
-    },
-    "require-dev": {
-        "pestphp/pest": "^2.35",
-        "phpstan/phpstan": "^2.0",
-        "friendsofphp/php-cs-fixer": "^3.90",
-        "phunkie/phpstan": "@dev"
     },
     "scripts": {
         "test": "pest",
