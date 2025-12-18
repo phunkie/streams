@@ -44,7 +44,7 @@ class PDOPull implements Pull
 
     public function toStream(): Stream
     {
-        $stream = Stream::fromPull($this);
+        $stream = \Stream($this);
         $stream->setScope($this->getScope());
 
         return $stream;

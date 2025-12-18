@@ -24,6 +24,6 @@ namespace {
      */
     function StreamFromPDO(\PDOStatement $stmt): Stream
     {
-        return Stream::fromPull(new PDOPull($stmt));
+        return Stream(new PDOPull($stmt));
     }
 }
