@@ -12,11 +12,11 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "../phunkie"
+            "url": "https://github.com/phunkie/phunkie.git"
         },
         {
             "type": "vcs",
-            "url": "../effect"
+            "url": "https://github.com/phunkie/effect.git"
         }
     ],
     "require": {
