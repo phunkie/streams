@@ -16,7 +16,7 @@ use Phunkie\Streams\Ops\Pull\ResourcePull\CompileOps;
 use Phunkie\Streams\Ops\Pull\ResourcePull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
-use Phunkie\Streams\Type\Stream; 
+use Phunkie\Streams\Type\Stream;
 
 class PDOPull implements Pull
 {
@@ -101,15 +101,16 @@ class PDOPull implements Pull
         $values = [];
         // Consumes the rest of the result set
         if ($this->current === null && $this->key === 0) {
-             $this->rewind();
+            $this->rewind();
         }
-        
+
         while ($this->valid()) {
             if ($this->current !== null) {
                 $values[] = $this->current;
             }
             $this->next();
         }
+
         return $values;
     }
 }

@@ -43,10 +43,7 @@ trait CompileOps
     public function drain(): IO
     {
         return new IO(function () {
-            while ($this->valid()) {
-                $this->runTransformations([$this->current()]);
-                $this->next();
-            }
+            $this->runTransformations($this->getValues());
 
             return Unit();
         });

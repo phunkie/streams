@@ -9,20 +9,10 @@
             "email": "marcello.duarte@gmail.com"
         }
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/phunkie/phunkie.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/phunkie/effect.git"
-        }
-    ],
     "require": {
-        "php": "^8.2 || ^8.3 || ^8.4",
-        "phunkie/phunkie": "dev-developing-1.1.0",
-        "phunkie/effect": "dev-developing-1.2.0"
+        "php": "^8.2 || ^8.3 || ^8.4 || ^8.5",
+        "phunkie/phunkie": "^1.1.0",
+        "phunkie/effect": "^1.2.0"
     },
     "require-dev": {
         "pestphp/pest": "^2.35",

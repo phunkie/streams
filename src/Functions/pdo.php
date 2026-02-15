@@ -11,16 +11,16 @@
 
 namespace {
 
-    use Phunkie\Streams\Type\Stream;
     use Phunkie\Streams\Pull\PDOPull;
+    use Phunkie\Streams\Type\Stream;
 
     /**
      * Create a Stream from a PDOStatement.
-     * 
+     *
      * The stream will yield rows as arrays (PDO::FETCH_ASSOC).
-     * 
+     *
      * @param \PDOStatement $stmt
-     * @return Stream<array>
+     * @return Stream
      */
     function StreamFromPDO(\PDOStatement $stmt): Stream
     {

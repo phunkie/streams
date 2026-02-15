@@ -366,5 +366,20 @@ describe("Stream Operations", function () {
 
             expect($sideEffect)->toBe([2, 4, 6]);
         });
+
+        it("drain executes map side effects after chunk", function () {
+            $processed = [];
+
+            Stream(...['a', 'b', 'c', 'd', 'e'])
+                ->chunk(2)
+                ->map(function (array $chunk) use (&$processed) {
+                    foreach ($chunk as $item) {
+                        $processed[] = $item;
+                    }
+                })
+                ->compile->drain->unsafeRunSync();
+
+            expect($processed)->toBe(['a', 'b', 'c', 'd', 'e']);
+        });
     });
 });
