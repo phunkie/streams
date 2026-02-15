@@ -91,6 +91,7 @@ class Read implements Resource
     /**
      * Read up to $bytes from the handle, returning Resource::EOF at end-of-file.
      *
+     * @param int $bytes Number of bytes to read.
      * @return string
      */
     private function read($bytes): string
@@ -108,7 +109,11 @@ class Read implements Resource
         throw new \Error("Not a valid resource");
     }
 
-    /** Close the file handle. */
+    /**
+     * Close the file handle.
+     *
+     * @return void
+     */
     private function close(): void
     {
         fclose($this->handle);

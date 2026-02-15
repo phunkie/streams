@@ -73,13 +73,21 @@ class InfinitePull implements Pull
         return $current;
     }
 
-    /** Returns the underlying generator of values. */
+    /**
+     * Returns the underlying generator of values.
+     *
+     * @return \Generator
+     */
     public function getValues(): \Generator
     {
         return $this->infinite->getValues();
     }
 
-    /** Converts this pull into an infinite Stream, preserving the current scope. */
+    /**
+     * Converts this pull into an infinite Stream, preserving the current scope.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         $stream = Stream::fromInfinite($this->infinite, $this->bytes);
@@ -88,19 +96,32 @@ class InfinitePull implements Pull
         return $stream;
     }
 
-    /** Returns the wrapped Infinite source. */
+    /**
+     * Returns the wrapped Infinite source.
+     *
+     * @return Infinite
+     */
     public function getInfinite(): Infinite
     {
         return $this->infinite;
     }
 
-    /** Returns the current scope. */
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    /** Replace the current scope. */
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;

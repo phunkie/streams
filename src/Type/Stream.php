@@ -60,7 +60,12 @@ class Stream implements Showable, Kind
     {
     }
 
-    /** Create a pure stream from in-memory values. */
+    /**
+     * Create a pure stream from in-memory values.
+     *
+     * @param mixed ...$pull The values to stream.
+     * @return Stream
+     */
     public static function fromValues(...$pull): Stream
     {
         return new Stream(new ValuesPull(...$pull), 256);
@@ -71,6 +76,7 @@ class Stream implements Showable, Kind
      *
      * @param Path $path  Path to the resource to read.
      * @param int  $bytes Chunk size in bytes for each pull.
+     * @return Stream
      */
     public static function fromResource(Path $path, int $bytes = 256): Stream
     {
@@ -84,6 +90,7 @@ class Stream implements Showable, Kind
      *
      * @param \Phunkie\Streams\IO\Resource $resource An open resource handle.
      * @param int                          $bytes    Chunk size in bytes for each pull.
+     * @return Stream
      */
     public static function fromResourceObject(\Phunkie\Streams\IO\Resource $resource, int $bytes = 4096): Stream
     {
@@ -92,19 +99,35 @@ class Stream implements Showable, Kind
         return new Stream($resourceObjectPull, $bytes);
     }
 
-    /** Create a stream from an arbitrary Pull implementation. */
+    /**
+     * Create a stream from an arbitrary Pull implementation.
+     *
+     * @param Pull $pull  The pull source to wrap.
+     * @param int  $bytes Chunk size in bytes.
+     * @return Stream
+     */
     public static function fromPull(Pull $pull, int $bytes = 256): Stream
     {
         return new Stream($pull, $bytes);
     }
 
-    /** Create a stream backed by an infinite generator. */
+    /**
+     * Create a stream backed by an infinite generator.
+     *
+     * @param Infinite $infinite The infinite source.
+     * @param int      $bytes    Chunk size in bytes.
+     * @return Stream
+     */
     public static function fromInfinite(Infinite $infinite, int $bytes = 256): Stream
     {
         return new Stream(new InfinitePull($infinite, $bytes), $bytes);
     }
 
-    /** Return the underlying Pull that drives this stream. */
+    /**
+     * Return the underlying Pull that drives this stream.
+     *
+     * @return Pull
+     */
     protected function getPull(): Pull
     {
         return $this->pull;
@@ -113,6 +136,7 @@ class Stream implements Showable, Kind
     /**
      * Magic property accessor for compile, repeat, runLog, toList, and toArray.
      *
+     * @param string $property The property name.
      * @return mixed
      * @throws \Error If the property is not recognised.
      */
@@ -128,13 +152,21 @@ class Stream implements Showable, Kind
         };
     }
 
-    /** Create a Compiler to materialise this stream's output. */
+    /**
+     * Create a Compiler to materialise this stream's output.
+     *
+     * @return Compiler
+     */
     public function compile(): Compiler
     {
         return new Compiler($this->getPull(), $this->getBytes());
     }
 
-    /** Return a new stream that infinitely repeats this stream's values. */
+    /**
+     * Return a new stream that infinitely repeats this stream's values.
+     *
+     * @return Stream
+     */
     public function repeat(): Stream
     {
         return self::fromInfinite(repeat(...$this->getPull()->getValues()), $this->getBytes());
@@ -143,6 +175,7 @@ class Stream implements Showable, Kind
     /**
      * Execute an effectful (resource-backed) stream and return its execution log.
      *
+     * @return array
      * @throws \Error If called on a pure stream.
      */
     public function runLog(): array
@@ -152,8 +185,10 @@ class Stream implements Showable, Kind
             throw new \Error("Cannot call runlog on Pure Streams");
     }
 
-    /** Assign a Scope (transformation pipeline) to this stream's pull.
+    /**
+     * Assign a Scope (transformation pipeline) to this stream's pull.
      *
+     * @param Scope $scope The scope to assign.
      * @return void
      */
     public function setScope(Scope $scope): void
@@ -164,6 +199,7 @@ class Stream implements Showable, Kind
     /**
      * Compile a pure (values-backed) stream into an ImmList.
      *
+     * @return ImmList
      * @throws \Error If called on a resource-backed stream.
      */
     public function toList(): ImmList
@@ -175,19 +211,32 @@ class Stream implements Showable, Kind
         }
     }
 
-    /** Return the Kind type arity (always 2: effect type + element type). */
+    /**
+     * Return the Kind type arity (always 2: effect type + element type).
+     *
+     * @return int
+     */
     public function getTypeArity(): int
     {
         return 2;
     }
 
-    /** Get the chunk size in bytes used for internal processing. */
+    /**
+     * Get the chunk size in bytes used for internal processing.
+     *
+     * @return int
+     */
     public function getBytes(): int
     {
         return $this->bytes;
     }
 
-    /** Set the chunk size in bytes used for internal processing. */
+    /**
+     * Set the chunk size in bytes used for internal processing.
+     *
+     * @param int $bytes The chunk size in bytes.
+     * @return static
+     */
     public function setBytes(int $bytes): static
     {
         $this->bytes = $bytes;
@@ -195,13 +244,21 @@ class Stream implements Showable, Kind
         return $this;
     }
 
-    /** Return the underlying values from this stream's pull. */
+    /**
+     * Return the underlying values from this stream's pull.
+     *
+     * @return array
+     */
     public function getValues(): array
     {
         return $this->pull->getValues();
     }
 
-    /** Return the effect type identifier: "IO" for resource streams, "Pure" otherwise. */
+    /**
+     * Return the effect type identifier: "IO" for resource streams, "Pure" otherwise.
+     *
+     * @return string
+     */
     public function getEffect(): string
     {
         return ($this->getPull() instanceof ResourcePull || $this->getPull() instanceof ResourceObjectPull) ? IO : Pure;
@@ -210,6 +267,7 @@ class Stream implements Showable, Kind
     /**
      * Compile a pure (values-backed) stream into a plain PHP array.
      *
+     * @return array
      * @throws \Error If called on a resource-backed stream.
      */
     public function toArray(): array

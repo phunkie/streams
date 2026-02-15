@@ -16,9 +16,17 @@ namespace Phunkie\Streams;
  */
 interface Showable
 {
-    /** Return the value representation as a string. */
+    /**
+     * Return the value representation as a string.
+     *
+     * @return string
+     */
     public function toString(): string;
 
-    /** Return a string describing this type (e.g. "Stream[IO, String]"). */
+    /**
+     * Return a string describing this type (e.g. "Stream[IO, String]").
+     *
+     * @return string
+     */
     public function showType(): string;
 }

@@ -81,13 +81,21 @@ class SocketServer implements Resource
         return $this->accept();
     }
 
-    /** Check whether the server socket is an open stream resource. */
+    /**
+     * Check whether the server socket is an open stream resource.
+     *
+     * @return bool
+     */
     private function isOpen(): bool
     {
         return is_resource($this->serverSocket) && get_resource_type($this->serverSocket) === 'stream';
     }
 
-    /** Create and bind a TCP server socket, then start listening. */
+    /**
+     * Create and bind a TCP server socket, then start listening.
+     *
+     * @return void
+     */
     private function bind(): void
     {
         $errno = 0;
@@ -113,6 +121,8 @@ class SocketServer implements Resource
 
     /**
      * Accept the next incoming connection, returning the client socket or Resource::EOF.
+     *
+     * @return mixed
      */
     private function accept(): mixed
     {
@@ -132,7 +142,11 @@ class SocketServer implements Resource
         return $client;
     }
 
-    /** Close the server socket. */
+    /**
+     * Close the server socket.
+     *
+     * @return void
+     */
     private function close(): void
     {
         if (is_resource($this->serverSocket)) {

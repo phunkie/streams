@@ -67,13 +67,21 @@ class ResourcePullConcat implements Pull
         }
     }
 
-    /** Returns true if either pull still has data. */
+    /**
+     * Returns true if either pull still has data.
+     *
+     * @return bool
+     */
     public function hasNext(): bool
     {
         return $this->currentPull->hasNext() || ($this->currentPull === $this->pull1 && $this->pull2->hasNext());
     }
 
-    /** Rewinds both underlying pulls and resets to pull1. */
+    /**
+     * Rewinds both underlying pulls and resets to pull1.
+     *
+     * @return void
+     */
     public function rewind(): void
     {
         $this->pull1->rewind();
@@ -81,13 +89,22 @@ class ResourcePullConcat implements Pull
         $this->currentPull = $this->pull1;
     }
 
-    /** Returns the current scope. */
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    /** Replace the current scope. */
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
@@ -95,7 +112,11 @@ class ResourcePullConcat implements Pull
         return $this;
     }
 
-    /** Converts this concatenated pull into a Stream, preserving the current scope. */
+    /**
+     * Converts this concatenated pull into a Stream, preserving the current scope.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         $stream = Stream($this->pull1, $this->pull2);
@@ -104,25 +125,41 @@ class ResourcePullConcat implements Pull
         return $stream;
     }
 
-    /** Returns the first ResourcePull. */
+    /**
+     * Returns the first ResourcePull.
+     *
+     * @return ResourcePull
+     */
     public function getPull1(): ResourcePull
     {
         return $this->pull1;
     }
 
-    /** Returns the second ResourcePull. */
+    /**
+     * Returns the second ResourcePull.
+     *
+     * @return ResourcePull
+     */
     public function getPull2(): ResourcePull
     {
         return $this->pull2;
     }
 
-    /** Returns the current value from the active pull. */
+    /**
+     * Returns the current value from the active pull.
+     *
+     * @return mixed
+     */
     public function current(): mixed
     {
         return $this->currentPull->current();
     }
 
-    /** Returns the current key from the active pull. */
+    /**
+     * Returns the current key from the active pull.
+     *
+     * @return mixed
+     */
     public function key(): mixed
     {
         return $this->currentPull->key();
@@ -147,7 +184,11 @@ class ResourcePullConcat implements Pull
         }
     }
 
-    /** Returns true if either pull still has data. */
+    /**
+     * Returns true if either pull still has data.
+     *
+     * @return bool
+     */
     public function valid(): bool
     {
         return $this->hasNext();
@@ -157,6 +198,8 @@ class ResourcePullConcat implements Pull
      * Consumes both pulls and returns all chunks as a single array.
      *
      * Rewinds before reading.
+     *
+     * @return array
      */
     public function getValues(): array
     {

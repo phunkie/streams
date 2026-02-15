@@ -46,6 +46,10 @@ interface Pull extends Showable, Compilable, \Iterator
      */
     public function pull(): mixed;
 
-    /** Lift this Pull back into a Stream. */
+    /**
+     * Lift this Pull back into a Stream.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream;
 }

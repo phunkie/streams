@@ -74,13 +74,21 @@ class ValuesPull implements Pull
         return $this->values;
     }
 
-    /** Returns the current scope. */
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    /** Converts this pull into a Stream, preserving the current scope. */
+    /**
+     * Converts this pull into a Stream, preserving the current scope.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         $stream = Stream(...$this->values);
@@ -89,7 +97,12 @@ class ValuesPull implements Pull
         return $stream;
     }
 
-    /** Replace the current scope. */
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
@@ -97,13 +110,22 @@ class ValuesPull implements Pull
         return $this;
     }
 
-    /** Returns the current iterator index. */
+    /**
+     * Returns the current iterator index.
+     *
+     * @return int
+     */
     public function getIndex(): int
     {
         return $this->index;
     }
 
-    /** Set the iterator index to a specific position. */
+    /**
+     * Set the iterator index to a specific position.
+     *
+     * @param int $index The new index.
+     * @return static
+     */
     public function setIndex(int $index): static
     {
         $this->index = $index;

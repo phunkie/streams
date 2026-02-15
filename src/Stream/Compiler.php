@@ -41,6 +41,7 @@ class Compiler
     /**
      * Magic property accessor for drain, toList, toArray, and runLog.
      *
+     * @param string $property The property name.
      * @return mixed
      * @throws \Error If the property is not recognised.
      */
@@ -55,13 +56,21 @@ class Compiler
         };
     }
 
-    /** Return the Pull being compiled. */
+    /**
+     * Return the Pull being compiled.
+     *
+     * @return Pull
+     */
     public function getPull(): Pull
     {
         return $this->pull;
     }
 
-    /** Return the configured chunk size in bytes. */
+    /**
+     * Return the configured chunk size in bytes.
+     *
+     * @return int
+     */
     public function getBytes(): int
     {
         return $this->bytes;

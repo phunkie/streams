@@ -73,6 +73,7 @@ namespace Phunkie\Streams\IO\Network {
      * Create a TCP socket connection with bracket for safe resource management
      *
      * @param SocketAddress $address The socket address to connect to
+     * @param float         $timeout Connection timeout in seconds
      * @return IO<resource> IO action that creates a socket connection
      */
     function socket(SocketAddress $address, float $timeout = 30.0): IO

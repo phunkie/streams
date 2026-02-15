@@ -38,6 +38,9 @@ class Scope
      *
      * If no transformation exists yet, the given one becomes the root;
      * otherwise it is composed after the existing pipeline via andThen().
+     *
+     * @param Transformation $transformation The transformation to append.
+     * @return void
      */
     public function appendTransformation(Transformation $transformation): void
     {
@@ -49,7 +52,12 @@ class Scope
         $this->transformation = $this->transformation->andThen($transformation);
     }
 
-    /** Register a map function to be applied to stream elements. */
+    /**
+     * Register a map function to be applied to stream elements.
+     *
+     * @param callable $f The mapping function.
+     * @return void
+     */
     public function addMap(callable $f): void
     {
         $this->maps[] = $f;
@@ -63,7 +71,12 @@ class Scope
         return $this->maps;
     }
 
-    /** Register a filter predicate to be applied to stream elements. */
+    /**
+     * Register a filter predicate to be applied to stream elements.
+     *
+     * @param callable $f The filter predicate.
+     * @return void
+     */
     public function addFilter(callable $f): void
     {
         $this->filters[] = $f;
@@ -84,7 +97,9 @@ class Scope
      * executed immediately. When $acceptIo is false, the IO result is
      * unwrapped synchronously instead of being returned as an IO value.
      *
-     * @param bool $acceptIo When true, passthrough results may be returned as IO.
+     * @param iterable $chunk    The data chunk to transform.
+     * @param bool     $acceptIo When true, passthrough results may be returned as IO.
+     * @return iterable|IO
      */
     public function runTransformations(iterable $chunk, $acceptIo = true): iterable | IO
     {

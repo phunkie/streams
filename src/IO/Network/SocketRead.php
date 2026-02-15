@@ -75,13 +75,21 @@ class SocketRead implements Resource
         return $this->read($bytes);
     }
 
-    /** Check whether the socket is an open stream resource. */
+    /**
+     * Check whether the socket is an open stream resource.
+     *
+     * @return bool
+     */
     private function isOpen(): bool
     {
         return is_resource($this->socket) && get_resource_type($this->socket) === 'stream';
     }
 
-    /** Open a TCP connection to the remote address. */
+    /**
+     * Open a TCP connection to the remote address.
+     *
+     * @return void
+     */
     private function connect(): void
     {
         $errno = 0;
@@ -107,6 +115,7 @@ class SocketRead implements Resource
     /**
      * Read up to $bytes from the socket, returning Resource::EOF when closed.
      *
+     * @param int $bytes Number of bytes to read.
      * @return string
      */
     private function read($bytes): string
@@ -127,7 +136,11 @@ class SocketRead implements Resource
         return $data;
     }
 
-    /** Close the socket connection. */
+    /**
+     * Close the socket connection.
+     *
+     * @return void
+     */
     private function close(): void
     {
         if (is_resource($this->socket)) {

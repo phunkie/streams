@@ -44,6 +44,8 @@ class Transformation implements \ArrayAccess
      * If an effect class is set, the result is wrapped in a new instance
      * of that effect. Otherwise the closure is invoked directly.
      *
+     * @param iterable $chunk The data chunk to transform.
+     * @return iterable|IO
      * @throws \Error If the configured effect class cannot be instantiated.
      */
     public function run(iterable $chunk): iterable | IO
@@ -61,7 +63,12 @@ class Transformation implements \ArrayAccess
         return ($this->f)($chunk);
     }
 
-    /** Compose this transformation with another, producing a new pipeline. */
+    /**
+     * Compose this transformation with another, producing a new pipeline.
+     *
+     * @param Transformation $transformation The transformation to chain after this one.
+     * @return Transformation
+     */
     public function andThen(Transformation $transformation): Transformation
     {
         return new Transformation(fn ($chunk) => $transformation->run($this->run($chunk)));
@@ -98,19 +105,32 @@ class Transformation implements \ArrayAccess
         throw new \Error('Transformation is not an array');
     }
 
-    /** Whether this transformation wraps its result in an effect. */
+    /**
+     * Whether this transformation wraps its result in an effect.
+     *
+     * @return bool
+     */
     private function isEffectful(): bool
     {
         return !is_null($this->effect);
     }
 
-    /** Whether this transformation is side-effect-only (data passes through). */
+    /**
+     * Whether this transformation is side-effect-only (data passes through).
+     *
+     * @return bool
+     */
     public function isPassthrough(): bool
     {
         return $this->isPassthrough;
     }
 
-    /** Mark this transformation as passthrough (side-effect-only) or not. */
+    /**
+     * Mark this transformation as passthrough (side-effect-only) or not.
+     *
+     * @param bool $isPassthrough Whether this transformation is passthrough.
+     * @return void
+     */
     public function setPassthrough(bool $isPassthrough): void
     {
         $this->isPassthrough = $isPassthrough;

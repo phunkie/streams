@@ -63,13 +63,21 @@ class ResourcePull implements Pull
         return $this->current();
     }
 
-    /** Returns the current scope. */
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    /** Converts this pull into a Stream, preserving the current scope. */
+    /**
+     * Converts this pull into a Stream, preserving the current scope.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         $stream = Stream($this->resource, $this->chunkSize);
@@ -78,7 +86,12 @@ class ResourcePull implements Pull
         return $stream;
     }
 
-    /** Replace the current scope. */
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
@@ -86,20 +99,32 @@ class ResourcePull implements Pull
         return $this;
     }
 
-    /** Returns the last-read chunk. */
+    /**
+     * Returns the last-read chunk.
+     *
+     * @return mixed
+     */
     #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
     }
 
-    /** Checks whether the underlying resource has more data. */
+    /**
+     * Checks whether the underlying resource has more data.
+     *
+     * @return bool
+     */
     public function hasNext(): bool
     {
         return !feof($this->resource);
     }
 
-    /** Rewinds the resource pointer and resets the key counter. */
+    /**
+     * Rewinds the resource pointer and resets the key counter.
+     *
+     * @return void
+     */
     public function rewind(): void
     {
         if (is_resource($this->resource)) {
@@ -108,7 +133,11 @@ class ResourcePull implements Pull
         $this->key = 0;
     }
 
-    /** Returns the current chunk index. */
+    /**
+     * Returns the current chunk index.
+     *
+     * @return int
+     */
     public function key(): int
     {
         return $this->key;
@@ -136,7 +165,11 @@ class ResourcePull implements Pull
         $this->key++;
     }
 
-    /** Returns true while the resource has not reached EOF. */
+    /**
+     * Returns true while the resource has not reached EOF.
+     *
+     * @return bool
+     */
     public function valid(): bool
     {
         return $this->hasNext();
@@ -146,6 +179,8 @@ class ResourcePull implements Pull
      * Consumes the entire resource and returns all chunks as an array.
      *
      * Rewinds the resource before reading.
+     *
+     * @return array
      */
     public function getValues(): array
     {

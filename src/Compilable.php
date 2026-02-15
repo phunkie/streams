@@ -26,6 +26,10 @@ interface Compilable
      */
     public function toList(): ImmList | IO;
 
-    /** Compile the stream into a plain PHP array. */
+    /**
+     * Compile the stream into a plain PHP array.
+     *
+     * @return array
+     */
     public function toArray(): array;
 }

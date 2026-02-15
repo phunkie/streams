@@ -122,13 +122,21 @@ class HttpRequest implements Resource
         return $this->read($bytes);
     }
 
-    /** Check whether the response handle is an open stream resource. */
+    /**
+     * Check whether the response handle is an open stream resource.
+     *
+     * @return bool
+     */
     private function isOpen(): bool
     {
         return is_resource($this->handle) && get_resource_type($this->handle) === 'stream';
     }
 
-    /** Execute the HTTP request and open the response stream. */
+    /**
+     * Execute the HTTP request and open the response stream.
+     *
+     * @return void
+     */
     private function execute(): void
     {
         $options = [
@@ -154,7 +162,11 @@ class HttpRequest implements Resource
         $this->executed = true;
     }
 
-    /** Format the headers array into an HTTP header string. */
+    /**
+     * Format the headers array into an HTTP header string.
+     *
+     * @return string
+     */
     private function formatHeaders(): string
     {
         if (empty($this->headers)) {
@@ -179,6 +191,7 @@ class HttpRequest implements Resource
     /**
      * Read up to $bytes from the response, returning Resource::EOF at end-of-stream.
      *
+     * @param int $bytes Number of bytes to read.
      * @return string
      */
     private function read($bytes): string
@@ -196,7 +209,11 @@ class HttpRequest implements Resource
         return $data;
     }
 
-    /** Close the response stream handle. */
+    /**
+     * Close the response stream handle.
+     *
+     * @return void
+     */
     private function close(): void
     {
         if (is_resource($this->handle)) {

@@ -51,13 +51,21 @@ class PDOPull implements Pull
         return $this->current();
     }
 
-    /** Returns the current scope. */
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    /** Converts this pull into a Stream, preserving the current scope. */
+    /**
+     * Converts this pull into a Stream, preserving the current scope.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         $stream = \Stream($this);
@@ -66,7 +74,12 @@ class PDOPull implements Pull
         return $stream;
     }
 
-    /** Replace the current scope. */
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
@@ -74,33 +87,53 @@ class PDOPull implements Pull
         return $this;
     }
 
-    /** Returns the current row. */
+    /**
+     * Returns the current row.
+     *
+     * @return mixed
+     */
     #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->current;
     }
 
-    /** Alias for valid(); returns true while rows remain. */
+    /**
+     * Alias for valid(); returns true while rows remain.
+     *
+     * @return bool
+     */
     public function hasNext(): bool
     {
         return $this->valid();
     }
 
-    /** Resets the key and fetches the first row. */
+    /**
+     * Resets the key and fetches the first row.
+     *
+     * @return void
+     */
     public function rewind(): void
     {
         $this->key = 0;
         $this->next(); // Fetch first row
     }
 
-    /** Returns the current row index (1-based after first next()). */
+    /**
+     * Returns the current row index (1-based after first next()).
+     *
+     * @return int
+     */
     public function key(): int
     {
         return $this->key;
     }
 
-    /** Fetches the next row as an associative array, or sets current to null at end of results. */
+    /**
+     * Fetches the next row as an associative array, or sets current to null at end of results.
+     *
+     * @return void
+     */
     public function next(): void
     {
         $result = $this->stmt->fetch(\PDO::FETCH_ASSOC);
@@ -112,7 +145,11 @@ class PDOPull implements Pull
         }
     }
 
-    /** Returns true while the current row is not null. */
+    /**
+     * Returns true while the current row is not null.
+     *
+     * @return bool
+     */
     public function valid(): bool
     {
         return $this->current !== null;

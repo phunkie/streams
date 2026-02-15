@@ -59,19 +59,32 @@ class ResourceObjectPull implements Pull
         return $this->current();
     }
 
-    /** Returns the current scope. */
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
-    /** Converts this pull into a Stream backed by the same Resource object. */
+    /**
+     * Converts this pull into a Stream backed by the same Resource object.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         return Stream::fromResourceObject($this->resource);
     }
 
-    /** Replace the current scope. */
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
@@ -79,26 +92,42 @@ class ResourceObjectPull implements Pull
         return $this;
     }
 
-    /** Returns the last-read chunk. */
+    /**
+     * Returns the last-read chunk.
+     *
+     * @return mixed
+     */
     public function current(): mixed
     {
         return $this->current;
     }
 
-    /** Returns true while EOF has not been reached. */
+    /**
+     * Returns true while EOF has not been reached.
+     *
+     * @return bool
+     */
     public function hasNext(): bool
     {
         return !$this->eof;
     }
 
-    /** Resets the key counter. Resource objects typically cannot rewind. */
+    /**
+     * Resets the key counter. Resource objects typically cannot rewind.
+     *
+     * @return void
+     */
     public function rewind(): void
     {
         // Resource objects typically can't rewind
         $this->key = 0;
     }
 
-    /** Returns the current chunk index. */
+    /**
+     * Returns the current chunk index.
+     *
+     * @return int
+     */
     public function key(): int
     {
         return $this->key;
@@ -128,7 +157,11 @@ class ResourceObjectPull implements Pull
         }
     }
 
-    /** Returns true while EOF has not been reached. */
+    /**
+     * Returns true while EOF has not been reached.
+     *
+     * @return bool
+     */
     public function valid(): bool
     {
         return $this->hasNext();
@@ -172,7 +205,12 @@ class ResourceObjectPull implements Pull
         return $values;
     }
 
-    /** Registers a mapping function to be applied on getValues(). */
+    /**
+     * Registers a mapping function to be applied on getValues().
+     *
+     * @param callable $f The mapping function.
+     * @return static
+     */
     public function map($f): static
     {
         $this->getScope()->addMap($f);
@@ -180,7 +218,12 @@ class ResourceObjectPull implements Pull
         return $this;
     }
 
-    /** Registers a filter predicate to be applied on getValues(). */
+    /**
+     * Registers a filter predicate to be applied on getValues().
+     *
+     * @param callable $f The filter predicate.
+     * @return static
+     */
     public function filter(callable $f): static
     {
         $this->getScope()->addFilter($f);
