@@ -15,7 +15,11 @@ use Phunkie\Streams\Compilable;
 use Phunkie\Streams\Showable;
 
 /**
- * Pull represents a pull-based stream that can be compiled to produce values.
+ * Pull-based stream interface that lazily produces values on demand.
+ *
+ * Combines Iterator for traversal, Showable for display, and Compilable
+ * for materialising results. Concrete pulls (values, resources, infinite)
+ * implement the actual data-sourcing logic.
  *
  * @method static map(callable $f)
  * @method static flatMap(callable $f)
@@ -35,7 +39,17 @@ use Phunkie\Streams\Showable;
  */
 interface Pull extends Showable, Compilable, \Iterator
 {
-    public function pull();
+    /**
+     * Pull the next value from the underlying source.
+     *
+     * @return mixed
+     */
+    public function pull(): mixed;
 
+    /**
+     * Lift this Pull back into a Stream.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream;
 }

@@ -17,20 +17,35 @@ use Phunkie\Streams\Type\Pull;
 use Phunkie\Types\ImmList;
 
 /**
- * @property ImmList|IO $toList
- * @property array $toArray
- * @property array $runLog
+ * Compiles a stream's Pull into a materialised value (list, array, or execution log).
  *
+ * Accessible as a property on Stream via $stream->compile, then chained
+ * with ->toList, ->toArray, ->drain, or ->runLog (as properties or methods).
+ *
+ * @property ImmList|IO $toList  Compile the stream to an ImmList (or IO for effectful streams).
+ * @property array      $toArray Compile the stream to a plain PHP array.
+ * @property array      $runLog  Execute the stream and return the execution log.
  */
 class Compiler
 {
     use CompileOps;
 
+    /**
+     * @param Pull $pull  The pull source to compile.
+     * @param int  $bytes Chunk size in bytes for resource-based pulls.
+     */
     public function __construct(private Pull $pull, private int $bytes)
     {
     }
 
-    public function __get($property)
+    /**
+     * Magic property accessor for drain, toList, toArray, and runLog.
+     *
+     * @param string $property The property name.
+     * @return mixed
+     * @throws \Error If the property is not recognised.
+     */
+    public function __get($property): mixed
     {
         return match($property) {
             'drain' => $this->drain(),
@@ -41,17 +56,32 @@ class Compiler
         };
     }
 
+    /**
+     * Return the Pull being compiled.
+     *
+     * @return Pull
+     */
     public function getPull(): Pull
     {
         return $this->pull;
     }
 
+    /**
+     * Return the configured chunk size in bytes.
+     *
+     * @return int
+     */
     public function getBytes(): int
     {
         return $this->bytes;
     }
 
-    private function drain()
+    /**
+     * Execute the stream for its side effects, discarding the output.
+     *
+     * @return \Phunkie\Effect\IO\IO
+     */
+    private function drain(): IO
     {
         return $this->getPull()->drain();
     }

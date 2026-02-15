@@ -19,12 +19,6 @@ parameters:
 			path: src/Pull/InfinitePull.php
 
 		-
-			message: '#^Method Phunkie\\Streams\\Pull\\InfinitePull\:\:toArray\(\) should return array but returns Generator\.$#'
-			identifier: return.type
-			count: 1
-			path: src/Pull/InfinitePull.php
-
-		-
 			message: '#^Call to an undefined method Phunkie\\Streams\\IO\\Resource\:\:pull\(\)\.$#'
 			identifier: method.notFound
 			count: 1

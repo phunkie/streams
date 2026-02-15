@@ -15,14 +15,21 @@ use Phunkie\Streams\IO\Resource;
 use Phunkie\Streams\Type\Stream;
 
 /**
- * TCP Socket server for accepting client connections
+ * TCP server listener as a pullable stream Resource.
  *
- * Each pull() returns a client socket resource
+ * Binds to a host:port, listens for connections, and yields accepted
+ * client socket resources on each pull.
  */
 class SocketServer implements Resource
 {
     private $serverSocket;
 
+    /**
+     * @param string $host    Hostname or IP to bind to
+     * @param int    $port    TCP port to listen on (1-65535)
+     * @param int    $backlog Maximum length of the pending connections queue
+     * @throws \InvalidArgumentException If port is out of range
+     */
     public function __construct(
         private string $host,
         private int $port,
@@ -33,6 +40,7 @@ class SocketServer implements Resource
         }
     }
 
+    /** Close the server socket if still open. */
     public function __destruct()
     {
         if ($this->isOpen()) {
@@ -40,6 +48,14 @@ class SocketServer implements Resource
         }
     }
 
+    /**
+     * Create a Stream that listens for incoming TCP connections.
+     *
+     * @param string $host    Hostname or IP to bind to
+     * @param int    $port    TCP port to listen on
+     * @param int    $backlog Maximum pending connections queue length
+     * @return Stream
+     */
     public static function listen(string $host, int $port, int $backlog = SOMAXCONN): Stream
     {
         $stream = Stream(new SocketServer($host, $port, $backlog));
@@ -47,7 +63,16 @@ class SocketServer implements Resource
         return $stream;
     }
 
-    public function pull($bytes)
+    /**
+     * Accept the next client connection.
+     *
+     * Binds and listens on first call. Returns a client socket resource,
+     * or Resource::EOF if the accept fails.
+     *
+     * @param int $bytes Unused (required by Resource interface)
+     * @return mixed Client socket resource, or Resource::EOF on failure
+     */
+    public function pull($bytes): mixed
     {
         if (!$this->isOpen()) {
             $this->bind();
@@ -56,11 +81,21 @@ class SocketServer implements Resource
         return $this->accept();
     }
 
+    /**
+     * Check whether the server socket is an open stream resource.
+     *
+     * @return bool
+     */
     private function isOpen(): bool
     {
         return is_resource($this->serverSocket) && get_resource_type($this->serverSocket) === 'stream';
     }
 
+    /**
+     * Create and bind a TCP server socket, then start listening.
+     *
+     * @return void
+     */
     private function bind(): void
     {
         $errno = 0;
@@ -84,7 +119,12 @@ class SocketServer implements Resource
         stream_set_blocking($this->serverSocket, false);
     }
 
-    private function accept()
+    /**
+     * Accept the next incoming connection, returning the client socket or Resource::EOF.
+     *
+     * @return mixed
+     */
+    private function accept(): mixed
     {
         if (!is_resource($this->serverSocket)) {
             throw new \Error("Server socket is not a valid resource");
@@ -102,6 +142,11 @@ class SocketServer implements Resource
         return $client;
     }
 
+    /**
+     * Close the server socket.
+     *
+     * @return void
+     */
     private function close(): void
     {
         if (is_resource($this->serverSocket)) {
@@ -109,6 +154,9 @@ class SocketServer implements Resource
         }
     }
 
+    /**
+     * @return string The bound address as a TCP URI (e.g. "tcp://host:port")
+     */
     public function getAddress(): string
     {
         return "tcp://{$this->host}:{$this->port}";

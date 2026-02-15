@@ -11,9 +11,22 @@
 
 namespace Phunkie\Streams\Infinite;
 
+/**
+ * Interface for infinite stream sources (generators).
+ *
+ * Implementations produce an unbounded sequence of values via a Generator.
+ */
 interface Infinite
 {
+    /**
+     * Get the values from this infinite source as a Generator.
+     *
+     * @return \Generator
+     */
     public function getValues(): \Generator;
 
+    /**
+     * Reset the source to its initial state.
+     */
     public function reset(): void;
 }

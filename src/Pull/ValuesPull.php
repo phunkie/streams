@@ -23,6 +23,12 @@ use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
 
+/**
+ * Pull backed by an in-memory array of values.
+ *
+ * Wraps a variadic list of values and exposes them through the Pull/Iterator interface.
+ * Supports functor, monad, and compilation operations via traits.
+ */
 class ValuesPull implements Pull
 {
     use ShowOps;
@@ -39,9 +45,7 @@ class ValuesPull implements Pull
     private Scope $scope;
 
     /**
-     * ValuesPull constructor.
-     *
-     * @param mixed ...$values The values to be pulled from.
+     * @param mixed ...$values Values to expose through this pull.
      */
     public function __construct(...$values)
     {
@@ -50,21 +54,41 @@ class ValuesPull implements Pull
         $this->scope = new Scope();
     }
 
-    public function pull()
+    /**
+     * Returns the current value without advancing the iterator.
+     *
+     * @return mixed The value at the current index.
+     */
+    public function pull(): mixed
     {
         return $this->current();
     }
 
-    public function getValues()
+    /**
+     * Returns the underlying values array.
+     *
+     * @return array
+     */
+    public function getValues(): array
     {
         return $this->values;
     }
 
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
+    /**
+     * Converts this pull into a Stream, preserving the current scope.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         $stream = Stream(...$this->values);
@@ -73,6 +97,12 @@ class ValuesPull implements Pull
         return $stream;
     }
 
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
@@ -80,11 +110,22 @@ class ValuesPull implements Pull
         return $this;
     }
 
+    /**
+     * Returns the current iterator index.
+     *
+     * @return int
+     */
     public function getIndex(): int
     {
         return $this->index;
     }
 
+    /**
+     * Set the iterator index to a specific position.
+     *
+     * @param int $index The new index.
+     * @return static
+     */
     public function setIndex(int $index): static
     {
         $this->index = $index;

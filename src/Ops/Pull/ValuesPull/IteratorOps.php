@@ -11,28 +11,61 @@
 
 namespace Phunkie\Streams\Ops\Pull\ValuesPull;
 
+/**
+ * Iterator interface implementation for ValuesPull. Enables sequential element access.
+ *
+ * @method array getValues()
+ * @method int getIndex()
+ * @method void setIndex(int $index)
+ */
 trait IteratorOps
 {
+    /**
+     * Reset the iterator to the first element.
+     *
+     * @return void
+     */
     public function rewind(): void
     {
         $this->setIndex(0);
     }
 
+    /**
+     * Return the current element.
+     *
+     * @return mixed
+     */
     public function current(): mixed
     {
         return $this->getValues()[$this->index];
     }
 
+    /**
+     * Return the current index.
+     *
+     * @return mixed
+     */
     public function key(): mixed
     {
         return $this->getIndex();
     }
 
+    /**
+     * Check if the current position is valid.
+     *
+     * @return bool
+     */
     public function valid(): bool
     {
         return $this->getIndex() < count($this->getValues());
     }
 
+    /**
+     * Advance to the next element.
+     *
+     * @return void
+     * @throws \OutOfBoundsException If no more elements are available
+     */
     public function next(): void
     {
         if (!$this->valid()) {

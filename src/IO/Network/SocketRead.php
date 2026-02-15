@@ -15,13 +15,19 @@ use Phunkie\Streams\IO\Resource;
 use Phunkie\Streams\Type\Stream;
 
 /**
- * TCP Socket client for reading data from a remote server
+ * TCP socket reader as a pullable stream Resource.
+ *
+ * Connects lazily on first pull and reads data with a configurable timeout.
  */
 class SocketRead implements Resource
 {
     private $socket;
     private float $timeout;
 
+    /**
+     * @param SocketAddress $address Remote TCP address to connect to
+     * @param float         $timeout Connection timeout in seconds
+     */
     public function __construct(
         private SocketAddress $address,
         float $timeout = 30.0
@@ -29,6 +35,7 @@ class SocketRead implements Resource
         $this->timeout = $timeout;
     }
 
+    /** Close the socket if still open. */
     public function __destruct()
     {
         if ($this->isOpen()) {
@@ -36,6 +43,14 @@ class SocketRead implements Resource
         }
     }
 
+    /**
+     * Create a Stream that reads all data from a TCP socket in chunks.
+     *
+     * @param SocketAddress $address Remote TCP address
+     * @param int           $bytes   Chunk size in bytes
+     * @param float         $timeout Connection timeout in seconds
+     * @return Stream
+     */
     public static function readAll(SocketAddress $address, int $bytes = 4096, float $timeout = 30.0): Stream
     {
         $stream = Stream(new SocketRead($address, $timeout));
@@ -43,7 +58,15 @@ class SocketRead implements Resource
         return $stream->setBytes($bytes);
     }
 
-    public function pull($bytes)
+    /**
+     * Pull the next chunk of bytes from the socket.
+     *
+     * Connects on first call. Returns Resource::EOF when the remote end closes.
+     *
+     * @param int $bytes Number of bytes to read
+     * @return string Data chunk, or Resource::EOF when the connection is closed
+     */
+    public function pull($bytes): string
     {
         if (!$this->isOpen()) {
             $this->connect();
@@ -52,11 +75,21 @@ class SocketRead implements Resource
         return $this->read($bytes);
     }
 
+    /**
+     * Check whether the socket is an open stream resource.
+     *
+     * @return bool
+     */
     private function isOpen(): bool
     {
         return is_resource($this->socket) && get_resource_type($this->socket) === 'stream';
     }
 
+    /**
+     * Open a TCP connection to the remote address.
+     *
+     * @return void
+     */
     private function connect(): void
     {
         $errno = 0;
@@ -79,7 +112,13 @@ class SocketRead implements Resource
         stream_set_blocking($this->socket, false);
     }
 
-    private function read($bytes)
+    /**
+     * Read up to $bytes from the socket, returning Resource::EOF when closed.
+     *
+     * @param int $bytes Number of bytes to read.
+     * @return string
+     */
+    private function read($bytes): string
     {
         if (!is_resource($this->socket)) {
             throw new \Error("Socket is not a valid resource");
@@ -97,6 +136,11 @@ class SocketRead implements Resource
         return $data;
     }
 
+    /**
+     * Close the socket connection.
+     *
+     * @return void
+     */
     private function close(): void
     {
         if (is_resource($this->socket)) {

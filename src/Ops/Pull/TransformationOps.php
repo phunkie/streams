@@ -16,10 +16,19 @@ use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Transformation;
 
 /**
+ * Transformation pipeline operations for Pull. Manages the lazy transformation chain
+ * that is applied when the pull is compiled.
+ *
  * @method Scope getScope()
  */
 trait TransformationOps
 {
+    /**
+     * Append a transformation to the scope's pipeline, to be applied at compile time.
+     *
+     * @param Transformation $transformation The transformation to append
+     * @return static
+     */
     public function appendTransformation(Transformation $transformation): static
     {
         $this->getScope()->appendTransformation($transformation);
@@ -27,6 +36,14 @@ trait TransformationOps
         return $this;
     }
 
+    /**
+     * Execute all pending transformations against the given chunk of data.
+     * Returns IO if effectful transformations are present and $acceptIo is true.
+     *
+     * @param iterable $chunk The input data to transform
+     * @param bool $acceptIo Whether to allow IO return (false forces array)
+     * @return iterable|IO
+     */
     public function runTransformations(iterable $chunk, $acceptIo = true): iterable | IO
     {
         return $this->getScope()->runTransformations($chunk, $acceptIo);

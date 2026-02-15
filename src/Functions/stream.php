@@ -16,6 +16,19 @@ namespace {
     use Phunkie\Streams\IO\Resource;
     use Phunkie\Streams\Type\Stream;
 
+    /**
+     * Factory function for creating streams.
+     *
+     * Accepts a Pull, Path, Infinite, Resource, or plain values.
+     * - Pull: creates a stream backed by a pull-based source
+     * - Path: creates a stream that reads from a file path
+     * - Infinite: creates a stream from an infinite generator (range, iterate, unfold, etc.)
+     * - Resource: creates a stream from a resource object
+     * - Plain values: creates a finite stream emitting the given values
+     *
+     * @param mixed ...$t A single Pull|Path|Infinite|Resource, or one or more plain values
+     * @return Stream
+     */
     function Stream(...$t): Stream
     {
         if (count($t) === 1 && $t[0] instanceof \Phunkie\Streams\Type\Pull) {

@@ -17,10 +17,19 @@ use Phunkie\Streams\Type\Pull;
 use Phunkie\Types\ImmList;
 
 /**
+ * Compilation operations for ResourcePullConcat. Materialises concatenated resource pulls.
+ *
  * @method Pull pull()
+ * @method array getValues()
+ * @method \Phunkie\Streams\Type\Scope getScope()
  */
 trait CompileOps
 {
+    /**
+     * Compile into an ImmList, applying any scope-registered maps.
+     *
+     * @return ImmList
+     */
     public function toList(): ImmList
     {
         $list = ImmList(...$this->getValues());
@@ -32,12 +41,23 @@ trait CompileOps
         return $list;
     }
 
+    /**
+     * Compile into a plain PHP array.
+     *
+     * @return array
+     */
     public function toArray(): array
     {
         return $this->getValues();
     }
 
-    public function runLog($bytes)
+    /**
+     * Run the concatenated resource pulls and log output as IO, reading up to 10 chunks.
+     *
+     * @param mixed $bytes Byte size hint for reading
+     * @return IO
+     */
+    public function runLog($bytes): IO
     {
         return new IO(function () use ($bytes) {
             $log = [];

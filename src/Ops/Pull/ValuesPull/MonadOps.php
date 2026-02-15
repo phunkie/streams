@@ -17,10 +17,18 @@ use function Phunkie\Streams\Functions\transformation\flatten;
 use Phunkie\Streams\Type\Scope;
 
 /**
+ * Monad operations for ValuesPull. Registers flatMap and flatten transformations.
+ *
  * @method Scope getScope()
  */
 trait MonadOps
 {
+    /**
+     * Register a flatMap transformation. The function should return an iterable for each element.
+     *
+     * @param callable $f A => iterable<B>
+     * @return static
+     */
     public function flatMap(callable $f): static
     {
         $this->appendTransformation(flatMap($f));
@@ -28,6 +36,11 @@ trait MonadOps
         return $this;
     }
 
+    /**
+     * Register a flatten transformation to unwrap nested iterables.
+     *
+     * @return static
+     */
     public function flatten(): static
     {
         $this->appendTransformation(flatten());

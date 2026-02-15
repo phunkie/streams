@@ -33,28 +33,46 @@ trait EffectfulOps
      * @param callable $f A => IO<B>
      * @return $this
      */
-    public function evalMap($f)
+    public function evalMap($f): static
     {
         $this->appendTransformation(evalMap($f)[IO::class]);
 
         return $this;
     }
 
-    public function evalTap($f)
+    /**
+     * Apply an effectful function for side effects, keeping the original element.
+     *
+     * @param callable $f A => IO<void>
+     * @return $this
+     */
+    public function evalTap($f): static
     {
         $this->appendTransformation(evalTap($f)[IO::class]);
 
         return $this;
     }
 
-    public function evalFilter($f)
+    /**
+     * Filter elements using an effectful predicate that returns IO<bool>.
+     *
+     * @param callable $f A => IO<bool>
+     * @return $this
+     */
+    public function evalFilter($f): static
     {
         $this->appendTransformation(evalFilter($f)[IO::class]);
 
         return $this;
     }
 
-    public function evalFlatMap($f)
+    /**
+     * FlatMap with an effectful function. Delegates to evalFilter transformation.
+     *
+     * @param callable $f A => IO<iterable<B>>
+     * @return $this
+     */
+    public function evalFlatMap($f): static
     {
         $this->appendTransformation(evalFilter($f)[IO::class]);
 

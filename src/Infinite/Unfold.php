@@ -46,6 +46,7 @@ class Unfold implements Infinite
         return $this->values;
     }
 
+    /** @return \Generator */
     private function generate(): \Generator
     {
         $currentSeed = $this->seed;
@@ -69,7 +70,7 @@ class Unfold implements Infinite
      *
      * @return mixed The seed value
      */
-    public function getSeed()
+    public function getSeed(): mixed
     {
         return $this->seed;
     }
@@ -79,7 +80,7 @@ class Unfold implements Infinite
      *
      * @return callable The unfold function
      */
-    public function getUnfoldFn()
+    public function getUnfoldFn(): callable
     {
         return $this->f;
     }
@@ -90,7 +91,7 @@ class Unfold implements Infinite
      * @param mixed $seed The current seed value
      * @return array [currentValue, nextSeed]
      */
-    public function next($seed)
+    public function next($seed): array
     {
         $pair = ($this->f)($seed);
 

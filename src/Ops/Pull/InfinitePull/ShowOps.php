@@ -11,13 +11,29 @@
 
 namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 
+/**
+ * Show operations for InfinitePull. Previews the first 10 elements for display.
+ *
+ * @method \Phunkie\Streams\Infinite\Infinite getInfinite()
+ */
 trait ShowOps
 {
+    /**
+     * Return the type representation.
+     *
+     * @return string
+     */
     public function showType(): string
     {
         return 'Byte';
     }
 
+    /**
+     * Return a string showing the first 10 elements followed by "...".
+     * Resets the infinite source after peeking.
+     *
+     * @return string
+     */
     public function toString(): string
     {
         $values = [];

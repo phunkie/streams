@@ -25,6 +25,12 @@ use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
 
+/**
+ * Pull backed by an Infinite generator source.
+ *
+ * Produces values lazily from a generator, suitable for unbounded or
+ * computationally-defined streams (e.g. repeat, iterate, unfold).
+ */
 class InfinitePull implements Pull
 {
     use CompileOps;
@@ -39,6 +45,10 @@ class InfinitePull implements Pull
     private int $bytes;
     private Scope $scope;
 
+    /**
+     * @param Infinite $infinite The generator-based infinite source.
+     * @param int      $bytes    Chunk size hint for downstream consumers.
+     */
     public function __construct(Infinite $infinite, int $bytes = 256)
     {
         $this->infinite = $infinite;
@@ -46,7 +56,15 @@ class InfinitePull implements Pull
         $this->scope = new Scope(identity);
     }
 
-    public function pull()
+    /**
+     * Returns the current value and advances to the next element.
+     *
+     * Unlike ValuesPull::pull(), this consumes the element so that successive
+     * calls yield successive generator values.
+     *
+     * @return mixed The value before advancing.
+     */
+    public function pull(): mixed
     {
         $current = $this->current();
 
@@ -55,11 +73,21 @@ class InfinitePull implements Pull
         return $current;
     }
 
+    /**
+     * Returns the underlying generator of values.
+     *
+     * @return \Generator
+     */
     public function getValues(): \Generator
     {
         return $this->infinite->getValues();
     }
 
+    /**
+     * Converts this pull into an infinite Stream, preserving the current scope.
+     *
+     * @return Stream
+     */
     public function toStream(): Stream
     {
         $stream = Stream::fromInfinite($this->infinite, $this->bytes);
@@ -68,16 +96,32 @@ class InfinitePull implements Pull
         return $stream;
     }
 
+    /**
+     * Returns the wrapped Infinite source.
+     *
+     * @return Infinite
+     */
     public function getInfinite(): Infinite
     {
         return $this->infinite;
     }
 
+    /**
+     * Returns the current scope.
+     *
+     * @return Scope
+     */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
+    /**
+     * Replace the current scope.
+     *
+     * @param Scope $scope The new scope.
+     * @return static
+     */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;

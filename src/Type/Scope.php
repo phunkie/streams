@@ -13,13 +13,35 @@ namespace Phunkie\Streams\Type;
 
 use Phunkie\Effect\IO\IO;
 
+/**
+ * Manages the transformation pipeline and filtering state for a stream.
+ *
+ * A Scope accumulates map, filter, and composed Transformation operations
+ * that are applied to each chunk when the stream is evaluated.
+ */
 class Scope
 {
+    /** @var callable[] */
     private array $callables = [];
+
+    /** @var callable[] Accumulated map functions. */
     private array $maps = [];
+
+    /** @var callable[] Accumulated filter predicates. */
     private array $filters = [];
+
+    /** @var Transformation Composed transformation pipeline. */
     private Transformation $transformation;
 
+    /**
+     * Append a transformation to the pipeline.
+     *
+     * If no transformation exists yet, the given one becomes the root;
+     * otherwise it is composed after the existing pipeline via andThen().
+     *
+     * @param Transformation $transformation The transformation to append.
+     * @return void
+     */
     public function appendTransformation(Transformation $transformation): void
     {
         if (!isset($this->transformation)) {
@@ -30,26 +52,55 @@ class Scope
         $this->transformation = $this->transformation->andThen($transformation);
     }
 
+    /**
+     * Register a map function to be applied to stream elements.
+     *
+     * @param callable $f The mapping function.
+     * @return void
+     */
     public function addMap(callable $f): void
     {
         $this->maps[] = $f;
     }
 
+    /**
+     * @return callable[]
+     */
     public function getMaps(): array
     {
         return $this->maps;
     }
 
+    /**
+     * Register a filter predicate to be applied to stream elements.
+     *
+     * @param callable $f The filter predicate.
+     * @return void
+     */
     public function addFilter(callable $f): void
     {
         $this->filters[] = $f;
     }
 
+    /**
+     * @return callable[]
+     */
     public function getFilters(): array
     {
         return $this->filters;
     }
 
+    /**
+     * Run the composed transformation pipeline against a chunk of data.
+     *
+     * For passthrough transformations (side-effect-only), the IO action is
+     * executed immediately. When $acceptIo is false, the IO result is
+     * unwrapped synchronously instead of being returned as an IO value.
+     *
+     * @param iterable $chunk    The data chunk to transform.
+     * @param bool     $acceptIo When true, passthrough results may be returned as IO.
+     * @return iterable|IO
+     */
     public function runTransformations(iterable $chunk, $acceptIo = true): iterable | IO
     {
         if (!isset($this->transformation)) {

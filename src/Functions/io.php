@@ -13,6 +13,12 @@ namespace Phunkie\Streams\Functions\io {
 
     use Phunkie\Effect\IO\IO;
 
+    /**
+     * Wrap a closure in an IO effect.
+     *
+     * @param callable $f The side-effecting closure to wrap
+     * @return IO
+     */
     function io($f): IO
     {
         return new IO($f);
