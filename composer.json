@@ -15,7 +15,7 @@
         "phunkie/effect": "^1.2.0"
     },
     "require-dev": {
-        "pestphp/pest": "^2.35",
+        "pestphp/pest": "^3",
         "phpstan/phpstan": "^2.0",
         "friendsofphp/php-cs-fixer": "^3.90",
         "phunkie/phpstan": "^1.0"
