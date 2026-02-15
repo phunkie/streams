@@ -33,7 +33,7 @@ trait EffectfulOps
      * @param callable $f A => IO<B>
      * @return $this
      */
-    public function evalMap($f)
+    public function evalMap($f): static
     {
         $this->appendTransformation(evalMap($f)[IO::class]);
 
@@ -46,7 +46,7 @@ trait EffectfulOps
      * @param callable $f A => IO<void>
      * @return $this
      */
-    public function evalTap($f)
+    public function evalTap($f): static
     {
         $this->appendTransformation(evalTap($f)[IO::class]);
 
@@ -59,7 +59,7 @@ trait EffectfulOps
      * @param callable $f A => IO<bool>
      * @return $this
      */
-    public function evalFilter($f)
+    public function evalFilter($f): static
     {
         $this->appendTransformation(evalFilter($f)[IO::class]);
 
@@ -72,7 +72,7 @@ trait EffectfulOps
      * @param callable $f A => IO<iterable<B>>
      * @return $this
      */
-    public function evalFlatMap($f)
+    public function evalFlatMap($f): static
     {
         $this->appendTransformation(evalFilter($f)[IO::class]);
 

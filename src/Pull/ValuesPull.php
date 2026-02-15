@@ -59,13 +59,17 @@ class ValuesPull implements Pull
      *
      * @return mixed The value at the current index.
      */
-    public function pull()
+    public function pull(): mixed
     {
         return $this->current();
     }
 
-    /** Returns the underlying values array. */
-    public function getValues()
+    /**
+     * Returns the underlying values array.
+     *
+     * @return array
+     */
+    public function getValues(): array
     {
         return $this->values;
     }

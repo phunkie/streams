@@ -48,7 +48,7 @@ trait CompileOps
      *
      * @return array|IO
      */
-    public function runLog()
+    public function runLog(): array|IO
     {
         return $this->getPull()->runLog($this->getBytes());
     }

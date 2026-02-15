@@ -46,7 +46,7 @@ class PDOPull implements Pull
      *
      * @return array<string, mixed>|null The current row as an associative array, or null if exhausted.
      */
-    public function pull()
+    public function pull(): mixed
     {
         return $this->current();
     }

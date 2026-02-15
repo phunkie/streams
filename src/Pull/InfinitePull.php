@@ -64,7 +64,7 @@ class InfinitePull implements Pull
      *
      * @return mixed The value before advancing.
      */
-    public function pull()
+    public function pull(): mixed
     {
         $current = $this->current();
 

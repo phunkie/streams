@@ -52,7 +52,7 @@ class ResourcePullConcat implements Pull
      *
      * @throws \OutOfBoundsException If both pulls are exhausted.
      */
-    public function pull()
+    public function pull(): mixed
     {
         try {
             return $this->currentPull->pull();

@@ -70,9 +70,9 @@ class SocketServer implements Resource
      * or Resource::EOF if the accept fails.
      *
      * @param int $bytes Unused (required by Resource interface)
-     * @return resource|string Client socket resource, or Resource::EOF on failure
+     * @return mixed Client socket resource, or Resource::EOF on failure
      */
-    public function pull($bytes)
+    public function pull($bytes): mixed
     {
         if (!$this->isOpen()) {
             $this->bind();
@@ -111,8 +111,10 @@ class SocketServer implements Resource
         stream_set_blocking($this->serverSocket, false);
     }
 
-    /** Accept the next incoming connection, returning the client socket or Resource::EOF. */
-    private function accept()
+    /**
+     * Accept the next incoming connection, returning the client socket or Resource::EOF.
+     */
+    private function accept(): mixed
     {
         if (!is_resource($this->serverSocket)) {
             throw new \Error("Server socket is not a valid resource");

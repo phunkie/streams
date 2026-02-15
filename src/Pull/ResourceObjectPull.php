@@ -54,7 +54,7 @@ class ResourceObjectPull implements Pull
      *
      * @return mixed The current chunk, or null if EOF reached or before first next().
      */
-    public function pull()
+    public function pull(): mixed
     {
         return $this->current();
     }

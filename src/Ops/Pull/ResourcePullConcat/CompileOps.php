@@ -57,7 +57,7 @@ trait CompileOps
      * @param mixed $bytes Byte size hint for reading
      * @return IO
      */
-    public function runLog($bytes)
+    public function runLog($bytes): IO
     {
         return new IO(function () use ($bytes) {
             $log = [];

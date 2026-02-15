@@ -40,7 +40,7 @@ namespace {
      * @param int $start The initial seed value
      * @return \Closure(callable): Iterate
      */
-    function iterate(int $start)
+    function iterate(int $start): \Closure
     {
         return function (callable $f) use ($start) {
             return new Iterate($f, $start);
@@ -55,7 +55,7 @@ namespace {
      * @param mixed $seed The initial state
      * @return \Closure(callable): Unfold
      */
-    function unfold($seed)
+    function unfold($seed): \Closure
     {
         return function (callable $f) use ($seed) {
             return new Unfold($f, $seed);

@@ -39,8 +39,12 @@ use Phunkie\Streams\Showable;
  */
 interface Pull extends Showable, Compilable, \Iterator
 {
-    /** Pull the next value from the underlying source. */
-    public function pull();
+    /**
+     * Pull the next value from the underlying source.
+     *
+     * @return mixed
+     */
+    public function pull(): mixed;
 
     /** Lift this Pull back into a Stream. */
     public function toStream(): Stream;

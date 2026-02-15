@@ -64,9 +64,9 @@ class SocketRead implements Resource
      * Connects on first call. Returns Resource::EOF when the remote end closes.
      *
      * @param int $bytes Number of bytes to read
-     * @return string|string Resource::EOF when the connection is closed
+     * @return string Data chunk, or Resource::EOF when the connection is closed
      */
-    public function pull($bytes)
+    public function pull($bytes): string
     {
         if (!$this->isOpen()) {
             $this->connect();
@@ -104,8 +104,12 @@ class SocketRead implements Resource
         stream_set_blocking($this->socket, false);
     }
 
-    /** Read up to $bytes from the socket, returning Resource::EOF when closed. */
-    private function read($bytes)
+    /**
+     * Read up to $bytes from the socket, returning Resource::EOF when closed.
+     *
+     * @return string
+     */
+    private function read($bytes): string
     {
         if (!is_resource($this->socket)) {
             throw new \Error("Socket is not a valid resource");

@@ -57,9 +57,9 @@ class Read implements Resource
      * Opens the file on first call. Returns Resource::EOF at end-of-file.
      *
      * @param int $bytes Number of bytes to read
-     * @return string|string Resource::EOF when the file is exhausted
+     * @return string Data chunk, or Resource::EOF when the file is exhausted
      */
-    public function pull($bytes)
+    public function pull($bytes): string
     {
         if (!$this->isOpen()) {
             $this->open();
@@ -68,20 +68,32 @@ class Read implements Resource
         return $this->read($bytes);
     }
 
-    /** Check whether the file handle is an open stream resource. */
-    private function isOpen()
+    /**
+     * Check whether the file handle is an open stream resource.
+     *
+     * @return bool
+     */
+    private function isOpen(): bool
     {
         return is_resource($this->handle) && get_resource_type($this->handle) === 'stream';
     }
 
-    /** Open the file for reading. */
-    private function open()
+    /**
+     * Open the file for reading.
+     *
+     * @return void
+     */
+    private function open(): void
     {
         $this->handle = fopen($this->path, 'r');
     }
 
-    /** Read up to $bytes from the handle, returning Resource::EOF at end-of-file. */
-    private function read($bytes)
+    /**
+     * Read up to $bytes from the handle, returning Resource::EOF at end-of-file.
+     *
+     * @return string
+     */
+    private function read($bytes): string
     {
         if (is_resource($this->handle)) {
             $data = fread($this->handle, $bytes);

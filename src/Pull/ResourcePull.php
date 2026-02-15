@@ -58,7 +58,7 @@ class ResourcePull implements Pull
      *
      * @return string|null The current chunk, or null before the first next().
      */
-    public function pull()
+    public function pull(): mixed
     {
         return $this->current();
     }

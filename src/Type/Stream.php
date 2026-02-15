@@ -72,7 +72,7 @@ class Stream implements Showable, Kind
      * @param Path $path  Path to the resource to read.
      * @param int  $bytes Chunk size in bytes for each pull.
      */
-    public static function fromResource(Path $path, int $bytes = 256)
+    public static function fromResource(Path $path, int $bytes = 256): Stream
     {
         $resourcePull = new ResourcePull($path, $bytes);
 
@@ -113,9 +113,10 @@ class Stream implements Showable, Kind
     /**
      * Magic property accessor for compile, repeat, runLog, toList, and toArray.
      *
+     * @return mixed
      * @throws \Error If the property is not recognised.
      */
-    public function __get($property)
+    public function __get($property): mixed
     {
         return match($property) {
             'compile' => $this->compile(),
@@ -151,8 +152,11 @@ class Stream implements Showable, Kind
             throw new \Error("Cannot call runlog on Pure Streams");
     }
 
-    /** Assign a Scope (transformation pipeline) to this stream's pull. */
-    public function setScope(Scope $scope)
+    /** Assign a Scope (transformation pipeline) to this stream's pull.
+     *
+     * @return void
+     */
+    public function setScope(Scope $scope): void
     {
         $this->getPull()->setScope($scope);
     }

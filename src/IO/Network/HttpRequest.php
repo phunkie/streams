@@ -111,9 +111,9 @@ class HttpRequest implements Resource
      * when the response has been fully consumed.
      *
      * @param int $bytes Number of bytes to read
-     * @return string|string Resource::EOF when the response is exhausted
+     * @return string Data chunk, or Resource::EOF when the response is exhausted
      */
-    public function pull($bytes)
+    public function pull($bytes): string
     {
         if (!$this->executed) {
             $this->execute();
@@ -176,8 +176,12 @@ class HttpRequest implements Resource
         return implode("\r\n", $formatted);
     }
 
-    /** Read up to $bytes from the response, returning Resource::EOF at end-of-stream. */
-    private function read($bytes)
+    /**
+     * Read up to $bytes from the response, returning Resource::EOF at end-of-stream.
+     *
+     * @return string
+     */
+    private function read($bytes): string
     {
         if (!is_resource($this->handle)) {
             throw new \Error("HTTP handle is not a valid resource");

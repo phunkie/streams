@@ -41,9 +41,10 @@ class Compiler
     /**
      * Magic property accessor for drain, toList, toArray, and runLog.
      *
+     * @return mixed
      * @throws \Error If the property is not recognised.
      */
-    public function __get($property)
+    public function __get($property): mixed
     {
         return match($property) {
             'drain' => $this->drain(),
@@ -66,8 +67,12 @@ class Compiler
         return $this->bytes;
     }
 
-    /** Execute the stream for its side effects, discarding the output. */
-    private function drain()
+    /**
+     * Execute the stream for its side effects, discarding the output.
+     *
+     * @return \Phunkie\Effect\IO\IO
+     */
+    private function drain(): IO
     {
         return $this->getPull()->drain();
     }
