@@ -79,6 +79,11 @@ class Stream implements Showable, Kind
         return new Stream($resourceObjectPull, $bytes);
     }
 
+    public static function fromPull(Pull $pull, int $bytes = 256): Stream
+    {
+        return new Stream($pull, $bytes);
+    }
+
     public static function fromInfinite(Infinite $infinite, int $bytes = 256): Stream
     {
         return new Stream(new InfinitePull($infinite, $bytes), $bytes);

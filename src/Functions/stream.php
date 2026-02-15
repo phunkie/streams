@@ -18,6 +18,10 @@ namespace {
 
     function Stream(...$t): Stream
     {
+        if (count($t) === 1 && $t[0] instanceof \Phunkie\Streams\Type\Pull) {
+            return Stream::fromPull($t[0]);
+        }
+
         if (count($t) === 1 && $t[0] instanceof Path) {
             return Stream::fromResource($t[0]);
         }
