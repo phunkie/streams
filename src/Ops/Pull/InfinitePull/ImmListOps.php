@@ -15,8 +15,23 @@ use Phunkie\Streams\Infinite\Timer;
 use Phunkie\Streams\Pull\InfinitePull;
 use Phunkie\Streams\Pull\ValuesPull;
 
+/**
+ * List-like operations for InfinitePull. Converts to finite ValuesPull when bounded.
+ *
+ * @method \Phunkie\Streams\Infinite\Infinite getInfinite()
+ * @method \Phunkie\Streams\Type\Scope getScope()
+ * @method bool valid()
+ * @method mixed pull()
+ */
 trait ImmListOps
 {
+    /**
+     * Take the first $n elements from the infinite source.
+     * Returns InfinitePull for Timer sources (preserving timing), or ValuesPull otherwise.
+     *
+     * @param int $n Number of elements to take
+     * @return InfinitePull|ValuesPull
+     */
     public function take(int $n): InfinitePull | ValuesPull
     {
         $infinite = $this->getInfinite();

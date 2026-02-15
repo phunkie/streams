@@ -11,13 +11,26 @@
 
 namespace Phunkie\Streams\Ops\Pull\ResourcePull;
 
+/**
+ * Show operations for ResourcePull. Displays opaque representation since resource data is lazy.
+ */
 trait ShowOps
 {
+    /**
+     * Return the type representation for resource-backed pulls.
+     *
+     * @return string
+     */
     public function showType(): string
     {
         return 'Byte';
     }
 
+    /**
+     * Return an opaque string representation (resource content is not eagerly available).
+     *
+     * @return string
+     */
     public function toString(): string
     {
         return '...';

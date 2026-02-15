@@ -20,9 +20,11 @@ use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
 
 /**
- * Pull for Resource objects (like SocketRead, HttpRequest, etc.)
- * Unlike ResourcePull which expects a raw stream resource,
- * this works with Resource interface implementations
+ * Pull backed by a Resource interface object (SocketRead, HttpRequest, etc.).
+ *
+ * Unlike ResourcePull which wraps a raw PHP stream resource, this class
+ * works with Resource interface implementations that define their own
+ * pull($chunkSize) method and EOF sentinel.
  */
 class ResourceObjectPull implements Pull
 {
@@ -35,6 +37,10 @@ class ResourceObjectPull implements Pull
     private Scope $scope;
     private bool $eof = false;
 
+    /**
+     * @param Resource $resource  The Resource implementation to read from.
+     * @param int      $chunkSize Bytes to request per pull.
+     */
     public function __construct(
         private Resource $resource,
         private int $chunkSize = 4096
@@ -43,21 +49,29 @@ class ResourceObjectPull implements Pull
         $this->scope = new Scope();
     }
 
+    /**
+     * Returns the current chunk without advancing.
+     *
+     * @return mixed The current chunk, or null if EOF reached or before first next().
+     */
     public function pull()
     {
         return $this->current();
     }
 
+    /** Returns the current scope. */
     public function getScope(): Scope
     {
         return $this->scope;
     }
 
+    /** Converts this pull into a Stream backed by the same Resource object. */
     public function toStream(): Stream
     {
         return Stream::fromResourceObject($this->resource);
     }
 
+    /** Replace the current scope. */
     public function setScope(Scope $scope): static
     {
         $this->scope = $scope;
@@ -65,27 +79,38 @@ class ResourceObjectPull implements Pull
         return $this;
     }
 
+    /** Returns the last-read chunk. */
     public function current(): mixed
     {
         return $this->current;
     }
 
+    /** Returns true while EOF has not been reached. */
     public function hasNext(): bool
     {
         return !$this->eof;
     }
 
+    /** Resets the key counter. Resource objects typically cannot rewind. */
     public function rewind(): void
     {
         // Resource objects typically can't rewind
         $this->key = 0;
     }
 
+    /** Returns the current chunk index. */
     public function key(): int
     {
         return $this->key;
     }
 
+    /**
+     * Pulls the next chunk from the Resource object.
+     *
+     * Sets EOF when Resource::EOF is returned.
+     *
+     * @throws \OutOfBoundsException If already at EOF.
+     */
     public function next(): void
     {
         if ($this->eof) {
@@ -103,11 +128,17 @@ class ResourceObjectPull implements Pull
         }
     }
 
+    /** Returns true while EOF has not been reached. */
     public function valid(): bool
     {
         return $this->hasNext();
     }
 
+    /**
+     * Consumes the entire resource, applying scope maps and filters to each chunk.
+     *
+     * @return array<mixed> All transformed and filtered chunks.
+     */
     public function getValues(): array
     {
         $values = [];
@@ -141,6 +172,7 @@ class ResourceObjectPull implements Pull
         return $values;
     }
 
+    /** Registers a mapping function to be applied on getValues(). */
     public function map($f): static
     {
         $this->getScope()->addMap($f);
@@ -148,6 +180,7 @@ class ResourceObjectPull implements Pull
         return $this;
     }
 
+    /** Registers a filter predicate to be applied on getValues(). */
     public function filter(callable $f): static
     {
         $this->getScope()->addFilter($f);

@@ -15,8 +15,20 @@ use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
 
+/**
+ * Compilation operations for ResourcePull. Materialises resource-backed data into collections.
+ *
+ * @method array getValues()
+ * @method \Phunkie\Streams\Type\Scope getScope()
+ * @method mixed pull()
+ */
 trait CompileOps
 {
+    /**
+     * Compile into an ImmList, applying any scope-registered maps.
+     *
+     * @return ImmList
+     */
     public function toList(): ImmList
     {
         $list = ImmList(...$this->getValues());
@@ -28,11 +40,22 @@ trait CompileOps
         return $list;
     }
 
+    /**
+     * Compile into a plain PHP array.
+     *
+     * @return array
+     */
     public function toArray(): array
     {
         return $this->getValues();
     }
 
+    /**
+     * Run the resource pull and log output as IO, reading up to 10 chunks.
+     *
+     * @param mixed $bytes Byte size hint for reading
+     * @return IO
+     */
     public function runLog($bytes)
     {
         return new IO(function () use ($bytes) {

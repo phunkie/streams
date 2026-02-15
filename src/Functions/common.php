@@ -9,9 +9,15 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * Bootstraps all function files in this directory.
+ */
 array_map(function ($file) {
     require_once $file;
 }, glob(__DIR__ .'/*'));
 
+/** @var string Effect type constant for pure (non-effectful) streams. */
 const Pure = 'Pure';
+
+/** @var string Effect type constant for IO (effectful) streams. */
 const IO = 'IO';

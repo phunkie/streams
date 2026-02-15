@@ -16,15 +16,29 @@ use function Phunkie\Streams\Functions\transformation\map;
 use Phunkie\Streams\Type\Scope;
 
 /**
+ * Functor operations for InfinitePull. Registers map transformations on the scope.
+ *
  * @method Scope getScope()
  */
 trait FunctorOps
 {
+    /**
+     * Alias for map. Apply a function to each output element.
+     *
+     * @param callable $f A => B
+     * @return static
+     */
     public function mapOutput($f): static
     {
         return $this->map($f);
     }
 
+    /**
+     * Register a map transformation to be applied when the pull is compiled.
+     *
+     * @param callable $f A => B
+     * @return static
+     */
     public function map($f): static
     {
         $this->appendTransformation(map($f));

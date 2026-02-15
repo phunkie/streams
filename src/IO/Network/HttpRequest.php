@@ -15,13 +15,25 @@ use Phunkie\Streams\IO\Resource;
 use Phunkie\Streams\Type\Stream;
 
 /**
- * HTTP Request resource for making HTTP calls
+ * HTTP request as a pullable stream Resource.
+ *
+ * Supports GET, POST, PUT, DELETE, PATCH, and HEAD methods.
+ * The request is executed lazily on the first pull. Uses PHP stream
+ * contexts internally.
  */
 class HttpRequest implements Resource
 {
     private $handle;
     private bool $executed = false;
 
+    /**
+     * @param string      $url     Request URL
+     * @param string      $method  HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD)
+     * @param array       $headers Request headers as strings or key-value pairs
+     * @param string|null $body    Request body (used with POST, PUT, PATCH)
+     * @param float       $timeout Connection timeout in seconds
+     * @throws \InvalidArgumentException If the HTTP method is not supported
+     */
     public function __construct(
         private string $url,
         private string $method = 'GET',
@@ -34,6 +46,7 @@ class HttpRequest implements Resource
         }
     }
 
+    /** Close the response stream if still open. */
     public function __destruct()
     {
         if ($this->isOpen()) {
@@ -41,26 +54,65 @@ class HttpRequest implements Resource
         }
     }
 
+    /**
+     * Create a Stream for an HTTP GET request.
+     *
+     * @param string $url     Request URL
+     * @param array  $headers Optional request headers
+     * @return Stream
+     */
     public static function get(string $url, array $headers = []): Stream
     {
         return Stream(new HttpRequest($url, 'GET', $headers));
     }
 
+    /**
+     * Create a Stream for an HTTP POST request.
+     *
+     * @param string $url     Request URL
+     * @param string $body    Request body
+     * @param array  $headers Optional request headers
+     * @return Stream
+     */
     public static function post(string $url, string $body, array $headers = []): Stream
     {
         return Stream(new HttpRequest($url, 'POST', $headers, $body));
     }
 
+    /**
+     * Create a Stream for an HTTP PUT request.
+     *
+     * @param string $url     Request URL
+     * @param string $body    Request body
+     * @param array  $headers Optional request headers
+     * @return Stream
+     */
     public static function put(string $url, string $body, array $headers = []): Stream
     {
         return Stream(new HttpRequest($url, 'PUT', $headers, $body));
     }
 
+    /**
+     * Create a Stream for an HTTP DELETE request.
+     *
+     * @param string $url     Request URL
+     * @param array  $headers Optional request headers
+     * @return Stream
+     */
     public static function delete(string $url, array $headers = []): Stream
     {
         return Stream(new HttpRequest($url, 'DELETE', $headers));
     }
 
+    /**
+     * Pull the next chunk of response data.
+     *
+     * Executes the HTTP request on first call. Returns Resource::EOF
+     * when the response has been fully consumed.
+     *
+     * @param int $bytes Number of bytes to read
+     * @return string|string Resource::EOF when the response is exhausted
+     */
     public function pull($bytes)
     {
         if (!$this->executed) {
@@ -70,11 +122,13 @@ class HttpRequest implements Resource
         return $this->read($bytes);
     }
 
+    /** Check whether the response handle is an open stream resource. */
     private function isOpen(): bool
     {
         return is_resource($this->handle) && get_resource_type($this->handle) === 'stream';
     }
 
+    /** Execute the HTTP request and open the response stream. */
     private function execute(): void
     {
         $options = [
@@ -100,6 +154,7 @@ class HttpRequest implements Resource
         $this->executed = true;
     }
 
+    /** Format the headers array into an HTTP header string. */
     private function formatHeaders(): string
     {
         if (empty($this->headers)) {
@@ -121,6 +176,7 @@ class HttpRequest implements Resource
         return implode("\r\n", $formatted);
     }
 
+    /** Read up to $bytes from the response, returning Resource::EOF at end-of-stream. */
     private function read($bytes)
     {
         if (!is_resource($this->handle)) {
@@ -136,6 +192,7 @@ class HttpRequest implements Resource
         return $data;
     }
 
+    /** Close the response stream handle. */
     private function close(): void
     {
         if (is_resource($this->handle)) {
@@ -144,8 +201,11 @@ class HttpRequest implements Resource
     }
 
     /**
-     * Get response headers from the HTTP request
-     * Only available after execution
+     * Get response headers from the HTTP request.
+     *
+     * Only available after the request has been executed (after the first pull).
+     *
+     * @return array Response headers, or empty array if not yet executed
      */
     public function getResponseHeaders(): array
     {

@@ -14,18 +14,39 @@ namespace Phunkie\Streams\Functions\transformation {
     use Phunkie\Streams\Type\Transformation;
 
     const map = 'map';
+
+    /**
+     * Apply a function to each element in the stream.
+     *
+     * @param callable $f The mapping function
+     * @return Transformation
+     */
     function map($f): Transformation
     {
         return new Transformation(fn ($chunk) => array_map($f, $chunk));
     }
 
     const filter = 'filter';
+
+    /**
+     * Keep only elements that satisfy the predicate.
+     *
+     * @param callable $f The predicate function
+     * @return Transformation
+     */
     function filter(callable $f): Transformation
     {
         return new Transformation(fn ($chunk) => array_filter($chunk, $f));
     }
 
     const flatMap = 'flatMap';
+
+    /**
+     * Map each element to a Stream or array and flatten the results.
+     *
+     * @param callable $f Function returning a Stream, array, or scalar per element
+     * @return Transformation
+     */
     function flatMap(callable $f): Transformation
     {
         return new Transformation(function ($chunk) use ($f) {
@@ -47,6 +68,12 @@ namespace Phunkie\Streams\Functions\transformation {
     }
 
     const flatten = 'flatten';
+
+    /**
+     * Flatten one level of nested Streams or arrays.
+     *
+     * @return Transformation
+     */
     function flatten(): Transformation
     {
         return new Transformation(function ($chunk) {
@@ -67,6 +94,13 @@ namespace Phunkie\Streams\Functions\transformation {
     }
 
     const interleave = 'interleave';
+
+    /**
+     * Interleave elements from this stream with one or more other streams, alternating round-robin.
+     *
+     * @param \Phunkie\Streams\Type\Stream ...$others Streams to interleave with
+     * @return Transformation
+     */
     function interleave(...$others): Transformation
     {
         return new Transformation(function ($chunk) use ($others) {
@@ -93,23 +127,50 @@ namespace Phunkie\Streams\Functions\transformation {
     }
 
     const evalMap = 'evalMap';
+
+    /**
+     * Map each element through an effectful function (returning IO) and run the effect.
+     *
+     * @param callable $f Function returning an IO per element
+     * @return Transformation
+     */
     function evalMap(callable $f): Transformation
     {
         return new Transformation(fn ($chunk) => ImmList(...array_map(fn ($x) => $f($x)->unsafeRun(), $chunk)));
     }
 
     const evalFlatMap = 'evalFlatMap';
+
+    /**
+     * Map each element through a function and flatten the resulting Streams.
+     *
+     * @param callable $f Function returning a value to be wrapped in a Stream per element
+     * @return Transformation
+     */
     function evalFlatMap(callable $f): Transformation
     {
         return new Transformation(fn ($chunk) => Stream(...array_map($f, $chunk)));
     }
 
     const evalFilter = 'evalFilter';
+
+    /**
+     * Filter elements using an effectful predicate (returning IO<bool>) and run the effect.
+     *
+     * @param callable $f Predicate function returning an IO<bool> per element
+     * @return Transformation
+     */
     function evalFilter(callable $f): Transformation
     {
         return new Transformation(fn ($chunk) => ImmList(...array_filter($chunk, fn ($v) => $f($v)->unsafeRun())));
     }
 
+    /**
+     * Run an effectful function (returning IO) on each element for its side effect, passing elements through unchanged.
+     *
+     * @param callable $f Function returning an IO per element (result is discarded)
+     * @return Transformation
+     */
     function evalTap($f): Transformation
     {
         $transformation = new Transformation(
@@ -128,6 +189,13 @@ namespace Phunkie\Streams\Functions\transformation {
     }
 
     const takeWhile = 'takeWhile';
+
+    /**
+     * Emit elements while the predicate holds, then stop.
+     *
+     * @param callable $predicate The predicate to test each element
+     * @return Transformation
+     */
     function takeWhile(callable $predicate): Transformation
     {
         return new Transformation(function ($chunk) use ($predicate) {
@@ -144,6 +212,13 @@ namespace Phunkie\Streams\Functions\transformation {
     }
 
     const dropWhile = 'dropWhile';
+
+    /**
+     * Skip elements while the predicate holds, then emit the rest.
+     *
+     * @param callable $predicate The predicate to test each element
+     * @return Transformation
+     */
     function dropWhile(callable $predicate): Transformation
     {
         $dropping = true;
@@ -164,6 +239,13 @@ namespace Phunkie\Streams\Functions\transformation {
     }
 
     const chunk = 'chunk';
+
+    /**
+     * Group elements into fixed-size sub-arrays (chunks). The last chunk may be smaller.
+     *
+     * @param int $size Number of elements per chunk
+     * @return Transformation
+     */
     function chunk(int $size): Transformation
     {
         $buffer = [];

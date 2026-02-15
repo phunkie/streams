@@ -40,6 +40,12 @@ trait EffectfulOps
         return $this;
     }
 
+    /**
+     * Apply an effectful function for side effects, keeping the original element.
+     *
+     * @param callable $f A => IO<void>
+     * @return $this
+     */
     public function evalTap($f)
     {
         $this->appendTransformation(evalTap($f)[IO::class]);
@@ -47,6 +53,12 @@ trait EffectfulOps
         return $this;
     }
 
+    /**
+     * Filter elements using an effectful predicate that returns IO<bool>.
+     *
+     * @param callable $f A => IO<bool>
+     * @return $this
+     */
     public function evalFilter($f)
     {
         $this->appendTransformation(evalFilter($f)[IO::class]);
@@ -54,6 +66,12 @@ trait EffectfulOps
         return $this;
     }
 
+    /**
+     * FlatMap with an effectful function. Delegates to evalFilter transformation.
+     *
+     * @param callable $f A => IO<iterable<B>>
+     * @return $this
+     */
     public function evalFlatMap($f)
     {
         $this->appendTransformation(evalFilter($f)[IO::class]);

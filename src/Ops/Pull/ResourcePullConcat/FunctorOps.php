@@ -14,10 +14,18 @@ namespace Phunkie\Streams\Ops\Pull\ResourcePullConcat;
 use Phunkie\Streams\Type\Scope;
 
 /**
+ * Functor operations for ResourcePullConcat. Registers maps on the scope for deferred execution.
+ *
  * @method Scope getScope()
  */
 trait FunctorOps
 {
+    /**
+     * Register a mapping function to be applied to each output element at compile time.
+     *
+     * @param callable $f A => B
+     * @return static
+     */
     public function mapOutput($f): static
     {
         $this->getScope()->addMap($f);

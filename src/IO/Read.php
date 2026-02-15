@@ -13,14 +13,23 @@ namespace Phunkie\Streams\IO;
 
 use Phunkie\Streams\Type\Stream;
 
+/**
+ * Reads from a file resource chunk by chunk.
+ *
+ * Opens the file lazily on first pull and closes it on destruction.
+ */
 class Read implements Resource
 {
     private $handle;
 
+    /**
+     * @param string $path Filesystem path to read from
+     */
     public function __construct(private string $path)
     {
     }
 
+    /** Close the file handle if still open. */
     public function __destruct()
     {
         if ($this->isOpen()) {
@@ -28,6 +37,13 @@ class Read implements Resource
         }
     }
 
+    /**
+     * Create a Stream that reads the entire file in chunks.
+     *
+     * @param string $path  Filesystem path to read from
+     * @param int    $bytes Chunk size in bytes
+     * @return Stream
+     */
     public static function readAll($path, $bytes = 256): Stream
     {
         $stream = Stream(new Read($path));
@@ -35,6 +51,14 @@ class Read implements Resource
         return $stream->setBytes($bytes);
     }
 
+    /**
+     * Pull the next chunk of bytes from the file.
+     *
+     * Opens the file on first call. Returns Resource::EOF at end-of-file.
+     *
+     * @param int $bytes Number of bytes to read
+     * @return string|string Resource::EOF when the file is exhausted
+     */
     public function pull($bytes)
     {
         if (!$this->isOpen()) {
@@ -44,16 +68,19 @@ class Read implements Resource
         return $this->read($bytes);
     }
 
+    /** Check whether the file handle is an open stream resource. */
     private function isOpen()
     {
         return is_resource($this->handle) && get_resource_type($this->handle) === 'stream';
     }
 
+    /** Open the file for reading. */
     private function open()
     {
         $this->handle = fopen($this->path, 'r');
     }
 
+    /** Read up to $bytes from the handle, returning Resource::EOF at end-of-file. */
     private function read($bytes)
     {
         if (is_resource($this->handle)) {
@@ -69,6 +96,7 @@ class Read implements Resource
         throw new \Error("Not a valid resource");
     }
 
+    /** Close the file handle. */
     private function close(): void
     {
         fclose($this->handle);

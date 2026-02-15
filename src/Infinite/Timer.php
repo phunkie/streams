@@ -11,6 +11,12 @@
 
 namespace Phunkie\Streams\Infinite;
 
+/**
+ * Timer-based infinite stream that yields elapsed nanoseconds at regular intervals.
+ *
+ * When the interval is a fractional second, stopAt is treated as an emission count.
+ * When the interval is a whole second, stopAt is treated as a duration in seconds.
+ */
 class Timer implements Infinite
 {
     private ?float $stopAt;
@@ -22,6 +28,10 @@ class Timer implements Infinite
     private ?int $limit;
     private bool $isFraction;
 
+    /**
+     * @param float      $seconds Interval between emissions in seconds
+     * @param float|null $stopAt  Stop condition: emission count (fractional interval) or duration in seconds (whole interval), null for infinite
+     */
     public function __construct(float $seconds, ?float $stopAt)
     {
         $this->start = microtime(true);
@@ -38,6 +48,11 @@ class Timer implements Infinite
         $this->limit = $this->isFraction ? $this->stopAt : $stopAt;
     }
 
+    /**
+     * Yield elapsed nanoseconds (as a string) at each interval tick.
+     *
+     * {@inheritdoc}
+     */
     public function getValues(): \Generator
     {
         while ($this->stopAt === null || $this->end()) {
@@ -51,18 +66,24 @@ class Timer implements Infinite
         }
     }
 
+    /** {@inheritdoc} */
     public function reset(): void
     {
         $this->start = microtime(true);
     }
 
+    /**
+     * @return float The interval in seconds between emissions
+     */
     public function getSeconds(): float
     {
         return $this->seconds;
     }
 
     /**
-     * @return bool
+     * Check whether the timer should continue emitting.
+     *
+     * @return bool True if the timer has not yet reached its stop condition
      */
     public function end(): bool
     {

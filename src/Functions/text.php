@@ -11,12 +11,26 @@
 
 namespace Phunkie\Streams\text {
     const lines = "\\Phunkie\\Streams\\text\\lines";
+
+    /**
+     * Split a string chunk into lines by the platform EOL character.
+     *
+     * @param string $chunk The text to split
+     * @return array<string> Array of lines
+     */
     function lines($chunk): array
     {
         return explode(PHP_EOL, $chunk);
     }
 
     const utf8Encode = "\\Phunkie\\Streams\\text\\utf8Encode";
+
+    /**
+     * Encode a string chunk to UTF-8. Uses mbstring if available, otherwise a manual fallback.
+     *
+     * @param string $chunk The string to encode
+     * @return string UTF-8 encoded string
+     */
     function utf8Encode(string $chunk): string
     {
         static $useMbstring = null;
@@ -49,6 +63,13 @@ namespace Phunkie\Streams\text {
     }
 
     const utf8Decode = "\\Phunkie\\Streams\\text\\utf8Decode";
+
+    /**
+     * Decode a UTF-8 encoded string chunk. Uses mbstring if available, otherwise a manual fallback.
+     *
+     * @param string $chunk The UTF-8 string to decode
+     * @return string Decoded string
+     */
     function utf8Decode(string $chunk): string
     {
         static $useMbstring = null;
@@ -78,11 +99,24 @@ namespace Phunkie\Streams\text {
     }
 
     const trim = "\\Phunkie\\Streams\\text\\trim";
+
+    /**
+     * Trim whitespace from both ends of a string chunk.
+     *
+     * @param string $chunk The string to trim
+     * @return string Trimmed string
+     */
     function trim($chunk): string
     {
         return \trim($chunk);
     }
 
+    /**
+     * Create a closure that splits a string chunk by the given delimiter.
+     *
+     * @param string $delimiter The delimiter to split on
+     * @return \Closure(string): array<string>
+     */
     function splitBy(string $delimiter): \Closure
     {
         return function ($chunk) use ($delimiter) {

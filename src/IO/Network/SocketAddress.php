@@ -12,10 +12,17 @@
 namespace Phunkie\Streams\IO\Network;
 
 /**
- * Represents a socket address (host:port combination)
+ * Value object representing a TCP socket address (host:port).
+ *
+ * Port is validated to be within the range 1-65535.
  */
 class SocketAddress
 {
+    /**
+     * @param string $host Hostname or IP address
+     * @param int    $port TCP port (1-65535)
+     * @throws \InvalidArgumentException If port is out of range
+     */
     public function __construct(
         private readonly string $host,
         private readonly int $port
@@ -25,21 +32,33 @@ class SocketAddress
         }
     }
 
+    /**
+     * @return string The address formatted as a TCP URI (e.g. "tcp://host:port")
+     */
     public function toString(): string
     {
         return "tcp://{$this->host}:{$this->port}";
     }
 
+    /**
+     * @return string The hostname or IP address
+     */
     public function getHost(): string
     {
         return $this->host;
     }
 
+    /**
+     * @return int The port number
+     */
     public function getPort(): int
     {
         return $this->port;
     }
 
+    /**
+     * @return string The address formatted as a TCP URI
+     */
     public function __toString(): string
     {
         return $this->toString();

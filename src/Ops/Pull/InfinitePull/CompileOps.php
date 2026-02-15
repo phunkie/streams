@@ -17,8 +17,22 @@ use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
 
+/**
+ * Compilation operations for InfinitePull. Materialises infinite sequences
+ * with truncation (first 10 elements + "...") to prevent unbounded evaluation.
+ *
+ * @method \Phunkie\Streams\Infinite\Infinite getInfinite()
+ * @method array getValues()
+ * @method mixed pull()
+ */
 trait CompileOps
 {
+    /**
+     * Compile into an ImmList, truncating to 10 elements for infinite sources.
+     * Returns IO wrapping the list for infinite generators.
+     *
+     * @return ImmList|IO
+     */
     public function toList(): ImmList | IO
     {
         $list = $this->runTransformations($this->getInfinite()->getValues());
@@ -43,11 +57,22 @@ trait CompileOps
         return $list instanceof IO ? $list : new ImmList(...$list);
     }
 
+    /**
+     * Compile into a plain PHP array.
+     *
+     * @return array
+     */
     public function toArray(): array
     {
         return $this->getValues();
     }
 
+    /**
+     * Run the pull and log output as IO, capped at 10 elements for safety.
+     *
+     * @param mixed $bytes Byte size hint
+     * @return IO
+     */
     public function runLog($bytes)
     {
         return new IO(function () use ($bytes) {

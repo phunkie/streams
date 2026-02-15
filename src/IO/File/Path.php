@@ -11,12 +11,21 @@
 
 namespace Phunkie\Streams\IO\File;
 
+/**
+ * Value object representing a filesystem path.
+ */
 class Path
 {
+    /**
+     * @param string $pathname The filesystem path
+     */
     public function __construct(private readonly string $pathname)
     {
     }
 
+    /**
+     * @return string The filesystem path as a string
+     */
     public function toString(): string
     {
         return $this->pathname;
