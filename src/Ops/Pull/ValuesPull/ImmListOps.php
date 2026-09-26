@@ -15,9 +15,8 @@ use function Phunkie\Streams\Functions\transformation\chunk;
 use function Phunkie\Streams\Functions\transformation\dropWhile;
 use function Phunkie\Streams\Functions\transformation\filter;
 use function Phunkie\Streams\Functions\transformation\interleave;
+use function Phunkie\Streams\Functions\transformation\take;
 use function Phunkie\Streams\Functions\transformation\takeWhile;
-
-use Phunkie\Streams\Pull\ValuesPull;
 
 /**
  * List-like operations for ValuesPull. Provides take, filter, interleave, and more.
@@ -28,28 +27,25 @@ use Phunkie\Streams\Pull\ValuesPull;
 trait ImmListOps
 {
     /**
-     * Take the first $n elements, returning a new ValuesPull with the same scope.
+     * Register a take transformation to keep only the first $n elements.
      *
      * @param int $n Number of elements to take
-     * @return ValuesPull
+     * @return static
      */
-    public function take(int $n): ValuesPull
+    public function take(int $n): static
     {
-        $valuesPull = new ValuesPull(
-            ...array_slice($this->getValues(), 0, $n)
-        );
-        $valuesPull->setScope($this->getScope());
+        $this->appendTransformation(take($n));
 
-        return $valuesPull;
+        return $this;
     }
 
     /**
      * Register a filter transformation to keep elements matching the predicate.
      *
      * @param callable $f A => bool
-     * @return ValuesPull
+     * @return static
      */
-    public function filter(callable $f): ValuesPull
+    public function filter(callable $f): static
     {
         $this->appendTransformation(filter($f));
 
@@ -60,9 +56,9 @@ trait ImmListOps
      * Register an interleave transformation to alternate elements with other pulls.
      *
      * @param \Phunkie\Streams\Type\Pull ...$other Pulls to interleave with
-     * @return ValuesPull
+     * @return static
      */
-    public function interleave(...$other): ValuesPull
+    public function interleave(...$other): static
     {
         $this->appendTransformation(interleave(...$other));
 
@@ -73,9 +69,9 @@ trait ImmListOps
      * Register a takeWhile transformation to emit elements while the predicate holds.
      *
      * @param callable $predicate A => bool
-     * @return ValuesPull
+     * @return static
      */
-    public function takeWhile(callable $predicate): ValuesPull
+    public function takeWhile(callable $predicate): static
     {
         $this->appendTransformation(takeWhile($predicate));
 
@@ -86,9 +82,9 @@ trait ImmListOps
      * Register a dropWhile transformation to skip elements while the predicate holds.
      *
      * @param callable $predicate A => bool
-     * @return ValuesPull
+     * @return static
      */
-    public function dropWhile(callable $predicate): ValuesPull
+    public function dropWhile(callable $predicate): static
     {
         $this->appendTransformation(dropWhile($predicate));
 
@@ -99,9 +95,9 @@ trait ImmListOps
      * Register a chunk transformation to group elements into arrays of the given size.
      *
      * @param int $size Number of elements per chunk
-     * @return ValuesPull
+     * @return static
      */
-    public function chunk(int $size): ValuesPull
+    public function chunk(int $size): static
     {
         $this->appendTransformation(chunk($size));
 

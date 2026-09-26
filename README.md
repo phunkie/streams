@@ -45,6 +45,7 @@ Phunkie Streams has completed Phases 1-3 of development. Here's what's currently
 
 ### File I/O
 - **Reading**: `Stream(new Path('file.txt'))`, `readFileContents()`, `readLines()`
+- **Database rows**: `StreamFromPDO($statement)` streams a `PDOStatement` row by row and takes the same `map`, `filter`, `take` and `evalTap` as any other stream
 - **Writing**: `writeFileContents()`, `writeLines()`, `writeFile()` pipe function
 - **Utilities**: `exists()`, `deleteFile()`
 - All file operations use `bracket()` internally for guaranteed cleanup

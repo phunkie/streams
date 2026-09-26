@@ -35,8 +35,8 @@ namespace {
             return Stream::fromPull($t[0]);
         }
 
-        if (count($t) === 1 && $t[0] instanceof Path) {
-            return Stream::fromResource($t[0]);
+        if (isset($t[0]) && $t[0] instanceof Path && (count($t) === 1 || (count($t) === 2 && is_int($t[1])))) {
+            return Stream::fromResource($t[0], $t[1] ?? 256);
         }
 
         if (count($t) === 1 && $t[0] instanceof Infinite) {
