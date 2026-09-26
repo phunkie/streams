@@ -165,6 +165,29 @@ namespace Phunkie\Streams\Functions\transformation {
         return new Transformation(fn ($chunk) => ImmList(...array_filter($chunk, fn ($v) => $f($v)->unsafeRun())));
     }
 
+    const take = 'take';
+
+    /**
+     * Keep only the first $n elements of each chunk.
+     *
+     * @param int $n Number of elements to keep
+     * @return Transformation
+     */
+    function take(int $n): Transformation
+    {
+        return new Transformation(function ($chunk) use ($n) {
+            $result = [];
+            foreach ($chunk as $value) {
+                if (count($result) === $n) {
+                    break;
+                }
+                $result[] = $value;
+            }
+
+            return $result;
+        });
+    }
+
     /**
      * Run an effectful function (returning IO) on each element for its side effect, passing elements through unchanged.
      *

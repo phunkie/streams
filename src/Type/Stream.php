@@ -15,6 +15,7 @@ namespace Phunkie\Streams\Type;
 use Phunkie\Cats\Show;
 use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\IO\File\Path;
+use Phunkie\Streams\IO\Read;
 use Phunkie\Streams\Ops\Stream\EffectfulOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
 use Phunkie\Streams\Ops\Stream\ImmListOps;
@@ -80,9 +81,7 @@ class Stream implements Showable, Kind
      */
     public static function fromResource(Path $path, int $bytes = 256): Stream
     {
-        $resourcePull = new ResourcePull($path, $bytes);
-
-        return new Stream($resourcePull, $bytes);
+        return self::fromResourceObject(new Read($path->toString()), $bytes);
     }
 
     /**

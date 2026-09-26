@@ -40,3 +40,45 @@ it('can be converted to Stream using helper', function () {
 
     expect($list->toArray())->toBe([['name' => 'Apple']]);
 });
+
+it('transforms rows with map, filter and take before compiling', function () {
+    $stmt = $this->createMock(PDOStatement::class);
+    $stmt->method('fetch')->with(PDO::FETCH_ASSOC)->willReturnOnConsecutiveCalls(
+        ['name' => 'Alice'],
+        ['name' => 'Bob'],
+        ['name' => 'Carol'],
+        ['name' => 'Dave'],
+        false
+    );
+
+    $names = StreamFromPDO($stmt)
+        ->map(fn ($row) => $row['name'])
+        ->filter(fn ($name) => $name !== 'Bob')
+        ->take(2)
+        ->compile()
+        ->toList();
+
+    expect($names->toArray())->toBe(['Alice', 'Carol']);
+});
+
+it('runs an effect for every row when drained', function () {
+    $stmt = $this->createMock(PDOStatement::class);
+    $stmt->method('fetch')->with(PDO::FETCH_ASSOC)->willReturnOnConsecutiveCalls(
+        ['name' => 'Alice'],
+        ['name' => 'Bob'],
+        false
+    );
+    $seen = [];
+
+    StreamFromPDO($stmt)
+        ->evalTap(function ($row) use (&$seen) {
+            return \Phunkie\Effect\Functions\io\io(function () use (&$seen, $row) {
+                $seen[] = $row['name'];
+            });
+        })
+        ->compile()
+        ->drain()
+        ->unsafeRun();
+
+    expect($seen)->toBe(['Alice', 'Bob']);
+});

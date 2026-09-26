@@ -12,8 +12,13 @@
 namespace Phunkie\Streams\Pull;
 
 use PDOStatement;
-use Phunkie\Streams\Ops\Pull\ResourcePull\CompileOps;
+use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\ResourcePull\ShowOps;
+use Phunkie\Streams\Ops\Pull\TransformationOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\MonadOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -27,7 +32,12 @@ use Phunkie\Streams\Type\Stream;
 class PDOPull implements Pull
 {
     use CompileOps;
+    use EffectfulOps;
+    use FunctorOps;
+    use ImmListOps;
+    use MonadOps;
     use ShowOps;
+    use TransformationOps;
 
     private $current;
     private int $key = 0;

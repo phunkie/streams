@@ -81,7 +81,7 @@ class Compiler
      *
      * @return \Phunkie\Effect\IO\IO
      */
-    private function drain(): IO
+    public function drain(): IO
     {
         return $this->getPull()->drain();
     }
