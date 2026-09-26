@@ -239,6 +239,7 @@ class Stream implements Showable, Kind
     public function setBytes(int $bytes): static
     {
         $this->bytes = $bytes;
+        $this->getPull()->setChunkSize($bytes);
 
         return $this;
     }

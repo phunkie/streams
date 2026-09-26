@@ -111,6 +111,17 @@ class ValuesPull implements Pull
     }
 
     /**
+     * Values are produced whole, so the chunk size does not apply.
+     *
+     * @param int $chunkSize Ignored.
+     * @return static
+     */
+    public function setChunkSize(int $chunkSize): static
+    {
+        return $this;
+    }
+
+    /**
      * Returns the current iterator index.
      *
      * @return int

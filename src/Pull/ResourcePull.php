@@ -100,6 +100,19 @@ class ResourcePull implements Pull
     }
 
     /**
+     * Set the number of bytes read on each pull.
+     *
+     * @param int $chunkSize Bytes to read per iteration.
+     * @return static
+     */
+    public function setChunkSize(int $chunkSize): static
+    {
+        $this->chunkSize = $chunkSize;
+
+        return $this;
+    }
+
+    /**
      * Returns the last-read chunk.
      *
      * @return mixed

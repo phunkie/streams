@@ -128,4 +128,17 @@ class InfinitePull implements Pull
 
         return $this;
     }
+
+    /**
+     * Set the chunk size hint carried into the Stream this pull lifts to.
+     *
+     * @param int $chunkSize Chunk size hint for downstream consumers.
+     * @return static
+     */
+    public function setChunkSize(int $chunkSize): static
+    {
+        $this->bytes = $chunkSize;
+
+        return $this;
+    }
 }

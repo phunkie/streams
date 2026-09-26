@@ -113,6 +113,20 @@ class ResourcePullConcat implements Pull
     }
 
     /**
+     * Set the number of bytes read on each pull of both underlying pulls.
+     *
+     * @param int $chunkSize Bytes to read per iteration.
+     * @return static
+     */
+    public function setChunkSize(int $chunkSize): static
+    {
+        $this->pull1->setChunkSize($chunkSize);
+        $this->pull2->setChunkSize($chunkSize);
+
+        return $this;
+    }
+
+    /**
      * Converts this concatenated pull into a Stream, preserving the current scope.
      *
      * @return Stream
