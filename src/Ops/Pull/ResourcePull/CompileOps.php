@@ -11,9 +11,14 @@
 
 namespace Phunkie\Streams\Ops\Pull\ResourcePull;
 
+use function None;
+
 use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Types\ImmList;
+use Phunkie\Types\Option;
+
+use function Some;
 
 /**
  * Compilation operations for ResourcePull. Materialises resource-backed data into collections.
@@ -25,19 +30,33 @@ use Phunkie\Types\ImmList;
 trait CompileOps
 {
     /**
-     * Compile into an ImmList, applying any scope-registered maps.
+     * Compile into an ImmList.
      *
      * @return ImmList
      */
     public function toList(): ImmList
     {
-        $list = ImmList(...$this->getValues());
+        return ImmList(...$this->getValues());
+    }
 
-        foreach ($this->getScope()->getMaps() as $f) {
-            $list = $list->map($f);
+    /**
+     * One chunk after the scope's maps, or None when one of the scope's filters rejects it.
+     *
+     * @return Option<mixed>
+     */
+    private function transformed(mixed $chunk): Option
+    {
+        foreach ($this->getScope()->getMaps() as $map) {
+            $chunk = $map($chunk);
         }
 
-        return $list;
+        foreach ($this->getScope()->getFilters() as $filter) {
+            if (!$filter($chunk)) {
+                return None();
+            }
+        }
+
+        return Some($chunk);
     }
 
     /**

@@ -29,4 +29,18 @@ describe("Stream from a Path", function () {
             unlink($file);
         }
     });
+    it("applies a map exactly once whether compiled to a list or an array", function () {
+        $file = sys_get_temp_dir() . '/path_stream_' . uniqid() . '.txt';
+        file_put_contents($file, "ab");
+
+        try {
+            $asList = Stream(new Path($file), 1)->map(fn ($chunk) => $chunk . '!')->compile()->toList();
+            $asArray = Stream(new Path($file), 1)->map(fn ($chunk) => $chunk . '!')->compile()->toArray();
+
+            expect($asList->toArray())->toBe(["a!", "b!"]);
+            expect($asArray)->toBe(["a!", "b!"]);
+        } finally {
+            unlink($file);
+        }
+    });
 });

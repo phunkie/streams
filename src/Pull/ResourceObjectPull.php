@@ -93,6 +93,19 @@ class ResourceObjectPull implements Pull
     }
 
     /**
+     * Set the number of bytes requested on each pull.
+     *
+     * @param int $chunkSize Bytes to request per pull.
+     * @return static
+     */
+    public function setChunkSize(int $chunkSize): static
+    {
+        $this->chunkSize = $chunkSize;
+
+        return $this;
+    }
+
+    /**
      * Returns the last-read chunk.
      *
      * @return mixed
@@ -179,43 +192,14 @@ class ResourceObjectPull implements Pull
         while ($this->hasNext()) {
             $this->next();
             if ($this->current !== null) {
-                $value = $this->current;
-
-                // Apply maps from scope
-                foreach ($this->getScope()->getMaps() as $f) {
-                    $value = $f($value);
-                }
-
-                // Apply filters from scope
-                $passesFilters = true;
-                foreach ($this->getScope()->getFilters() as $filter) {
-                    if (!$filter($value)) {
-                        $passesFilters = false;
-
-                        break;
-                    }
-                }
-
-                if ($passesFilters) {
-                    $values[] = $value;
+                $transformed = $this->transformed($this->current);
+                if ($transformed->isDefined()) {
+                    $values[] = $transformed->get();
                 }
             }
         }
 
         return $values;
-    }
-
-    /**
-     * Registers a mapping function to be applied on getValues().
-     *
-     * @param callable $f The mapping function.
-     * @return static
-     */
-    public function map($f): static
-    {
-        $this->getScope()->addMap($f);
-
-        return $this;
     }
 
     /**

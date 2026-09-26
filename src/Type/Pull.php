@@ -52,4 +52,12 @@ interface Pull extends Showable, Compilable, \Iterator
      * @return Stream
      */
     public function toStream(): Stream;
+
+    /**
+     * Set the number of bytes read on each pull. Pulls that do not read in chunks ignore it.
+     *
+     * @param int $chunkSize Bytes per pull.
+     * @return static
+     */
+    public function setChunkSize(int $chunkSize): static;
 }

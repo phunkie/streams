@@ -98,6 +98,17 @@ class PDOPull implements Pull
     }
 
     /**
+     * Rows are fetched whole, so the chunk size does not apply.
+     *
+     * @param int $chunkSize Ignored.
+     * @return static
+     */
+    public function setChunkSize(int $chunkSize): static
+    {
+        return $this;
+    }
+
+    /**
      * Returns the current row.
      *
      * @return mixed
