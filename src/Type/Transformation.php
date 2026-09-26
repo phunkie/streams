@@ -71,7 +71,23 @@ class Transformation implements \ArrayAccess
      */
     public function andThen(Transformation $transformation): Transformation
     {
-        return new Transformation(fn ($chunk) => $transformation->run($this->run($chunk)));
+        if (!$this->isEffectful() && !$transformation->isEffectful()) {
+            return new Transformation(fn ($chunk) => $transformation->run($this->run($chunk)));
+        }
+
+        $composed = new Transformation(function ($chunk) use ($transformation) {
+            $intermediate = $this->run($chunk);
+            $result = $transformation->run($intermediate instanceof IO ? $intermediate->unsafeRun() : $intermediate);
+
+            return $result instanceof IO ? $result->unsafeRun() : $result;
+        });
+        $composed->setEffect($this->effect ?? $transformation->getEffect());
+        $composed->setPassthrough(
+            (!$this->isEffectful() || $this->isPassthrough())
+            && (!$transformation->isEffectful() || $transformation->isPassthrough())
+        );
+
+        return $composed;
     }
 
     /** @throws \Error Always -- Transformation does not support isset via ArrayAccess. */
