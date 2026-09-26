@@ -107,16 +107,13 @@ class Scope
             return $chunk;
         }
 
-        if ($this->transformation->isPassthrough()) {
-            $io = $this->transformation->run($chunk);
-            $io->unsafeRun();
-            if ($acceptIo) {
-                return $io;
-            }
-
-            return $io->unsafeRunSync();
+        $result = $this->transformation->run($chunk);
+        if (!$result instanceof IO || !$this->transformation->isPassthrough()) {
+            return $result;
         }
 
-        return $this->transformation->run($chunk);
+        $value = $result->unsafeRun();
+
+        return $acceptIo ? new IO(fn () => $value) : $value;
     }
 }

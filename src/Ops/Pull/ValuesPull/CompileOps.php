@@ -45,7 +45,9 @@ trait CompileOps
      */
     public function toArray(): array
     {
-        return $this->runTransformations($this->getValues());
+        $result = $this->runTransformations($this->getValues(), false);
+
+        return $result instanceof IO ? $result->unsafeRunSync() : $result;
     }
 
     /**
@@ -67,7 +69,10 @@ trait CompileOps
     public function drain(): IO
     {
         return new IO(function () {
-            $this->runTransformations($this->getValues());
+            $result = $this->runTransformations($this->getValues());
+            if ($result instanceof IO) {
+                $result->unsafeRun();
+            }
 
             return Unit();
         });
