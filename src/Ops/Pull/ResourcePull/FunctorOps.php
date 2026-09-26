@@ -21,6 +21,19 @@ use Phunkie\Streams\Type\Scope;
 trait FunctorOps
 {
     /**
+     * Register a map to apply to every chunk the pull yields.
+     *
+     * @param callable $f
+     * @return static
+     */
+    public function map($f): static
+    {
+        $this->getScope()->addMap($f);
+
+        return $this;
+    }
+
+    /**
      * Register a mapping function to be applied to each output element at compile time.
      *
      * @param callable $f A => B

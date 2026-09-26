@@ -12,6 +12,7 @@
 namespace Phunkie\Streams\Pull;
 
 use Phunkie\Streams\Ops\Pull\ResourcePull\CompileOps;
+use Phunkie\Streams\Ops\Pull\ResourcePull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\ResourcePull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
@@ -26,6 +27,7 @@ use Phunkie\Streams\Type\Stream;
 class ResourcePull implements Pull
 {
     use CompileOps;
+    use FunctorOps;
     use ShowOps;
     private $resource;
     private $chunkSize;
@@ -174,6 +176,12 @@ class ResourcePull implements Pull
             throw new \RuntimeException("Error reading from resource.");
         }
 
+        if ($chunk === '') {
+            $this->current = null;
+
+            return;
+        }
+
         $this->current = $chunk;
         $this->key++;
     }
@@ -203,7 +211,10 @@ class ResourcePull implements Pull
         while ($this->hasNext()) {
             $this->next();
             if ($this->current !== null) {
-                $values[] = $this->current;
+                $transformed = $this->transformed($this->current);
+                if ($transformed->isDefined()) {
+                    $values[] = $transformed->get();
+                }
             }
         }
 

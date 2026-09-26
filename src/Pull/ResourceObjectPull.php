@@ -192,43 +192,14 @@ class ResourceObjectPull implements Pull
         while ($this->hasNext()) {
             $this->next();
             if ($this->current !== null) {
-                $value = $this->current;
-
-                // Apply maps from scope
-                foreach ($this->getScope()->getMaps() as $f) {
-                    $value = $f($value);
-                }
-
-                // Apply filters from scope
-                $passesFilters = true;
-                foreach ($this->getScope()->getFilters() as $filter) {
-                    if (!$filter($value)) {
-                        $passesFilters = false;
-
-                        break;
-                    }
-                }
-
-                if ($passesFilters) {
-                    $values[] = $value;
+                $transformed = $this->transformed($this->current);
+                if ($transformed->isDefined()) {
+                    $values[] = $transformed->get();
                 }
             }
         }
 
         return $values;
-    }
-
-    /**
-     * Registers a mapping function to be applied on getValues().
-     *
-     * @param callable $f The mapping function.
-     * @return static
-     */
-    public function map($f): static
-    {
-        $this->getScope()->addMap($f);
-
-        return $this;
     }
 
     /**
