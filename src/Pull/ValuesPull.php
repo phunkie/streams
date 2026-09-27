@@ -16,6 +16,7 @@ use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\FunctorOps;
 use Phunkie\Streams\Ops\Pull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\MonadOps;
+use Phunkie\Streams\Ops\Pull\TextOps;
 use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\IteratorOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\LogOps;
@@ -40,6 +41,7 @@ class ValuesPull implements Pull
     use IteratorOps;
     use ImmListOps;
     use EffectfulOps;
+    use TextOps;
     use TransformationOps;
 
     private $values;

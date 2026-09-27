@@ -35,6 +35,7 @@ use Phunkie\Streams\Showable;
  * @method static takeWhile(callable $predicate)
  * @method static dropWhile(callable $predicate)
  * @method static chunk(int $size)
+ * @method static lines()
  * @method array getValues()
  * @method Scope getScope()
  * @method void setScope(Scope $scope)

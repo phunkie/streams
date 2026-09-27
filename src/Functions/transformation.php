@@ -303,4 +303,39 @@ namespace Phunkie\Streams\Functions\transformation {
 
         return $transformation;
     }
+
+    const lines = 'lines';
+
+    /**
+     * Split text chunks into lines, whatever the chunk boundaries: a line cut by a chunk is completed
+     * by the next one, a CRLF ending is treated as LF, and the text after the last newline is emitted
+     * when the input ends.
+     *
+     * @return Transformation
+     */
+    function lines(): Transformation
+    {
+        $tail = '';
+
+        $transformation = new Transformation(function ($chunk) use (&$tail) {
+            $lines = [];
+            foreach ($chunk as $text) {
+                $parts = explode("\n", $tail . $text);
+                $tail = array_pop($parts);
+                foreach ($parts as $line) {
+                    $lines[] = rtrim($line, "\r");
+                }
+            }
+
+            return $lines;
+        });
+        $transformation->onFinish(function () use (&$tail) {
+            $last = $tail;
+            $tail = '';
+
+            return '' === $last ? [] : [rtrim($last, "\r")];
+        });
+
+        return $transformation;
+    }
 }

@@ -18,6 +18,7 @@ use Phunkie\Streams\Ops\Pull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\MonadOps;
 use Phunkie\Streams\Ops\Pull\ResourcePull\LogOps;
 use Phunkie\Streams\Ops\Pull\ResourcePullConcat\ShowOps;
+use Phunkie\Streams\Ops\Pull\TextOps;
 use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
@@ -38,6 +39,7 @@ class ResourcePullConcat implements Pull
     use ImmListOps;
     use MonadOps;
     use ShowOps;
+    use TextOps;
     use TransformationOps;
 
     private ResourcePull $pull1;

@@ -23,6 +23,7 @@ use Phunkie\Streams\Ops\Stream\MergeOps;
 use Phunkie\Streams\Ops\Stream\MonadOps;
 use Phunkie\Streams\Ops\Stream\ParallelOps;
 use Phunkie\Streams\Ops\Stream\ShowOps;
+use Phunkie\Streams\Ops\Stream\TextOps;
 use Phunkie\Streams\Pull\InfinitePull;
 use Phunkie\Streams\Pull\ResourceObjectPull;
 use Phunkie\Streams\Pull\ResourcePull;
@@ -50,6 +51,7 @@ class Stream implements Showable, Kind
     use EffectfulOps;
     use ParallelOps;
     use MergeOps;
+    use TextOps;
 
     /**
      * Constructor for the Stream class.
