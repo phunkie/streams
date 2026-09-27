@@ -181,7 +181,7 @@ Phunkie Streams provides safe file I/O operations:
 ```php
 <?php
 use Phunkie\Streams\IO\File\Path;
-use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents, readLines, writeLines};
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents, readLines, writeLines};
 
 // Read entire file
 $content = readFileContents(new Path('data.txt'))
@@ -214,7 +214,7 @@ Use the `writeFile()` pipe to write streams to files:
 
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 
 // Write stream to file
 Stream('line1', 'line2', 'line3')
@@ -287,7 +287,7 @@ Handle errors functionally with `attempt()` and `handleError()`:
 
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 
 // Using attempt() - returns Validation<Throwable, string>
 $result = readFileContents(new Path('/nonexistent/file.txt'))

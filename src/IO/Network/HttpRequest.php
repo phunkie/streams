@@ -115,11 +115,25 @@ class HttpRequest implements Resource
      */
     public function pull($bytes): string
     {
-        if (!$this->executed) {
-            $this->execute();
-        }
+        $this->execute();
 
         return $this->read($bytes);
+    }
+
+    /**
+     * Send the request and open the response, so that its headers can be read before any of its
+     * body is pulled. Pulling does it on demand; calling it again does nothing.
+     *
+     * @return void
+     * @throws \RuntimeException If the request cannot be sent.
+     */
+    public function execute(): void
+    {
+        if ($this->executed) {
+            return;
+        }
+
+        $this->open();
     }
 
     /**
@@ -133,11 +147,11 @@ class HttpRequest implements Resource
     }
 
     /**
-     * Execute the HTTP request and open the response stream.
+     * Send the HTTP request and open the response stream.
      *
      * @return void
      */
-    private function execute(): void
+    private function open(): void
     {
         $options = [
             'http' => [

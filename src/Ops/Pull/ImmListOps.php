@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Phunkie\Streams\Ops\Pull\ValuesPull;
+namespace Phunkie\Streams\Ops\Pull;
 
 use function Phunkie\Streams\Functions\transformation\chunk;
 use function Phunkie\Streams\Functions\transformation\dropWhile;
@@ -19,7 +19,7 @@ use function Phunkie\Streams\Functions\transformation\take;
 use function Phunkie\Streams\Functions\transformation\takeWhile;
 
 /**
- * List-like operations for ValuesPull. Provides take, filter, interleave, and more.
+ * List-like operations for pulls. Provides take, filter, interleave, and more.
  *
  * @method array getValues()
  * @method \Phunkie\Streams\Type\Scope getScope()
@@ -27,7 +27,7 @@ use function Phunkie\Streams\Functions\transformation\takeWhile;
 trait ImmListOps
 {
     /**
-     * Register a take transformation to keep only the first $n elements.
+     * Register a take transformation to keep only the first $n elements and stop pulling after them.
      *
      * @param int $n Number of elements to take
      * @return static
@@ -66,7 +66,7 @@ trait ImmListOps
     }
 
     /**
-     * Register a takeWhile transformation to emit elements while the predicate holds.
+     * Register a takeWhile transformation to emit elements while the predicate holds, then stop pulling.
      *
      * @param callable $predicate A => bool
      * @return static

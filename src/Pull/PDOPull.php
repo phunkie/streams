@@ -12,13 +12,15 @@
 namespace Phunkie\Streams\Pull;
 
 use PDOStatement;
+use Phunkie\Streams\Ops\Pull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
+use Phunkie\Streams\Ops\Pull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\ImmListOps;
+use Phunkie\Streams\Ops\Pull\MonadOps;
+use Phunkie\Streams\Ops\Pull\ResourcePull\LogOps;
 use Phunkie\Streams\Ops\Pull\ResourcePull\ShowOps;
+use Phunkie\Streams\Ops\Pull\TextOps;
 use Phunkie\Streams\Ops\Pull\TransformationOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\MonadOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -27,16 +29,18 @@ use Phunkie\Streams\Type\Stream;
  * Pull backed by a PDOStatement result set.
  *
  * Iterates over query results row-by-row, fetching each row as an
- * associative array (PDO::FETCH_ASSOC).
+ * associative array (PDO::FETCH_ASSOC) only when the consumer asks for it.
  */
 class PDOPull implements Pull
 {
     use CompileOps;
+    use LogOps;
     use EffectfulOps;
     use FunctorOps;
     use ImmListOps;
     use MonadOps;
     use ShowOps;
+    use TextOps;
     use TransformationOps;
 
     private $current;
@@ -59,6 +63,23 @@ class PDOPull implements Pull
     public function pull(): mixed
     {
         return $this->current();
+    }
+
+    /**
+     * Yields the rows one fetch at a time, from wherever iteration stands.
+     *
+     * @return \Generator<int, array<string, mixed>>
+     */
+    public function elements(): \Generator
+    {
+        if ($this->current === null && $this->key === 0) {
+            $this->rewind();
+        }
+
+        while ($this->valid()) {
+            yield $this->current;
+            $this->next();
+        }
     }
 
     /**
@@ -137,7 +158,7 @@ class PDOPull implements Pull
     public function rewind(): void
     {
         $this->key = 0;
-        $this->next(); // Fetch first row
+        $this->next();
     }
 
     /**
@@ -179,25 +200,10 @@ class PDOPull implements Pull
     /**
      * Consumes the remaining result set and returns all rows.
      *
-     * If iteration has not started yet, rewinds first.
-     *
      * @return array<int, array<string, mixed>> All remaining rows.
      */
     public function getValues(): array
     {
-        $values = [];
-        // Consumes the rest of the result set
-        if ($this->current === null && $this->key === 0) {
-            $this->rewind();
-        }
-
-        while ($this->valid()) {
-            if ($this->current !== null) {
-                $values[] = $this->current;
-            }
-            $this->next();
-        }
-
-        return $values;
+        return iterator_to_array($this->elements(), false);
     }
 }

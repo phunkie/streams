@@ -19,7 +19,8 @@ use Phunkie\Streams\Showable;
  *
  * Combines Iterator for traversal, Showable for display, and Compilable
  * for materialising results. Concrete pulls (values, resources, infinite)
- * implement the actual data-sourcing logic.
+ * implement the actual data-sourcing logic; elements() is how the compile
+ * path reads them, one at a time.
  *
  * @method static map(callable $f)
  * @method static flatMap(callable $f)
@@ -34,7 +35,9 @@ use Phunkie\Streams\Showable;
  * @method static takeWhile(callable $predicate)
  * @method static dropWhile(callable $predicate)
  * @method static chunk(int $size)
+ * @method static lines()
  * @method array getValues()
+ * @method Scope getScope()
  * @method void setScope(Scope $scope)
  */
 interface Pull extends Showable, Compilable, \Iterator
@@ -45,6 +48,13 @@ interface Pull extends Showable, Compilable, \Iterator
      * @return mixed
      */
     public function pull(): mixed;
+
+    /**
+     * Yield the source's elements one at a time, each pulled only when the consumer asks for it.
+     *
+     * @return \Generator<int, mixed>
+     */
+    public function elements(): \Generator;
 
     /**
      * Lift this Pull back into a Stream.

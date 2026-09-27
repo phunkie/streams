@@ -79,7 +79,7 @@ For working with files and other resources:
 
 ```php
 <?php
-use function Phunkie\Streams\IO\File\Path;
+use function Phunkie\Streams\Functions\file\Path;
 
 // Create a stream from a file (reads line by line)
 $filePath = Path('path/to/file.txt');
@@ -381,7 +381,7 @@ $lines = Stream($filePath)
     ->toArray();
 
 // Using file I/O functions for simple operations
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 
 $content = readFileContents($filePath)
     ->map(fn($text) => strtoupper($text))

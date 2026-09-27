@@ -75,7 +75,7 @@ Combine file I/O, transformations, and output:
 
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{writeFile, readLines};
+use function Phunkie\Streams\Functions\file\{writeFile, readLines};
 use Phunkie\Streams\IO\File\Path;
 
 // Read CSV, transform, write JSON
@@ -169,7 +169,7 @@ Try multiple sources with fallback:
 ```php
 <?php
 use Phunkie\Streams\Network;
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
 // Try primary API, fall back to cache, fall back to default
@@ -191,7 +191,7 @@ Implement domain-specific error handling:
 
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
 class DataProcessingError extends \Exception {
@@ -244,7 +244,7 @@ class StreamProcessingTest extends TestCase
 ```php
 <?php
 use PHPUnit\Framework\TestCase;
-use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents};
+use function Phunkie\Streams\Functions\file\{writeFileContents, readFileContents};
 use Phunkie\Streams\IO\File\Path;
 
 class ResourceStreamTest extends TestCase

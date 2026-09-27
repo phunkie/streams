@@ -391,7 +391,7 @@ $results = Stream(...$endpoints)
 ```php
 <?php
 use Phunkie\Streams\Network;
-use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents, exists};
+use function Phunkie\Streams\Functions\file\{writeFileContents, readFileContents, exists};
 use Phunkie\Streams\IO\File\Path;
 
 class CachedApiClient

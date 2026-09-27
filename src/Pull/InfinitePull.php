@@ -11,12 +11,11 @@
 
 namespace Phunkie\Streams\Pull;
 
-use const Phunkie\Functions\function1\identity;
-
 use Phunkie\Streams\Infinite\Infinite;
+use Phunkie\Streams\Ops\Pull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
-use Phunkie\Streams\Ops\Pull\InfinitePull\CompileOps;
-use Phunkie\Streams\Ops\Pull\InfinitePull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\InfinitePull\CompileOps as InfiniteCompileOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\IteratorOps;
 use Phunkie\Streams\Ops\Pull\InfinitePull\ShowOps;
@@ -34,6 +33,9 @@ use Phunkie\Streams\Type\Stream;
 class InfinitePull implements Pull
 {
     use CompileOps;
+    use InfiniteCompileOps {
+        InfiniteCompileOps::toList insteadof CompileOps;
+    }
     use FunctorOps;
     use ShowOps;
     use IteratorOps;
@@ -53,7 +55,7 @@ class InfinitePull implements Pull
     {
         $this->infinite = $infinite;
         $this->bytes = $bytes;
-        $this->scope = new Scope(identity);
+        $this->scope = new Scope();
     }
 
     /**
@@ -71,6 +73,16 @@ class InfinitePull implements Pull
         $this->next();
 
         return $current;
+    }
+
+    /**
+     * Yields the generator's values, without end unless a transformation halts.
+     *
+     * @return \Generator<int, mixed>
+     */
+    public function elements(): \Generator
+    {
+        yield from $this->infinite->getValues();
     }
 
     /**

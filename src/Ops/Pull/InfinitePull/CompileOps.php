@@ -22,7 +22,7 @@ use Phunkie\Types\ImmList;
  * with truncation (first 10 elements + "...") to prevent unbounded evaluation.
  *
  * @method \Phunkie\Streams\Infinite\Infinite getInfinite()
- * @method array getValues()
+ * @method \Generator getValues()
  * @method mixed pull()
  */
 trait CompileOps
@@ -55,16 +55,6 @@ trait CompileOps
         }
 
         return $list instanceof IO ? $list : new ImmList(...$list);
-    }
-
-    /**
-     * Compile into a plain PHP array.
-     *
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return $this->getValues();
     }
 
     /**

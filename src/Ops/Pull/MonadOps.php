@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Phunkie\Streams\Ops\Pull\ValuesPull;
+namespace Phunkie\Streams\Ops\Pull;
 
 use function Phunkie\Streams\Functions\transformation\flatMap;
 use function Phunkie\Streams\Functions\transformation\flatten;
@@ -17,7 +17,7 @@ use function Phunkie\Streams\Functions\transformation\flatten;
 use Phunkie\Streams\Type\Scope;
 
 /**
- * Monad operations for ValuesPull. Registers flatMap and flatten transformations.
+ * Monad operations for pulls. Registers flatMap and flatten transformations.
  *
  * @method Scope getScope()
  */

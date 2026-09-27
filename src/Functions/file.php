@@ -234,35 +234,16 @@ namespace Phunkie\Streams\Functions\file {
                 }),
                 fn ($handle) => io(function () use ($handle, $stream) {
                     $count = 0;
-                    $pull = $stream->compile()->getPull();
-
-                    // Rewind to start
-                    if (method_exists($pull, 'rewind')) {
-                        $pull->rewind();
-                    }
-
-                    // Stream elements one at a time, applying transformations per element
-                    // This mirrors the approach used in drain() for memory-efficient processing
-                    while ($pull->valid()) {
-                        $element = $pull->current();
-
-                        // Apply transformations to this single element
-                        // This is how we get transformed values without materializing the whole stream
-                        if (method_exists($pull, 'runTransformations')) {
-                            $transformed = $pull->runTransformations([$element]);
-                            // runTransformations returns an array; write each transformed element
-                            foreach ($transformed as $value) {
+                    $stream
+                        ->evalTap(function ($value) use ($handle, &$count) {
+                            return io(function () use ($handle, $value, &$count) {
                                 fwrite($handle, strval($value) . PHP_EOL);
                                 $count++;
-                            }
-                        } else {
-                            // Fallback for pulls that don't have runTransformations
-                            fwrite($handle, strval($element) . PHP_EOL);
-                            $count++;
-                        }
-
-                        $pull->next();
-                    }
+                            });
+                        })
+                        ->compile()
+                        ->drain()
+                        ->unsafeRun();
 
                     return $count;
                 }),

@@ -305,74 +305,21 @@ trait ParallelOps
         }
 
         $context = $context ?? new FiberExecutionContext();
-        $pull = $this->getPull();
-        $bytes = $this->getBytes();
-
-        return new IO(function () use ($pull, $bytes, $maxConcurrent, $f, $context) {
-            $results = [];
-
-            // Use iterator protocol for memory-efficient streaming
-            if (method_exists($pull, 'rewind')) {
-                $pull->rewind();
+        $runOne = function ($elem) use ($f) {
+            $io = $f($elem);
+            if (!($io instanceof IO)) {
+                throw new \TypeError("parTraverse expects function to return IO, got " . get_debug_type($io));
             }
 
-            // Process in chunks without materializing entire stream
-            $chunk = [];
-            while ($pull->valid()) {
-                $element = $pull->current();
+            return $io->unsafeRunSync();
+        };
 
-                // Apply transformations to single element
-                if (method_exists($pull, 'runTransformations')) {
-                    $transformed = $pull->runTransformations([$element]);
-                    foreach ($transformed as $value) {
-                        $chunk[] = $value;
-                    }
-                } else {
-                    $chunk[] = $element;
-                }
-
-                // Process chunk when it reaches maxConcurrent size
-                if (count($chunk) >= $maxConcurrent) {
-                    $chunkResults = $this->executeWithFallback(
-                        $chunk,
-                        function ($elem) use ($f) {
-                            $io = $f($elem);
-                            if (!($io instanceof IO)) {
-                                throw new \TypeError("parTraverse expects function to return IO, got " . get_debug_type($io));
-                            }
-
-                            return $io->unsafeRunSync();
-                        },
-                        $context
-                    );
-
-                    $results = array_merge($results, $chunkResults);
-                    $chunk = [];
-                }
-
-                $pull->next();
-            }
-
-            // Process remaining elements in final chunk
-            if (!empty($chunk)) {
-                $chunkResults = $this->executeWithFallback(
-                    $chunk,
-                    function ($elem) use ($f) {
-                        $io = $f($elem);
-                        if (!($io instanceof IO)) {
-                            throw new \TypeError("parTraverse expects function to return IO, got " . get_debug_type($io));
-                        }
-
-                        return $io->unsafeRunSync();
-                    },
-                    $context
-                );
-
-                $results = array_merge($results, $chunkResults);
-            }
-
-            return Stream(...$results);
-        });
+        return $this->chunk($maxConcurrent)
+            ->evalMap(fn (array $batch) => new IO(fn () => $this->executeWithFallback($batch, $runOne, $context)))
+            ->flatten()
+            ->compile()
+            ->toList()
+            ->map(fn ($results) => Stream(...$results->toArray()));
     }
 
     /**

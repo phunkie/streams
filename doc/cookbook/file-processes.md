@@ -28,7 +28,7 @@ $lines = Stream(new Path("file.txt"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
 $content = readFileContents(new Path("file.txt"))
@@ -44,7 +44,7 @@ $content = readFileContents(new Path("file.txt"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\Functions\file\readLines;
 use Phunkie\Streams\IO\File\Path;
 
 $lines = readLines(new Path("file.txt"))
@@ -101,7 +101,7 @@ $lines = $textStream->compile()->toArray();
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeFileContents;
+use function Phunkie\Streams\Functions\file\writeFileContents;
 use Phunkie\Streams\IO\File\Path;
 
 $bytes = writeFileContents(new Path("output.txt"), "Hello, World!")
@@ -117,7 +117,7 @@ $bytes = writeFileContents(new Path("output.txt"), "Hello, World!")
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeLines;
+use function Phunkie\Streams\Functions\file\writeLines;
 use Phunkie\Streams\IO\File\Path;
 
 $lines = ["line1", "line2", "line3"];
@@ -134,7 +134,7 @@ $bytes = writeLines(new Path("output.txt"), $lines)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
 Stream("line1", "line2", "line3")
@@ -150,7 +150,7 @@ Stream("line1", "line2", "line3")
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
 Stream(1, 2, 3, 4, 5)
@@ -170,7 +170,7 @@ Stream(1, 2, 3, 4, 5)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
 Stream(new Path("data.csv"))
@@ -194,7 +194,7 @@ Stream(new Path("data.csv"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
 Stream(new Path("input.log"))
@@ -212,7 +212,7 @@ Stream(new Path("input.log"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents};
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents};
 use Phunkie\Streams\IO\File\Path;
 
 $result = readFileContents(new Path("input.txt"))
@@ -230,7 +230,7 @@ $result = readFileContents(new Path("input.txt"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents};
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents};
 use Phunkie\Streams\IO\File\Path;
 
 $compressFile = function(Path $input, Path $output) {
@@ -256,7 +256,7 @@ $compressFile(
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 use Phunkie\Streams\IO\File\Path;
 
 Stream(new Path("source.txt"))
@@ -272,7 +272,7 @@ Stream(new Path("source.txt"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{exists, readFileContents};
+use function Phunkie\Streams\Functions\file\{exists, readFileContents};
 use Phunkie\Streams\IO\File\Path;
 
 $path = new Path("data.txt");
@@ -295,7 +295,7 @@ $content = exists($path)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\deleteFile;
+use function Phunkie\Streams\Functions\file\deleteFile;
 use Phunkie\Streams\IO\File\Path;
 
 deleteFile(new Path("temp.txt"))
@@ -311,7 +311,7 @@ deleteFile(new Path("temp.txt"))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents, deleteFile};
+use function Phunkie\Streams\Functions\file\{writeFileContents, readFileContents, deleteFile};
 use Phunkie\Streams\IO\File\Path;
 
 $tempPath = new Path(tempnam(sys_get_temp_dir(), 'stream_'));
@@ -334,7 +334,7 @@ $result = writeFileContents($tempPath, "temporary data")
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
 // Get all .txt files from directory
@@ -366,7 +366,7 @@ $results = Stream(...$files)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readLines;
+use function Phunkie\Streams\Functions\file\readLines;
 use Phunkie\Streams\IO\File\Path;
 
 $files = ['data1.txt', 'data2.txt', 'data3.txt'];
@@ -389,7 +389,7 @@ $allLines = Stream(...$files)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
 $content = readFileContents(new Path('/nonexistent/file.txt'))
@@ -407,7 +407,7 @@ $content = readFileContents(new Path('/nonexistent/file.txt'))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{readFileContents, exists};
+use function Phunkie\Streams\Functions\file\{readFileContents, exists};
 use Phunkie\Streams\IO\File\Path;
 
 $tryFiles = function(array $paths) {

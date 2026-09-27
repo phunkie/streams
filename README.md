@@ -185,7 +185,7 @@ Phunkie Streams uses the bracket pattern from phunkie/effect for safe resource m
 
 ```php
 use Phunkie\Streams\IO\File\Path;
-use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents};
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents};
 
 // Read file with automatic resource cleanup
 $content = readFileContents(new Path('data.txt'))
@@ -203,7 +203,7 @@ See [examples/bracket.php](examples/bracket.php) for more examples.
 Functional error handling with `attempt()` and `handleError()`:
 
 ```php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 
 // Using attempt() - returns Validation
 $result = readFileContents(new Path('/nonexistent/file.txt'))
@@ -225,7 +225,7 @@ See [examples/error-handling.php](examples/error-handling.php) and [doc/error-ha
 Compose IO operations in type-safe pipelines:
 
 ```php
-use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents};
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents};
 
 $result = writeFileContents($path, "original")
     ->flatMap(fn($_) => readFileContents($path))
@@ -288,7 +288,7 @@ See [examples/stream-operations.php](examples/stream-operations.php) for 20 comp
 Write stream elements directly to files using the `writeFile()` pipe:
 
 ```php
-use function Phunkie\Streams\IO\File\{writeFile, readLines};
+use function Phunkie\Streams\Functions\file\{writeFile, readLines};
 
 // Write stream to file
 Stream(...['line1', 'line2', 'line3'])
@@ -452,14 +452,31 @@ All parallel operations are memory-optimized to process data incrementally:
 
 ## Memory Optimization
 
-Phunkie Streams is designed for **constant memory usage** regardless of data size. All operations use true streaming with lazy evaluation:
+Phunkie Streams is designed for **constant memory usage** regardless of data size. Compiling a stream pulls one element at a time from its source, runs it through the pipeline and hands the result on before the next element is pulled, whatever the source: values, a file, a socket, a `PDOStatement`.
+
+### How compiling works
+
+```php
+Stream(new Path('huge.log'))
+    ->map(fn($chunk) => strtoupper($chunk))
+    ->evalTap(fn($chunk) => io(fn() => fwrite($socket, $chunk)))
+    ->compile()
+    ->drain()
+    ->unsafeRun();
+```
+
+- `compile()->drain()` runs the pipeline for its effects: each element reaches the `evalTap` before the source is asked for the next one, so the first byte goes out as soon as it is read and memory holds one element.
+- `compile()->toArray()` and `compile()->toList()` pull the same way and collect what comes out; `toList()` hands back an `IO` when the pipeline carries an `evalMap` or `evalFilter`, whose results only exist once it runs.
+- `take($n)` and `takeWhile($p)` halt the source: nothing is read past what they need, so `->take(10)` on a million-row statement fetches ten rows.
+- `chunk($n)` emits every full batch as it fills and the last partial batch when the source ends.
+- Backpressure is the sink blocking. An `evalTap` that writes to a slow socket blocks the pipeline, which blocks the pull, which stops reading; nothing buffers in between.
 
 ### File Operations
 
 The `writeFile()` pipe function processes streams incrementally without loading everything into memory:
 
 ```php
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 
 // Process a 10GB log file with constant ~4MB memory usage
 Stream(new Path('huge-10gb-log.txt'))
@@ -480,13 +497,9 @@ Stream::fromLargeDataset()
     ->through(writeFile(new Path('output.txt')));
 ```
 
-### Iterator Protocol
+### Custom sources
 
-Operations use PHP's Iterator protocol for memory-efficient streaming:
-- Elements are pulled on-demand, one at a time
-- Transformations (map, filter) are applied per-element
-- No intermediate arrays are created unnecessarily
-- Memory usage stays constant regardless of input size
+A `Pull` yields its elements through `elements()`, a generator; that is all the compile path asks of it. A source that reads lazily inside its generator gets the same memory profile as the built-in file, socket and PDO pulls.
 
 ### Best Practices
 
