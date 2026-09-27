@@ -99,7 +99,7 @@ $result = $executeCommand('find /tmp -name "*.txt"')
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{readLines, writeLines};
+use function Phunkie\Streams\Functions\file\{readLines, writeLines};
 use Phunkie\Streams\IO\File\Path;
 
 // Process UTF-8 file
@@ -128,7 +128,7 @@ $processUtf8(
 ```php
 <?php
 use Phunkie\Streams\IO\File\Path;
-use function Phunkie\Streams\IO\File\writeFile;
+use function Phunkie\Streams\Functions\file\writeFile;
 
 // Process JSON lines file
 Stream(new Path('data.jsonl'))
@@ -153,7 +153,7 @@ Stream(new Path('data.jsonl'))
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents};
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents};
 use Phunkie\Streams\IO\File\Path;
 
 // Compress file contents
@@ -256,7 +256,7 @@ $metrics = Stream(
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 use Phunkie\Streams\IO\File\Path;
 
 // Get all .txt files from directory
@@ -288,7 +288,7 @@ $results = Stream(...$files)
 **Solution**:
 ```php
 <?php
-use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents, deleteFile};
+use function Phunkie\Streams\Functions\file\{writeFileContents, readFileContents, deleteFile};
 use Phunkie\Streams\IO\File\Path;
 
 $processWith TempFile = function(array $data) {

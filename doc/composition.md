@@ -46,7 +46,7 @@ IO<A> -> flatMap(A => IO<B>) -> IO<B>
 ### Basic Example
 
 ```php
-use function Phunkie\Streams\IO\File\{writeFileContents, readFileContents};
+use function Phunkie\Streams\Functions\file\{writeFileContents, readFileContents};
 
 $result = writeFileContents($path, "hello")
     ->flatMap(fn($bytesWritten) => readFileContents($path))

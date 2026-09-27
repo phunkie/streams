@@ -39,7 +39,7 @@ IO<A> -> attempt() -> IO<Validation<A>>
 ### Basic Usage
 
 ```php
-use function Phunkie\Streams\IO\File\readFileContents;
+use function Phunkie\Streams\Functions\file\readFileContents;
 
 $result = readFileContents(new Path('/path/to/file.txt'))
     ->attempt()
@@ -411,7 +411,7 @@ $result = withLogging(
 ### Complete File Processing Pipeline
 
 ```php
-use function Phunkie\Streams\IO\File\{readFileContents, writeFileContents, exists};
+use function Phunkie\Streams\Functions\file\{readFileContents, writeFileContents, exists};
 
 function processFile(Path $inputPath, Path $outputPath): IO {
     return exists($inputPath)
