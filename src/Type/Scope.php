@@ -14,22 +14,14 @@ namespace Phunkie\Streams\Type;
 use Phunkie\Effect\IO\IO;
 
 /**
- * Manages the transformation pipeline and filtering state for a stream.
+ * Holds the transformation pipeline of a stream.
  *
- * A Scope accumulates map, filter, and composed Transformation operations
- * that are applied to each chunk when the stream is evaluated.
+ * Operations append Transformations, composed into one pipeline. The compile path feeds it
+ * one element at a time through emit(), stops pulling when it halts, and flushes what it
+ * still buffers through finish().
  */
 class Scope
 {
-    /** @var callable[] */
-    private array $callables = [];
-
-    /** @var callable[] Accumulated map functions. */
-    private array $maps = [];
-
-    /** @var callable[] Accumulated filter predicates. */
-    private array $filters = [];
-
     /** @var Transformation Composed transformation pipeline. */
     private Transformation $transformation;
 
@@ -53,45 +45,55 @@ class Scope
     }
 
     /**
-     * Register a map function to be applied to stream elements.
+     * Run one chunk through the pipeline, effects included, and return the elements that come out.
      *
-     * @param callable $f The mapping function.
-     * @return void
+     * @param iterable $chunk
+     * @return array
      */
-    public function addMap(callable $f): void
+    public function emit(iterable $chunk): array
     {
-        $this->maps[] = $f;
+        if (!isset($this->transformation)) {
+            return is_array($chunk) ? $chunk : iterator_to_array($chunk, false);
+        }
+
+        return $this->transformation->emit($chunk);
     }
 
     /**
-     * @return callable[]
-     */
-    public function getMaps(): array
-    {
-        return $this->maps;
-    }
-
-    /**
-     * Register a filter predicate to be applied to stream elements.
+     * The elements the pipeline still holds once the input is exhausted.
      *
-     * @param callable $f The filter predicate.
-     * @return void
+     * @return array
      */
-    public function addFilter(callable $f): void
+    public function finish(): array
     {
-        $this->filters[] = $f;
+        return isset($this->transformation) ? $this->transformation->finish() : [];
     }
 
     /**
-     * @return callable[]
+     * Whether a transformation has asked the source to stop pulling.
+     *
+     * @return bool
      */
-    public function getFilters(): array
+    public function isHalted(): bool
     {
-        return $this->filters;
+        return isset($this->transformation) && $this->transformation->isHalted();
     }
 
     /**
-     * Run the composed transformation pipeline against a chunk of data.
+     * Whether compiling has to hand back an IO: the pipeline carries an effect that does more
+     * than pass elements through, so its results only exist once that effect runs.
+     *
+     * @return bool
+     */
+    public function compilesToIo(): bool
+    {
+        return isset($this->transformation)
+            && null !== $this->transformation->getEffect()
+            && !$this->transformation->isPassthrough();
+    }
+
+    /**
+     * Run the composed transformation pipeline against a whole chunk of data.
      *
      * For passthrough transformations (side-effect-only), the IO action is
      * executed immediately. When $acceptIo is false, the IO result is

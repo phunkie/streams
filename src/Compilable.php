@@ -15,7 +15,7 @@ use Phunkie\Effect\IO\IO;
 use Phunkie\Types\ImmList;
 
 /**
- * Contract for compiling a stream into a materialised collection.
+ * Contract for compiling a stream into a materialised collection or into its effects.
  */
 interface Compilable
 {
@@ -32,4 +32,11 @@ interface Compilable
      * @return array
      */
     public function toArray(): array;
+
+    /**
+     * Run the stream for its effects, one element at a time, discarding the output.
+     *
+     * @return IO<\Phunkie\Types\Unit>
+     */
+    public function drain(): IO;
 }

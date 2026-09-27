@@ -12,9 +12,14 @@
 namespace Phunkie\Streams\Pull;
 
 use Phunkie\Streams\IO\Resource;
-use Phunkie\Streams\Ops\Pull\ResourcePull\CompileOps;
-use Phunkie\Streams\Ops\Pull\ResourcePull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\CompileOps;
+use Phunkie\Streams\Ops\Pull\EffectfulOps;
+use Phunkie\Streams\Ops\Pull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\ImmListOps;
+use Phunkie\Streams\Ops\Pull\MonadOps;
+use Phunkie\Streams\Ops\Pull\ResourcePull\LogOps;
 use Phunkie\Streams\Ops\Pull\ResourcePull\ShowOps;
+use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -29,8 +34,13 @@ use Phunkie\Streams\Type\Stream;
 class ResourceObjectPull implements Pull
 {
     use CompileOps;
+    use LogOps;
+    use EffectfulOps;
     use FunctorOps;
+    use ImmListOps;
+    use MonadOps;
     use ShowOps;
+    use TransformationOps;
 
     private $current;
     private int $key;
@@ -57,6 +67,21 @@ class ResourceObjectPull implements Pull
     public function pull(): mixed
     {
         return $this->current();
+    }
+
+    /**
+     * Yields the chunks one pull at a time until the resource reports EOF.
+     *
+     * @return \Generator<int, mixed>
+     */
+    public function elements(): \Generator
+    {
+        while ($this->hasNext()) {
+            $this->next();
+            if ($this->current !== null) {
+                yield $this->current;
+            }
+        }
     }
 
     /**
@@ -132,7 +157,6 @@ class ResourceObjectPull implements Pull
      */
     public function rewind(): void
     {
-        // Resource objects typically can't rewind
         $this->key = 0;
     }
 
@@ -181,37 +205,12 @@ class ResourceObjectPull implements Pull
     }
 
     /**
-     * Consumes the entire resource, applying scope maps and filters to each chunk.
+     * Consumes the rest of the resource and returns its chunks as an array.
      *
-     * @return array<mixed> All transformed and filtered chunks.
+     * @return array<mixed>
      */
     public function getValues(): array
     {
-        $values = [];
-
-        while ($this->hasNext()) {
-            $this->next();
-            if ($this->current !== null) {
-                $transformed = $this->transformed($this->current);
-                if ($transformed->isDefined()) {
-                    $values[] = $transformed->get();
-                }
-            }
-        }
-
-        return $values;
-    }
-
-    /**
-     * Registers a filter predicate to be applied on getValues().
-     *
-     * @param callable $f The filter predicate.
-     * @return static
-     */
-    public function filter(callable $f): static
-    {
-        $this->getScope()->addFilter($f);
-
-        return $this;
+        return iterator_to_array($this->elements(), false);
     }
 }

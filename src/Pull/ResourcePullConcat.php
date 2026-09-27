@@ -11,8 +11,14 @@
 
 namespace Phunkie\Streams\Pull;
 
-use Phunkie\Streams\Ops\Pull\ResourcePullConcat\CompileOps;
+use Phunkie\Streams\Ops\Pull\CompileOps;
+use Phunkie\Streams\Ops\Pull\EffectfulOps;
+use Phunkie\Streams\Ops\Pull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\ImmListOps;
+use Phunkie\Streams\Ops\Pull\MonadOps;
+use Phunkie\Streams\Ops\Pull\ResourcePull\LogOps;
 use Phunkie\Streams\Ops\Pull\ResourcePullConcat\ShowOps;
+use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -26,7 +32,13 @@ use Phunkie\Streams\Type\Stream;
 class ResourcePullConcat implements Pull
 {
     use CompileOps;
+    use LogOps;
+    use EffectfulOps;
+    use FunctorOps;
+    use ImmListOps;
+    use MonadOps;
     use ShowOps;
+    use TransformationOps;
 
     private ResourcePull $pull1;
     private ResourcePull $pull2;
@@ -65,6 +77,17 @@ class ResourcePullConcat implements Pull
                 throw new \OutOfBoundsException("No more data to pull from the resource.");
             }
         }
+    }
+
+    /**
+     * Yields every chunk of the first pull, then every chunk of the second.
+     *
+     * @return \Generator<int, string>
+     */
+    public function elements(): \Generator
+    {
+        yield from $this->pull1->elements();
+        yield from $this->pull2->elements();
     }
 
     /**
@@ -211,24 +234,10 @@ class ResourcePullConcat implements Pull
     /**
      * Consumes both pulls and returns all chunks as a single array.
      *
-     * Rewinds before reading.
-     *
      * @return array
      */
     public function getValues(): array
     {
-        $values = [];
-        $this->rewind();
-
-        while ($this->hasNext()) {
-            try {
-                $this->next();
-                $values[] = $this->current();
-            } catch (\OutOfBoundsException $e) {
-                break;
-            }
-        }
-
-        return $values;
+        return iterator_to_array($this->elements(), false);
     }
 }

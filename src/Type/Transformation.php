@@ -16,10 +16,12 @@ use Phunkie\Effect\IO\IO;
 /**
  * Wraps a closure as a composable stream transformation.
  *
- * Transformations can be chained via andThen() and optionally bound to an
- * effect class (e.g. IO) using array-access syntax: $transformation[IO::class].
- * Passthrough mode marks a transformation as side-effect-only, meaning the
- * original data passes through unchanged after the effect executes.
+ * The closure receives a chunk of elements and the transformation itself, so it can halt the
+ * source once it has seen enough. Transformations can be chained via andThen() and optionally
+ * bound to an effect class (e.g. IO) using array-access syntax: $transformation[IO::class].
+ * Passthrough mode marks a transformation as side-effect-only, meaning the original data
+ * passes through unchanged after the effect executes. A transformation that buffers elements
+ * registers with onFinish() what it still holds when the input ends.
  */
 class Transformation implements \ArrayAccess
 {
@@ -31,6 +33,10 @@ class Transformation implements \ArrayAccess
 
     /** @var bool When true, the transformation is side-effect-only (data passes through). */
     private bool $isPassthrough = false;
+
+    private bool $halted = false;
+
+    private ?\Closure $finish = null;
 
     /** @param \Closure $f The transformation function to apply to each chunk. */
     public function __construct(\Closure $f)
@@ -54,38 +60,90 @@ class Transformation implements \ArrayAccess
             try {
                 $effectClass = new \ReflectionClass($this->effect);
 
-                return $effectClass->newInstance(fn () => ($this->f)($chunk));
+                return $effectClass->newInstance(fn () => ($this->f)($chunk, $this));
             } catch (\ReflectionException $e) {
                 throw new \Error($this->effect . " is not an Effect");
             }
         }
 
-        return ($this->f)($chunk);
+        return ($this->f)($chunk, $this);
+    }
+
+    /**
+     * Apply this transformation to a chunk, running its effect now, and return what comes out.
+     *
+     * @param iterable $chunk The data chunk to transform.
+     * @return array
+     */
+    public function emit(iterable $chunk): array
+    {
+        return $this->elementsOf($this->run($chunk));
+    }
+
+    /**
+     * Ask the source to stop pulling: the transformation has seen all it needs.
+     *
+     * @return void
+     */
+    public function halt(): void
+    {
+        $this->halted = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHalted(): bool
+    {
+        return $this->halted;
+    }
+
+    /**
+     * Register what to emit once the input is exhausted, for a transformation that buffers elements.
+     *
+     * @param \Closure $finish Returns the buffered elements.
+     * @return void
+     */
+    public function onFinish(\Closure $finish): void
+    {
+        $this->finish = $finish;
+    }
+
+    /**
+     * What the transformation still holds once the input is exhausted.
+     *
+     * @return array
+     */
+    public function finish(): array
+    {
+        return null === $this->finish ? [] : $this->elementsOf(($this->finish)());
     }
 
     /**
      * Compose this transformation with another, producing a new pipeline.
+     *
+     * The pipeline halts when either side halts, and finishes by pushing what this side
+     * still holds through the other before emitting what the other holds.
      *
      * @param Transformation $transformation The transformation to chain after this one.
      * @return Transformation
      */
     public function andThen(Transformation $transformation): Transformation
     {
-        if (!$this->isEffectful() && !$transformation->isEffectful()) {
-            return new Transformation(fn ($chunk) => $transformation->run($this->run($chunk)));
-        }
+        $composed = new Transformation(function ($chunk, Transformation $self) use ($transformation) {
+            $result = $transformation->run($this->emit($chunk));
+            if ($this->isHalted() || $transformation->isHalted()) {
+                $self->halt();
+            }
 
-        $composed = new Transformation(function ($chunk) use ($transformation) {
-            $intermediate = $this->run($chunk);
-            $result = $transformation->run($intermediate instanceof IO ? $intermediate->unsafeRun() : $intermediate);
-
-            return $result instanceof IO ? $result->unsafeRun() : $result;
+            return $this->elementsOf($result);
         });
         $composed->setEffect($this->effect ?? $transformation->getEffect());
         $composed->setPassthrough(
             (!$this->isEffectful() || $this->isPassthrough())
             && (!$transformation->isEffectful() || $transformation->isPassthrough())
         );
+        $composed->onFinish(fn () => array_merge($transformation->emit($this->finish()), $transformation->finish()));
 
         return $composed;
     }
@@ -119,16 +177,6 @@ class Transformation implements \ArrayAccess
     public function offsetUnset(mixed $offset): void
     {
         throw new \Error('Transformation is not an array');
-    }
-
-    /**
-     * Whether this transformation wraps its result in an effect.
-     *
-     * @return bool
-     */
-    private function isEffectful(): bool
-    {
-        return !is_null($this->effect);
     }
 
     /**
@@ -169,5 +217,28 @@ class Transformation implements \ArrayAccess
         $this->effect = $effect;
 
         return $this;
+    }
+
+    /**
+     * Whether this transformation wraps its result in an effect.
+     *
+     * @return bool
+     */
+    private function isEffectful(): bool
+    {
+        return !is_null($this->effect);
+    }
+
+    /**
+     * @param iterable|IO $result
+     * @return array
+     */
+    private function elementsOf(iterable | IO $result): array
+    {
+        if ($result instanceof IO) {
+            $result = $result->unsafeRun();
+        }
+
+        return is_array($result) ? $result : iterator_to_array($result, false);
     }
 }

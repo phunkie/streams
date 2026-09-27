@@ -11,13 +11,14 @@
 
 namespace Phunkie\Streams\Pull;
 
+use Phunkie\Streams\Ops\Pull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
+use Phunkie\Streams\Ops\Pull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\ImmListOps;
+use Phunkie\Streams\Ops\Pull\MonadOps;
 use Phunkie\Streams\Ops\Pull\TransformationOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\CompileOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\FunctorOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\ImmListOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\IteratorOps;
-use Phunkie\Streams\Ops\Pull\ValuesPull\MonadOps;
+use Phunkie\Streams\Ops\Pull\ValuesPull\LogOps;
 use Phunkie\Streams\Ops\Pull\ValuesPull\ShowOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
@@ -33,6 +34,7 @@ class ValuesPull implements Pull
 {
     use ShowOps;
     use CompileOps;
+    use LogOps;
     use FunctorOps;
     use MonadOps;
     use IteratorOps;
@@ -62,6 +64,16 @@ class ValuesPull implements Pull
     public function pull(): mixed
     {
         return $this->current();
+    }
+
+    /**
+     * Yields the values in order.
+     *
+     * @return \Generator<int, mixed>
+     */
+    public function elements(): \Generator
+    {
+        yield from $this->values;
     }
 
     /**

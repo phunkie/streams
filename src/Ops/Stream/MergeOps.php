@@ -72,32 +72,7 @@ trait MergeOps
             $handles = [];
             foreach ($streams as $stream) {
                 $blocker = new \Phunkie\Effect\Concurrent\Blocker(
-                    function () use ($stream) {
-                        $pull = $stream->compile()->getPull();
-                        $elements = [];
-
-                        if (method_exists($pull, 'rewind')) {
-                            $pull->rewind();
-                        }
-
-                        // Iterate and apply transformations per element
-                        while ($pull->valid()) {
-                            $element = $pull->current();
-
-                            if (method_exists($pull, 'runTransformations')) {
-                                $transformed = $pull->runTransformations([$element]);
-                                foreach ($transformed as $value) {
-                                    $elements[] = $value;
-                                }
-                            } else {
-                                $elements[] = $element;
-                            }
-
-                            $pull->next();
-                        }
-
-                        return $elements;
-                    },
+                    fn () => $stream->compile()->toArray(),
                     $context
                 );
                 $handles[] = $blocker();
@@ -113,26 +88,7 @@ trait MergeOps
             error_log("Phunkie Streams: Concurrent merge failed, falling back to sequential. Error: " . $e->getMessage());
 
             foreach ($streams as $stream) {
-                $pull = $stream->compile()->getPull();
-
-                if (method_exists($pull, 'rewind')) {
-                    $pull->rewind();
-                }
-
-                while ($pull->valid()) {
-                    $element = $pull->current();
-
-                    if (method_exists($pull, 'runTransformations')) {
-                        $transformed = $pull->runTransformations([$element]);
-                        foreach ($transformed as $value) {
-                            $allElements[] = $value;
-                        }
-                    } else {
-                        $allElements[] = $element;
-                    }
-
-                    $pull->next();
-                }
+                $allElements = array_merge($allElements, $stream->compile()->toArray());
             }
         }
 
@@ -181,30 +137,7 @@ trait MergeOps
                                     throw new \TypeError("parMergeMap expects function to return Stream, got " . get_debug_type($stream));
                                 }
 
-                                // Use iterator protocol for memory efficiency
-                                $pull = $stream->compile()->getPull();
-                                $elements = [];
-
-                                if (method_exists($pull, 'rewind')) {
-                                    $pull->rewind();
-                                }
-
-                                while ($pull->valid()) {
-                                    $elem = $pull->current();
-
-                                    if (method_exists($pull, 'runTransformations')) {
-                                        $transformed = $pull->runTransformations([$elem]);
-                                        foreach ($transformed as $value) {
-                                            $elements[] = $value;
-                                        }
-                                    } else {
-                                        $elements[] = $elem;
-                                    }
-
-                                    $pull->next();
-                                }
-
-                                return $elements;
+                                return $stream->compile()->toArray();
                             },
                             $context
                         );
@@ -230,26 +163,7 @@ trait MergeOps
                             throw new \TypeError("parMergeMap expects function to return Stream, got " . get_debug_type($stream));
                         }
 
-                        $pull = $stream->compile()->getPull();
-
-                        if (method_exists($pull, 'rewind')) {
-                            $pull->rewind();
-                        }
-
-                        while ($pull->valid()) {
-                            $elem = $pull->current();
-
-                            if (method_exists($pull, 'runTransformations')) {
-                                $transformed = $pull->runTransformations([$elem]);
-                                foreach ($transformed as $value) {
-                                    $allElements[] = $value;
-                                }
-                            } else {
-                                $allElements[] = $elem;
-                            }
-
-                            $pull->next();
-                        }
+                        $allElements = array_merge($allElements, $stream->compile()->toArray());
                     }
 
                     return Stream(...$allElements);

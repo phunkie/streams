@@ -9,14 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Phunkie\Streams\Ops\Pull\InfinitePull;
+namespace Phunkie\Streams\Ops\Pull;
 
 use function Phunkie\Streams\Functions\transformation\map;
 
 use Phunkie\Streams\Type\Scope;
 
 /**
- * Functor operations for InfinitePull. Registers map transformations on the scope.
+ * Functor operations for pulls. Registers map transformations on the scope.
  *
  * @method Scope getScope()
  */

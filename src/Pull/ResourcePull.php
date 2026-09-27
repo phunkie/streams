@@ -11,9 +11,14 @@
 
 namespace Phunkie\Streams\Pull;
 
-use Phunkie\Streams\Ops\Pull\ResourcePull\CompileOps;
-use Phunkie\Streams\Ops\Pull\ResourcePull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\CompileOps;
+use Phunkie\Streams\Ops\Pull\EffectfulOps;
+use Phunkie\Streams\Ops\Pull\FunctorOps;
+use Phunkie\Streams\Ops\Pull\ImmListOps;
+use Phunkie\Streams\Ops\Pull\MonadOps;
+use Phunkie\Streams\Ops\Pull\ResourcePull\LogOps;
 use Phunkie\Streams\Ops\Pull\ResourcePull\ShowOps;
+use Phunkie\Streams\Ops\Pull\TransformationOps;
 use Phunkie\Streams\Type\Pull;
 use Phunkie\Streams\Type\Scope;
 use Phunkie\Streams\Type\Stream;
@@ -27,8 +32,14 @@ use Phunkie\Streams\Type\Stream;
 class ResourcePull implements Pull
 {
     use CompileOps;
+    use LogOps;
+    use EffectfulOps;
     use FunctorOps;
+    use ImmListOps;
+    use MonadOps;
     use ShowOps;
+    use TransformationOps;
+
     private $resource;
     private $chunkSize;
     private $current;
@@ -63,6 +74,21 @@ class ResourcePull implements Pull
     public function pull(): mixed
     {
         return $this->current();
+    }
+
+    /**
+     * Yields the chunks one read at a time, from the handle's current position to its end.
+     *
+     * @return \Generator<int, string>
+     */
+    public function elements(): \Generator
+    {
+        while ($this->hasNext()) {
+            $this->next();
+            if ($this->current !== null) {
+                yield $this->current;
+            }
+        }
     }
 
     /**
@@ -197,28 +223,13 @@ class ResourcePull implements Pull
     }
 
     /**
-     * Consumes the entire resource and returns all chunks as an array.
-     *
-     * Rewinds the resource before reading.
+     * Consumes the rest of the resource and returns its chunks as an array.
      *
      * @return array
      */
     public function getValues(): array
     {
-        $values = [];
-        $this->rewind();
-
-        while ($this->hasNext()) {
-            $this->next();
-            if ($this->current !== null) {
-                $transformed = $this->transformed($this->current);
-                if ($transformed->isDefined()) {
-                    $values[] = $transformed->get();
-                }
-            }
-        }
-
-        return $values;
+        return iterator_to_array($this->elements(), false);
     }
 
     /** Closes the underlying resource handle. */

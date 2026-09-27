@@ -13,22 +13,10 @@ parameters:
 			path: src/Infinite/Timer.php
 
 		-
-			message: '#^Class Phunkie\\Streams\\Type\\Scope does not have a constructor and must be instantiated without any parameters\.$#'
-			identifier: new.noConstructor
-			count: 1
-			path: src/Pull/InfinitePull.php
-
-		-
 			message: '#^Call to an undefined method Phunkie\\Streams\\IO\\Resource\:\:pull\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: src/Pull/ResourceObjectPull.php
-
-		-
-			message: '#^Call to an undefined method Phunkie\\Streams\\Type\\Pull\:\:drain\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/Stream/Compiler.php
 
 		-
 			message: '#^Call to an undefined method Phunkie\\Streams\\Type\\Pull\:\:runLog\(\)\.$#'
@@ -39,12 +27,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Phunkie\\Streams\\Stream\\Compiler\:\:\$drain\.$#'
 			identifier: property.notFound
-			count: 1
-			path: src/Type/Stream.php
-
-		-
-			message: '#^Anonymous function has an unused use \$bytes\.$#'
-			identifier: closure.unusedUse
 			count: 1
 			path: src/Type/Stream.php
 

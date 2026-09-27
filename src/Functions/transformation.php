@@ -136,7 +136,7 @@ namespace Phunkie\Streams\Functions\transformation {
      */
     function evalMap(callable $f): Transformation
     {
-        return new Transformation(fn ($chunk) => ImmList(...array_map(fn ($x) => $f($x)->unsafeRun(), $chunk)));
+        return new Transformation(fn ($chunk) => array_map(fn ($x) => $f($x)->unsafeRun(), $chunk));
     }
 
     const evalFlatMap = 'evalFlatMap';
@@ -162,26 +162,32 @@ namespace Phunkie\Streams\Functions\transformation {
      */
     function evalFilter(callable $f): Transformation
     {
-        return new Transformation(fn ($chunk) => ImmList(...array_filter($chunk, fn ($v) => $f($v)->unsafeRun())));
+        return new Transformation(fn ($chunk) => array_values(array_filter($chunk, fn ($v) => $f($v)->unsafeRun())));
     }
 
     const take = 'take';
 
     /**
-     * Keep only the first $n elements of each chunk.
+     * Keep only the first $n elements across chunks, and halt the source once they are taken.
      *
      * @param int $n Number of elements to keep
      * @return Transformation
      */
     function take(int $n): Transformation
     {
-        return new Transformation(function ($chunk) use ($n) {
+        $taken = 0;
+
+        return new Transformation(function ($chunk, Transformation $take) use ($n, &$taken) {
             $result = [];
             foreach ($chunk as $value) {
-                if (count($result) === $n) {
+                if ($taken === $n) {
                     break;
                 }
                 $result[] = $value;
+                $taken++;
+            }
+            if ($taken === $n) {
+                $take->halt();
             }
 
             return $result;
@@ -214,17 +220,19 @@ namespace Phunkie\Streams\Functions\transformation {
     const takeWhile = 'takeWhile';
 
     /**
-     * Emit elements while the predicate holds, then stop.
+     * Emit elements while the predicate holds, then halt the source.
      *
      * @param callable $predicate The predicate to test each element
      * @return Transformation
      */
     function takeWhile(callable $predicate): Transformation
     {
-        return new Transformation(function ($chunk) use ($predicate) {
+        return new Transformation(function ($chunk, Transformation $takeWhile) use ($predicate) {
             $result = [];
             foreach ($chunk as $value) {
                 if (!$predicate($value)) {
+                    $takeWhile->halt();
+
                     break;
                 }
                 $result[] = $value;
@@ -264,7 +272,8 @@ namespace Phunkie\Streams\Functions\transformation {
     const chunk = 'chunk';
 
     /**
-     * Group elements into fixed-size sub-arrays (chunks). The last chunk may be smaller.
+     * Group elements into fixed-size sub-arrays (chunks). The last chunk, emitted when the input
+     * ends, may be smaller.
      *
      * @param int $size Number of elements per chunk
      * @return Transformation
@@ -273,7 +282,7 @@ namespace Phunkie\Streams\Functions\transformation {
     {
         $buffer = [];
 
-        return new Transformation(function ($chunk) use ($size, &$buffer) {
+        $transformation = new Transformation(function ($chunk) use ($size, &$buffer) {
             $chunks = [];
             foreach ($chunk as $value) {
                 $buffer[] = $value;
@@ -282,13 +291,16 @@ namespace Phunkie\Streams\Functions\transformation {
                     $buffer = [];
                 }
             }
-            // Flush remaining buffer as final chunk
-            if (!empty($buffer)) {
-                $chunks[] = $buffer;
-                $buffer = [];
-            }
 
             return $chunks;
         });
+        $transformation->onFinish(function () use (&$buffer) {
+            $rest = [] === $buffer ? [] : [$buffer];
+            $buffer = [];
+
+            return $rest;
+        });
+
+        return $transformation;
     }
 }
