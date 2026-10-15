@@ -530,4 +530,4 @@ For more examples, see:
 
 ---
 
-**Next**: Learn about [Core Stream Operations](./stream-operations.md)
+**Next**: Learn about [Working with Streams](./working-with-streams.md)

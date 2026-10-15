@@ -115,7 +115,7 @@ New to Phunkie Streams? Start here:
 - ❌ Connection Pooling
 - ❌ Process Management (dedicated Process class)
 
-See [README.md](../README.md) for the complete "What's Implemented" section.
+See the [README](https://github.com/phunkie/streams#whats-implemented) for the complete "What's Implemented" section.
 
 ## Examples
 
