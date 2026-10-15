@@ -12,6 +12,7 @@
 namespace Phunkie\Streams\Pull;
 
 use PDOStatement;
+use Phunkie\Streams\Closeable;
 use Phunkie\Streams\Ops\Pull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\FunctorOps;
@@ -31,7 +32,7 @@ use Phunkie\Streams\Type\Stream;
  * Iterates over query results row-by-row, fetching each row as an
  * associative array (PDO::FETCH_ASSOC) only when the consumer asks for it.
  */
-class PDOPull implements Pull
+class PDOPull implements Pull, Closeable
 {
     use CompileOps;
     use LogOps;
@@ -46,6 +47,7 @@ class PDOPull implements Pull
     private $current;
     private int $key = 0;
     private Scope $scope;
+    private bool $closed = false;
 
     /**
      * @param PDOStatement $stmt An already-executed statement to iterate over.
@@ -72,6 +74,9 @@ class PDOPull implements Pull
      */
     public function elements(): \Generator
     {
+        if ($this->closed) {
+            return;
+        }
         if ($this->current === null && $this->key === 0) {
             $this->rewind();
         }
@@ -80,6 +85,21 @@ class PDOPull implements Pull
             yield $this->current;
             $this->next();
         }
+    }
+
+    /**
+     * Close the statement's cursor so the connection can run another statement, which MySQL
+     * refuses while an unbuffered result set is open; pulling afterwards yields nothing.
+     *
+     * @return void
+     */
+    public function close(): void
+    {
+        if (!$this->closed) {
+            $this->stmt->closeCursor();
+        }
+        $this->closed = true;
+        $this->current = null;
     }
 
     /**

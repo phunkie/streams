@@ -470,6 +470,10 @@ Stream(new Path('huge.log'))
 - `take($n)` and `takeWhile($p)` halt the source: nothing is read past what they need, so `->take(10)` on a million-row statement fetches ten rows.
 - `chunk($n)` emits every full batch as it fills and the last partial batch when the source ends.
 - Backpressure is the sink blocking. An `evalTap` that writes to a slow socket blocks the pipeline, which blocks the pull, which stops reading; nothing buffers in between.
+- `compile()->fold($initial, $f)`, or `$stream->foldLeft($initial)($f)` partially applied as on `ImmList`, folds the output one element at a time into an `IO` of the result: a count or a total over a million rows without holding them.
+- `compile()->toGenerator()` hands the output to a consumer outside the IO discipline, such as an HTTP client that takes a body as an iterable. Elements are pulled and their effects run as it iterates, and the source is closed when the generator finishes or is abandoned.
+- A pull that implements `Closeable` is closed exactly once when the stream ends, when `take` or `takeWhile` halts it early, or when an effect throws. File handles (`Read`, `readHandle`), HTTP responses (`HttpRequest`) and statement cursors (`PDOPull`, through `closeCursor()`, which frees a MySQL connection after an unbuffered `take`) all do; after close a source yields EOF.
+- `readHandle(io(fn () => fopen('php://input', 'rb')), 65536)` streams a handle that an `IO` opens: the `IO` runs on the first pull, the handle is closed at EOF and through `Closeable`.
 
 ### File Operations
 
@@ -499,7 +503,7 @@ Stream::fromLargeDataset()
 
 ### Custom sources
 
-A `Pull` yields its elements through `elements()`, a generator; that is all the compile path asks of it. A source that reads lazily inside its generator gets the same memory profile as the built-in file, socket and PDO pulls.
+A `Pull` yields its elements through `elements()`, a generator; that is all the compile path asks of it. One that holds a handle implements `Closeable` and is closed once the run is over, however it ended. A source that reads lazily inside its generator gets the same memory profile as the built-in file, socket and PDO pulls.
 
 ### Best Practices
 

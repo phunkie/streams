@@ -15,7 +15,8 @@ use Phunkie\Effect\IO\IO;
 use Phunkie\Types\ImmList;
 
 /**
- * Contract for compiling a stream into a materialised collection or into its effects.
+ * Contract for compiling a stream: into a collection, into its effects, into one folded value,
+ * or into a generator for consumers outside the IO discipline.
  */
 interface Compilable
 {
@@ -39,4 +40,21 @@ interface Compilable
      * @return IO<\Phunkie\Types\Unit>
      */
     public function drain(): IO;
+
+    /**
+     * Fold the output into one value, one element at a time, once the IO runs.
+     *
+     * @template B
+     * @param B $initial
+     * @param callable(B, mixed): B $f
+     * @return IO<B>
+     */
+    public function fold(mixed $initial, callable $f): IO;
+
+    /**
+     * The output as a Generator, pulled and run as the consumer iterates.
+     *
+     * @return \Generator<int, mixed>
+     */
+    public function toGenerator(): \Generator;
 }

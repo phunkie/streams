@@ -332,3 +332,25 @@ $result = Stream(new Path("input.csv"))
 ```
 
 By following these patterns, you can work with external resources in a functional, composable way that maintains the safety and expressiveness of Phunkie Streams.
+
+## Closing
+
+A resource stream holds something open while it runs: a file handle, a socket, a statement's cursor. A pull that implements `Phunkie\Streams\Closeable` is closed exactly once by the compile loop, whichever way the run ends: the source reached its end, `take` or `takeWhile` halted it early, or an effect threw. After `close()` the source yields EOF, so a second compile reads nothing instead of failing.
+
+`Read`, `HttpRequest`, `ResourcePull` and `PDOPull` all implement it; `PDOPull::close()` calls `closeCursor()`, which is what lets a MySQL connection run another statement after an unbuffered result set was cut short.
+
+```php
+use function Phunkie\Streams\Functions\io\readHandle;
+
+readHandle(io(fn () => fopen('php://input', 'rb')), 65536)   // opens on the first pull
+    ->lines()
+    ->take(1000)                                              // halts: the handle is closed here
+    ->compile()
+    ->drain();
+```
+
+`readHandle` streams a handle that an `IO` opens. The `IO` runs on the first pull, not when the stream is built, and the handle is closed at EOF or through `Closeable`.
+
+## Folding and handing over
+
+`foldLeft($initial)($f)` folds the output into an `IO` of one value, one element at a time, the way `ImmList::foldLeft` is partially applied; `compile()->fold($initial, $f)` is the same on the compiler. `compile()->toGenerator()` returns a `Generator` for a consumer outside the IO discipline, such as an HTTP client that takes a body as an iterable: elements are pulled and their effects run as it iterates, and the source is closed when the generator finishes or is abandoned.

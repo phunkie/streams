@@ -11,6 +11,7 @@
 
 namespace Phunkie\Streams\Type;
 
+use Phunkie\Effect\IO\IO;
 use Phunkie\Streams\Compilable;
 use Phunkie\Streams\Showable;
 
@@ -36,6 +37,8 @@ use Phunkie\Streams\Showable;
  * @method static dropWhile(callable $predicate)
  * @method static chunk(int $size)
  * @method static lines()
+ * @method IO fold(mixed $initial, callable $f)
+ * @method \Generator toGenerator()
  * @method array getValues()
  * @method Scope getScope()
  * @method void setScope(Scope $scope)

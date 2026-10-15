@@ -11,6 +11,7 @@
 
 namespace Phunkie\Streams\Pull;
 
+use Phunkie\Streams\Closeable;
 use Phunkie\Streams\Ops\Pull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\FunctorOps;
@@ -30,7 +31,7 @@ use Phunkie\Streams\Type\Stream;
  * Reads data in fixed-size chunks via fread(). The resource is closed
  * automatically when this object is destroyed.
  */
-class ResourcePull implements Pull
+class ResourcePull implements Pull, Closeable
 {
     use CompileOps;
     use LogOps;
@@ -47,6 +48,7 @@ class ResourcePull implements Pull
     private $current;
     private $key;
     private Scope $scope;
+    private bool $closed = false;
 
     /**
      * @param resource $resource  A PHP stream resource (e.g. from fopen()).
@@ -160,7 +162,21 @@ class ResourcePull implements Pull
      */
     public function hasNext(): bool
     {
-        return !feof($this->resource);
+        return !$this->closed && !feof($this->resource);
+    }
+
+    /**
+     * Close the handle; pulling afterwards yields nothing.
+     *
+     * @return void
+     */
+    public function close(): void
+    {
+        if (is_resource($this->resource)) {
+            fclose($this->resource);
+        }
+        $this->closed = true;
+        $this->current = null;
     }
 
     /**
@@ -170,7 +186,7 @@ class ResourcePull implements Pull
      */
     public function rewind(): void
     {
-        if (is_resource($this->resource)) {
+        if (!$this->closed) {
             rewind($this->resource);
         }
         $this->key = 0;
@@ -237,8 +253,6 @@ class ResourcePull implements Pull
     /** Closes the underlying resource handle. */
     public function __destruct()
     {
-        if (is_resource($this->resource)) {
-            fclose($this->resource);
-        }
+        $this->close();
     }
 }
