@@ -40,11 +40,11 @@ namespace Phunkie\Streams\Functions\file {
     /**
      * Read all contents from a file as a Stream
      *
-     * @param Path $path The file path to read from
+     * @param Path $path The file to read
      * @param int $chunk The chunk size in bytes for reading
      * @return Stream<string> A stream of file contents
      */
-    function readAll($path, $chunk): Stream
+    function readAll(Path $path, int $chunk): Stream
     {
         return Read::readAll($path, $chunk);
     }

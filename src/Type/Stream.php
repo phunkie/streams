@@ -85,7 +85,7 @@ class Stream implements Showable, Kind
      */
     public static function fromResource(Path $path, int $bytes = 256): Stream
     {
-        return self::fromResourceObject(new Read($path->toString()), $bytes);
+        return self::fromResourceObject(new Read($path), $bytes);
     }
 
     /**

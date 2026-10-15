@@ -12,6 +12,7 @@
 namespace Phunkie\Streams\IO;
 
 use Phunkie\Streams\Closeable;
+use Phunkie\Streams\IO\File\Path;
 use Phunkie\Streams\Type\Stream;
 
 /**
@@ -26,10 +27,7 @@ class Read implements Resource, Closeable
 
     private bool $closed = false;
 
-    /**
-     * @param string $path Filesystem path to read from
-     */
-    public function __construct(private string $path)
+    public function __construct(private Path $path)
     {
     }
 
@@ -42,11 +40,11 @@ class Read implements Resource, Closeable
     /**
      * Create a Stream that reads the entire file in chunks.
      *
-     * @param string $path  Filesystem path to read from
-     * @param int    $bytes Chunk size in bytes
+     * @param Path $path  The file to read
+     * @param int  $bytes Chunk size in bytes
      * @return Stream
      */
-    public static function readAll($path, $bytes = 256): Stream
+    public static function readAll(Path $path, int $bytes = 256): Stream
     {
         $stream = Stream(new Read($path));
 
@@ -104,7 +102,7 @@ class Read implements Resource, Closeable
      */
     private function open(): void
     {
-        $this->handle = fopen($this->path, 'r');
+        $this->handle = fopen($this->path->toString(), 'r');
     }
 
     /**

@@ -21,7 +21,7 @@ describe("Stream chunk size", function () {
     });
 
     it("reads the file in chunks of the size given to readAll", function () {
-        $chunks = Read::readAll($this->file, 5)->compile()->toList();
+        $chunks = Read::readAll(new Path($this->file), 5)->compile()->toList();
 
         expect($chunks->toArray())->toBe(["hello", " worl", "d"]);
     });
