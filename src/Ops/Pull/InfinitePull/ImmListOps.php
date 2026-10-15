@@ -11,55 +11,40 @@
 
 namespace Phunkie\Streams\Ops\Pull\InfinitePull;
 
+use function Phunkie\Streams\Functions\transformation\take;
+
 use Phunkie\Streams\Infinite\Timer;
 use Phunkie\Streams\Pull\InfinitePull;
-use Phunkie\Streams\Pull\ValuesPull;
 
 /**
- * List-like operations for InfinitePull. Converts to finite ValuesPull when bounded.
+ * List-like operations for InfinitePull.
  *
  * @method \Phunkie\Streams\Infinite\Infinite getInfinite()
  * @method \Phunkie\Streams\Type\Scope getScope()
- * @method bool valid()
- * @method mixed pull()
+ * @method static appendTransformation(\Phunkie\Streams\Type\Transformation $transformation)
  */
 trait ImmListOps
 {
     /**
-     * Take the first $n elements from the infinite source.
-     * Returns InfinitePull for Timer sources (preserving timing), or ValuesPull otherwise.
+     * Take the first $n elements from the infinite source, pulling no further once they are taken.
+     * A Timer source becomes a bounded timer so its timing is preserved.
      *
      * @param int $n Number of elements to take
-     * @return InfinitePull|ValuesPull
+     * @return InfinitePull
      */
-    public function take(int $n): InfinitePull | ValuesPull
+    public function take(int $n): InfinitePull
     {
         $infinite = $this->getInfinite();
 
         if ($infinite instanceof Timer) {
-            $smallerInfinite = new InfinitePull(
-                awakeEvery($infinite->getSeconds(), $n)
-            );
-            $smallerInfinite->setScope($this->getScope());
+            $bounded = new InfinitePull(awakeEvery($infinite->getSeconds(), $n));
+            $bounded->setScope($this->getScope());
 
-            return $smallerInfinite;
+            return $bounded;
         }
 
-        $values = [];
+        $this->appendTransformation(take($n));
 
-        for ($i = 0; $i < $n; $i++) {
-            if ($this->valid()) {
-                $values[] = $this->pull();
-            }
-        }
-
-        $infinite->reset();
-
-        $valuesPull = new ValuesPull(
-            ...$values
-        );
-        $valuesPull->setScope($this->getScope());
-
-        return $valuesPull;
+        return $this;
     }
 }
