@@ -11,6 +11,7 @@
 
 namespace Phunkie\Streams\Pull;
 
+use Phunkie\Streams\Closeable;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Streams\Ops\Pull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
@@ -32,7 +33,7 @@ use Phunkie\Streams\Type\Stream;
  * works with Resource interface implementations that define their own
  * pull($chunkSize) method and EOF sentinel.
  */
-class ResourceObjectPull implements Pull
+class ResourceObjectPull implements Pull, Closeable
 {
     use CompileOps;
     use LogOps;
@@ -83,6 +84,20 @@ class ResourceObjectPull implements Pull
             if ($this->current !== null) {
                 yield $this->current;
             }
+        }
+    }
+
+    /**
+     * Stop pulling and close the resource if it can be closed; pulling afterwards yields nothing.
+     *
+     * @return void
+     */
+    public function close(): void
+    {
+        $this->eof = true;
+        $this->current = null;
+        if ($this->resource instanceof Closeable) {
+            $this->resource->close();
         }
     }
 

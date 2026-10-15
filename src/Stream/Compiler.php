@@ -85,4 +85,29 @@ class Compiler
     {
         return $this->getPull()->drain();
     }
+
+    /**
+     * Fold the output into one value, one element at a time, once the IO runs.
+     *
+     * @template B
+     * @param B $initial
+     * @param callable(B, mixed): B $f
+     * @return IO<B>
+     */
+    public function fold(mixed $initial, callable $f): IO
+    {
+        return $this->getPull()->fold($initial, $f);
+    }
+
+    /**
+     * The output as a Generator for a consumer outside the IO discipline, such as an HTTP client
+     * that takes a body as an iterable: elements are pulled and their effects run as it iterates,
+     * and the source is closed when the generator finishes or is abandoned.
+     *
+     * @return \Generator<int, mixed>
+     */
+    public function toGenerator(): \Generator
+    {
+        return $this->getPull()->toGenerator();
+    }
 }

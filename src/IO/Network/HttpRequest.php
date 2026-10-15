@@ -11,6 +11,7 @@
 
 namespace Phunkie\Streams\IO\Network;
 
+use Phunkie\Streams\Closeable;
 use Phunkie\Streams\IO\Resource;
 use Phunkie\Streams\Type\Stream;
 
@@ -21,10 +22,11 @@ use Phunkie\Streams\Type\Stream;
  * The request is executed lazily on the first pull. Uses PHP stream
  * contexts internally.
  */
-class HttpRequest implements Resource
+class HttpRequest implements Resource, Closeable
 {
     private $handle;
     private bool $executed = false;
+    private bool $closed = false;
 
     /**
      * @param string      $url     Request URL
@@ -49,9 +51,7 @@ class HttpRequest implements Resource
     /** Close the response stream if still open. */
     public function __destruct()
     {
-        if ($this->isOpen()) {
-            $this->close();
-        }
+        $this->close();
     }
 
     /**
@@ -115,6 +115,9 @@ class HttpRequest implements Resource
      */
     public function pull($bytes): string
     {
+        if ($this->closed) {
+            return Resource::EOF;
+        }
         $this->execute();
 
         return $this->read($bytes);
@@ -224,15 +227,16 @@ class HttpRequest implements Resource
     }
 
     /**
-     * Close the response stream handle.
+     * Close the response stream; pulling afterwards yields EOF.
      *
      * @return void
      */
-    private function close(): void
+    public function close(): void
     {
         if (is_resource($this->handle)) {
             fclose($this->handle);
         }
+        $this->closed = true;
     }
 
     /**

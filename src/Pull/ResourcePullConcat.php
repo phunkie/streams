@@ -11,6 +11,7 @@
 
 namespace Phunkie\Streams\Pull;
 
+use Phunkie\Streams\Closeable;
 use Phunkie\Streams\Ops\Pull\CompileOps;
 use Phunkie\Streams\Ops\Pull\EffectfulOps;
 use Phunkie\Streams\Ops\Pull\FunctorOps;
@@ -30,7 +31,7 @@ use Phunkie\Streams\Type\Stream;
  * Drains the first ResourcePull completely before switching to the second.
  * Delegates all Iterator operations to the currently active pull.
  */
-class ResourcePullConcat implements Pull
+class ResourcePullConcat implements Pull, Closeable
 {
     use CompileOps;
     use LogOps;
@@ -112,6 +113,17 @@ class ResourcePullConcat implements Pull
         $this->pull1->rewind();
         $this->pull2->rewind();
         $this->currentPull = $this->pull1;
+    }
+
+    /**
+     * Close both pulls.
+     *
+     * @return void
+     */
+    public function close(): void
+    {
+        $this->pull1->close();
+        $this->pull2->close();
     }
 
     /**

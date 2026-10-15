@@ -17,6 +17,7 @@ use Phunkie\Streams\Infinite\Infinite;
 use Phunkie\Streams\IO\File\Path;
 use Phunkie\Streams\IO\Read;
 use Phunkie\Streams\Ops\Stream\EffectfulOps;
+use Phunkie\Streams\Ops\Stream\FoldableOps;
 use Phunkie\Streams\Ops\Stream\FunctorOps;
 use Phunkie\Streams\Ops\Stream\ImmListOps;
 use Phunkie\Streams\Ops\Stream\MergeOps;
@@ -52,6 +53,7 @@ class Stream implements Showable, Kind
     use ParallelOps;
     use MergeOps;
     use TextOps;
+    use FoldableOps;
 
     /**
      * Constructor for the Stream class.

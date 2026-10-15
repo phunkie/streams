@@ -11,16 +11,20 @@
 
 namespace Phunkie\Streams\IO;
 
+use Phunkie\Streams\Closeable;
 use Phunkie\Streams\Type\Stream;
 
 /**
  * Reads from a file resource chunk by chunk.
  *
- * Opens the file lazily on first pull and closes it on destruction.
+ * Opens the file lazily on first pull and closes it at end of file, when the stream is closed
+ * early, or on destruction, whichever comes first.
  */
-class Read implements Resource
+class Read implements Resource, Closeable
 {
     private $handle;
+
+    private bool $closed = false;
 
     /**
      * @param string $path Filesystem path to read from
@@ -32,9 +36,7 @@ class Read implements Resource
     /** Close the file handle if still open. */
     public function __destruct()
     {
-        if ($this->isOpen()) {
-            $this->close();
-        }
+        $this->close();
     }
 
     /**
@@ -61,11 +63,28 @@ class Read implements Resource
      */
     public function pull($bytes): string
     {
+        if ($this->closed) {
+            return Resource::EOF;
+        }
+
         if (!$this->isOpen()) {
             $this->open();
         }
 
         return $this->read($bytes);
+    }
+
+    /**
+     * Close the file handle; pulling afterwards yields EOF.
+     *
+     * @return void
+     */
+    public function close(): void
+    {
+        if ($this->isOpen()) {
+            fclose($this->handle);
+        }
+        $this->closed = true;
     }
 
     /**
@@ -100,6 +119,8 @@ class Read implements Resource
             $data = fread($this->handle, $bytes);
 
             if ($data === false || ($data === '' && feof($this->handle))) {
+                $this->close();
+
                 return Resource::EOF;
             }
 
@@ -107,15 +128,5 @@ class Read implements Resource
         }
 
         throw new \Error("Not a valid resource");
-    }
-
-    /**
-     * Close the file handle.
-     *
-     * @return void
-     */
-    private function close(): void
-    {
-        fclose($this->handle);
     }
 }
